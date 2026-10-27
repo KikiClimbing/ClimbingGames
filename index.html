@@ -127,7 +127,7 @@ function buildNav(){const cnt=f=>DATA.filter(g=>g.Famille===f).length;
   Object.keys(FAMS).forEach(n=>{h+=navBtn("fam/"+n,`${esc(n)}<span class="n">${cnt(n)}</span>`,`<span class="dot" style="background:${FAMS[n].a}"></span>`)});
   h+='<div class="sec">PARCOURIR</div>'+navBtn("anniv","Format anniversaire",'<span class="ic">★</span>')+navBtn("nomat","Sans matériel",'<span class="ic">○</span>');
   OBJS.forEach(o=>{h+=navBtn("obj/"+o,o,'<span class="ic">›</span>')});
-  h+='<div class="sec">MES SÉANCES</div>'+navBtn("mes","Séances &amp; cycles",'<span class="ic">✎</span>');
+  h+='<div class="sec">MES SÉANCES</div>'+navBtn("mes","Séances &amp; cycles",'<span class="ic">✎</span>')+navBtn("biblio","Bibliothèque de séances",'<span class="ic">▤</span>');
   h+='<div class="sec">GUIDES</div>';GUIDES.forEach(([k,l,i])=>{h+=navBtn("g/"+k,l,`<span class="ic">${i}</span>`)});
   $("#navbox").innerHTML=h}
 function go(v){location.hash="#/"+v}
@@ -177,16 +177,24 @@ function guideView(k){
   if(k==="gloss")return gsec("Glossaire","Les mots utilisés dans les fiches.")+'<dl class="gl">'+AX.GLOSS.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")+"</dl>";
   return '<div class="empty">Page introuvable.</div>'}
 function copyLink(u){const m=String(u||"").match(/\/d\/([\w-]{15,})/);return m?"https://docs.google.com/document/d/"+m[1]+"/copy":u}
+function folderId(u){const m=String(u||"").match(/folders\/([\w-]{10,})/)||String(u||"").match(/[?&]id=([\w-]{10,})/);return m?m[1]:""}
+let BMODE="list";
+function biblioView(){const id=folderId(CONFIG.LIBRARY_URL);
+  const head=gsec("Bibliothèque de séances","Les séances et cycles déposés par les éducateurs. Vous ne voyez que ce que Google vous autorise à voir : les droits de partage de chaque document s'appliquent.");
+  if(!id)return head+'<div class="box">Le dossier de la bibliothèque n\'est pas encore configuré. L\'administrateur du site doit renseigner <b>LIBRARY_URL</b> dans le fichier <i>config.js</i>.</div>';
+  return head+`<div class="tools"><div class="seg"><button data-bm="list" class="${BMODE==="list"?"on":""}">Liste</button><button data-bm="grid" class="${BMODE==="grid"?"on":""}">Vignettes</button></div><a class="chip" target="_blank" rel="noopener" href="${esc(CONFIG.LIBRARY_URL)}">Ouvrir dans Google Drive ↗</a></div>
+  <div class="box" style="padding:6px"><iframe title="Bibliothèque de séances" src="https://drive.google.com/embeddedfolderview?id=${esc(id)}#${BMODE}" style="width:100%;height:68vh;min-height:420px;border:0;border-radius:8px;background:#fff"></iframe></div>
+  <p style="color:#6B7280;font-size:14px">Rien ne s'affiche, ou une page de connexion apparaît ? Connectez-vous à Google dans ce navigateur avec le compte qui a reçu l'accès, ou utilisez le bouton « Ouvrir dans Google Drive ». Cliquez sur un document pour l'ouvrir dans un nouvel onglet.</p>`}
 function mesView(){
   const card=(t,txt,url,label,copy)=>`<div class="xc"><h4>${t}</h4><p style="margin-bottom:12px">${txt}</p>${url?`<a class="btn" style="display:inline-block;background:#26364D;color:#fff;border-radius:8px;padding:8px 16px;font-weight:700;text-decoration:none" target="_blank" rel="noopener" href="${esc(copy?copyLink(url):url)}">${label}</a>`:`<span style="color:#9a6b00;font-size:13px">Lien à renseigner par l'administrateur du site.</span>`}</div>`;
   return gsec("Séances &amp; cycles","Créez vos fiches de séance et vos cycles de formation dans Google Docs, puis partagez-les avec les personnes de votre choix.")+
   '<div class="g2">'+card("Créer une fiche de séance","Une copie du modèle s'ouvre dans votre Google Drive : thème, déroulé, exercices avec variantes, critères de réussite, matériel, sécurité.",CONFIG.TEMPLATE_SEANCE_URL,"Créer une séance",true)+
   card("Créer un cycle de formation","Un tableau pour planifier un cycle : séances, thèmes, objectifs, jeux utilisés (par leur code) et bilan.",CONFIG.TEMPLATE_CYCLE_URL,"Créer un cycle",true)+
-  card("Bibliothèque partagée","Le dossier où les éducateurs qui le souhaitent déposent leurs séances. Accès réservé aux personnes invitées.",CONFIG.LIBRARY_URL,"Ouvrir la bibliothèque",false)+"</div>"+
+  `<div class="xc"><h4>Bibliothèque partagée</h4><p style="margin-bottom:12px">Le dossier où les éducateurs qui le souhaitent déposent leurs séances. Accès réservé aux personnes invitées.</p><a class="btn" style="display:inline-block;background:#26364D;color:#fff;border-radius:8px;padding:8px 16px;font-weight:700;text-decoration:none;cursor:pointer" data-go="biblio">Ouvrir la bibliothèque</a></div></div>`+
   `<div class="box" style="margin-top:16px"><b>Comment partager une séance</b><ol><li>Ouvrez votre séance dans Google Docs.</li><li>Cliquez sur <b>Partager</b>, en haut à droite.</li><li>Saisissez les adresses e-mail des personnes concernées, et choisissez <b>Lecteur</b> ou <b>Éditeur</b>.</li><li>Pour la mettre dans la bibliothèque, glissez-la dans le dossier partagé.</li></ol>Vous seul décidez qui voit votre séance : rien n'est public tant que vous ne l'avez pas décidé.</div>
   <div class="box"><b>Astuce</b> : dans le déroulé, notez le code des jeux du site (E4, D11, G1…) pour les retrouver en un clic.</div>`}
 function render(){const v=VIEW;let h;
-  if(v==="home")h=homeView();else if(v==="mes")h=mesView();else if(v.startsWith("g/"))h=guideView(v.slice(2));else h=listView(v);
+  if(v==="home")h=homeView();else if(v==="mes")h=mesView();else if(v==="biblio")h=biblioView();else if(v.startsWith("g/"))h=guideView(v.slice(2));else h=listView(v);
   $("#main").innerHTML=h;
   const hq=$("#hq");if(hq)hq.addEventListener("keydown",e=>{if(e.key==="Enter"){S.q=hq.value;go("all")}});
   const q=$("#q");if(q)q.addEventListener("input",e=>{S.q=e.target.value;const L=filterGames(VIEW);$("#cnt").textContent=L.length+" jeu"+(L.length>1?"x":"");$("#res").innerHTML=gridHTML(L)});
@@ -215,6 +223,7 @@ document.addEventListener("click",e=>{
   const t=e.target.closest(".tab");if(t){tab(t.dataset.p);return}
   const j=e.target.closest("[data-jeu]");if(j){go("jeu/"+encodeURIComponent(j.dataset.jeu));return}
   const g=e.target.closest("[data-go]");if(g){go(g.dataset.go);return}
+  const bm=e.target.closest("[data-bm]");if(bm){BMODE=bm.dataset.bm;render();return}
   const m=e.target.closest("[data-mode]");if(m){S.mode=m.dataset.mode;render();return}
   const i=e.target.closest("[data-int]");if(i){S.int=S.int===i.dataset.int?null:i.dataset.int;render();return}
   if(e.target.id==="ov"||e.target.closest(".x")){closeFiche();return}
