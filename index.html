@@ -59,6 +59,7 @@ table.lst{width:100%;border-collapse:separate;border-spacing:0 5px}.lst th{font-
 .sws{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.swt{width:26px;height:26px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #aab;cursor:pointer}.swt.on{box-shadow:0 0 0 3px #26364D}
 .rowb{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.hint{font-size:13px;color:#6B7280;line-height:1.4}
 @media(max-width:1000px){.edwrap{grid-template-columns:1fr}.edpal,.edpanel{position:static;max-height:none}.edpal{order:2}.edmain{order:1}.edpanel{order:3}}
+.smg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px}.sml{display:block;font-size:12px;letter-spacing:.5px;color:#7a8497;font-weight:700}.sml input,.sml textarea{display:block;width:100%;margin-top:3px;padding:8px;border:1px solid #D5DAE5;border-radius:8px;font:inherit;font-weight:400;color:#2B2F36;letter-spacing:0}.dur{width:58px;padding:5px;border:2px solid;border-radius:6px}
 /* fiche */
 .ov{position:fixed;inset:0;background:rgba(20,28,40,.55);display:none;z-index:20;overflow:auto;padding:24px 12px}.ov.open{display:block}
 .fiche{max-width:900px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3)}
@@ -230,35 +231,14 @@ function mesView(){
   <div class="box"><b>Astuce</b> : dans le déroulé, notez le code des jeux du site (E4, D11, G1…) pour les retrouver en un clic.</div>`}
 const minOf=g=>{const d=String(g["Durée"]||"");if(!/min/i.test(d)&&/\bs\b|sec/i.test(d))return 1;const m=d.match(/\d+/);return m?Math.max(1,parseInt(m[0],10)):10};
 const inSel=c=>SEL.some(x=>x.k===c);
-function addSel(c){const g=DATA.find(x=>key(x)===c);if(!g||inSel(c))return;SEL.push({k:c,min:minOf(g)});saveSel();const e=$("#selcount");if(e)e.textContent=SEL.length}
-function seanceView(){
-  const items=SEL.map(s=>({s,g:DATA.find(x=>key(x)===s.k)})).filter(x=>x.g);
-  const tot=items.reduce((a,x)=>a+(+x.s.min||0),0);
-  const mats={};items.forEach(({g})=>{if(noMat(g))return;String(g["Matériel"]||"").split(/[;,]|\bet\b/i).map(s=>s.replace(/\(.*?\)/g,"").trim()).filter(t=>t&&!/^(aucun|option)/i.test(norm(t))).forEach(t=>{const kk=norm(t);(mats[kk]=mats[kk]||{t,c:[]}).c.push(g.Code||g.Titre)})});
-  const head=`<h2 class="pt">Ma séance</h2><p class="lead">Composez votre séance en ajoutant des jeux depuis leurs fiches (bouton « Ajouter à ma séance »). Elle est enregistrée dans ce navigateur : exportez-la en PDF ou copiez-la dans votre modèle de séance Google Docs.</p>`;
-  if(!items.length)return head+`<div class="box">Votre séance est vide. Ouvrez une fiche de jeu et cliquez sur <b>＋ Ajouter à ma séance</b>.<br><br><a class="chip" data-go="all" style="cursor:pointer;display:inline-block">Parcourir les jeux</a></div>`;
-  const rows=items.map(({s,g},i)=>`<tr><td style="font-weight:700;width:34px">${i+1}</td><td><a class="lk" data-jeu="${esc(s.k)}" style="color:${famOf(g).d}">${esc(g.Code||"★")} · ${esc(g.Titre)}</a><br><span style="color:#6B7280;font-size:13px">${esc(g["Résumé"])}</span></td><td style="white-space:nowrap"><input type="number" min="1" max="120" value="${s.min}" data-min="${i}" style="width:56px;padding:5px;border:1px solid #D5DAE5;border-radius:6px"> min</td><td class="noprint" style="white-space:nowrap"><button class="chip" data-up="${i}">↑</button> <button class="chip" data-dn="${i}">↓</button> <button class="chip" data-rm="${i}">✕</button></td></tr>`).join("");
-  const mat=Object.values(mats);
-  return head+`<div class="box"><div class="g2" style="margin-bottom:10px"><div><label style="font-size:12px;letter-spacing:1px;color:#7a8497;font-weight:700">TITRE DE LA SÉANCE</label><br><input id="smTitre" value="${esc(SMETA.titre)}" placeholder="Ex. Séance 4 – Pose de pieds" style="width:100%;padding:9px;border:1px solid #D5DAE5;border-radius:8px;font:inherit"></div><div><label style="font-size:12px;letter-spacing:1px;color:#7a8497;font-weight:700">PUBLIC</label><br><input id="smPublic" value="${esc(SMETA.public)}" placeholder="Ex. 8 enfants de 7 à 10 ans" style="width:100%;padding:9px;border:1px solid #D5DAE5;border-radius:8px;font:inherit"></div></div>
-  <h3 style="margin:6px 0 8px;color:#86690F" class="printtitle">${esc(SMETA.titre||"Ma séance")}${SMETA.public?" — "+esc(SMETA.public):""}</h3>
-  <table class="tl">${rows}<tr><td></td><td style="text-align:right"><b>Durée totale</b></td><td colspan="2"><b id="stot">${tot} min</b></td></tr></table></div>
-  <div class="box"><b>Matériel à préparer</b><table class="tl" style="margin-top:8px">${mat.length?mat.map(m=>`<tr><td style="font-size:18px;width:34px">☐</td><td><b>${esc(m.t.charAt(0).toUpperCase()+m.t.slice(1))}</b></td><td>${m.c.map(codeLk).join(" ")}</td></tr>`).join(""):"<tr><td>Aucun matériel particulier.</td></tr>"}</table></div>
-  <div class="tools noprint"><a class="btn" id="sPrint" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" id="sCopy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Copier le texte</a><a class="chip" id="sClear">Vider la séance</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>`}
-function seanceText(){const items=SEL.map(s=>({s,g:DATA.find(x=>key(x)===s.k)})).filter(x=>x.g);let t=(SMETA.titre||"Ma séance")+(SMETA.public?" — "+SMETA.public:"")+"\n\n";items.forEach(({s,g},i)=>{t+=`${i+1}. [${s.min} min] ${g.Code?g.Code+" · ":""}${g.Titre} — ${g["Résumé"]||""}\n`});t+=`\nDurée totale : ${items.reduce((a,x)=>a+(+x.s.min||0),0)} min\n`;return t}
+function addSel(c){const g=DATA.find(x=>key(x)===c);if(!g||inSel(c))return;SEL.push({k:c,min:minOf(g),ph:"c1"});saveSel();const e=$("#selcount");if(e)e.textContent=SEL.length}
 function render(){const v=VIEW;let h;
   if(v==="home")h=homeView();else if(v==="mes")h=mesView();else if(v==="biblio")h=biblioView();else if(v==="seance")h=seanceView();else if(v==="editeur"){try{h=editorHTML()}catch(err){h=`<div class="box"><b>Erreur dans l'éditeur :</b> ${esc(err.message)}</div>`}}else if(v.startsWith("g/"))h=guideView(v.slice(2));else h=listView(v);
   $("#main").innerHTML=h;
   const hq=$("#hq");if(hq)hq.addEventListener("keydown",e=>{if(e.key==="Enter"){S.q=hq.value;go("all")}});
   const q=$("#q");if(q)q.addEventListener("input",e=>{S.q=e.target.value;const L=filterGames(VIEW);$("#cnt").textContent=L.length+" jeu"+(L.length>1?"x":"");$("#res").innerHTML=gridHTML(L)});
   if(v==="editeur"){try{edInit()}catch(err){try{localStorage.removeItem("edSchema")}catch(e){}ED.els=[];try{edInit()}catch(e2){$("#main").insertAdjacentHTML("afterbegin",`<div class="box" style="border:2px solid #E0485A"><b>Erreur dans l'éditeur :</b> ${esc(e2.message)}</div>`)}}}
-  if(v==="seance"){
-    const t=$("#smTitre");if(t)t.addEventListener("input",e=>{SMETA.titre=e.target.value;saveMeta();const p=document.querySelector(".printtitle");if(p)p.textContent=(SMETA.titre||"Ma séance")+(SMETA.public?" — "+SMETA.public:"")});
-    const p=$("#smPublic");if(p)p.addEventListener("input",e=>{SMETA.public=e.target.value;saveMeta();const q=document.querySelector(".printtitle");if(q)q.textContent=(SMETA.titre||"Ma séance")+(SMETA.public?" — "+SMETA.public:"")});
-    document.querySelectorAll("[data-min]").forEach(i=>i.addEventListener("input",e=>{SEL[+e.target.dataset.min].min=Math.max(0,+e.target.value||0);saveSel();$("#stot").textContent=SEL.reduce((a,x)=>a+(+x.min||0),0)+" min"}));
-    const pr=$("#sPrint");if(pr)pr.addEventListener("click",()=>{document.body.classList.add("ps");window.print();setTimeout(()=>document.body.classList.remove("ps"),500)});
-    const cp=$("#sCopy");if(cp)cp.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(seanceText());$("#sMsg").textContent="Texte copié !"}catch(e){$("#sMsg").textContent="Copie impossible : sélectionnez le texte à la main."}});
-    const cl=$("#sClear");if(cl)cl.addEventListener("click",()=>{if(confirm("Vider la séance ?")){SEL=[];saveSel();buildNav();render()}});
-  }
+  if(v==="seance")seanceBind();
   const r=$("#rnd");if(r)r.addEventListener("click",()=>{const g=DATA[Math.floor(Math.random()*DATA.length)];go("jeu/"+encodeURIComponent(key(g)))})}
 
 /* ---------- fiche ---------- */
@@ -534,6 +514,124 @@ function edUpload(){const msg=$("#edUpMsg"),url=CONFIG.SCHEMA_UPLOAD_URL;
     fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({name:name+".png",data,key:CONFIG.SCHEMA_UPLOAD_KEY||""})}).then(r=>r.json()).then(j=>{
       if(!j.ok)throw new Error(j.error||"refusé");msg.innerHTML=`✓ Envoyé. Lien à coller dans « Schéma (lien) » : <input readonly id="edLink" value="${esc(j.url)}" style="width:100%;margin-top:6px;padding:6px;border:1px solid #D5DAE5;border-radius:6px"> <button class="chip" id="edCopyLk" style="margin-top:6px">Copier le lien</button>`;
       $("#edCopyLk").onclick=()=>{const i=$("#edLink");i.select();try{navigator.clipboard.writeText(i.value)}catch(e){document.execCommand("copy")}$("#edCopyLk").textContent="Copié !"}}).catch(e=>{msg.textContent="Échec de l'envoi ("+e.message+"). Exportez le PNG et déposez-le à la main dans le Drive."})};fr.readAsDataURL(blob)},()=>{msg.textContent="Image impossible à générer."})}
+/* ===== Ma séance : fiche calquée sur le modèle (2 groupes, accueil, échauffement, corps de séance) ===== */
+const C1="#3A8FB0",C2="#E8662F",NAVYC="#1E2630";
+const m1=s=>+s.min||0,m2=s=>s.min2===undefined?(+s.min||0):(+s.min2||0);
+function seDefaults(){const d={titre:"",periode:"",theme:"",educ:"",objectif:"",dates:"",deux:true,g1:"Enfants (8–10 ans)",g2:"Ados (11–14 ans)",acc1:5,acc2:5,echNom:"",bloc1:"",bloc2:"",objCol:"",secu:"",rc1:"",rc2:""};Object.keys(d).forEach(k=>{if(SMETA[k]===undefined)SMETA[k]=d[k]})}
+function seModel(){seDefaults();const items=SEL.map((s,i)=>({s,i,g:DATA.find(x=>key(x)===s.k)})).filter(x=>x.g);const ph=p=>items.filter(x=>(x.s.ph||"c1")===p);
+  const mats={};items.forEach(({g})=>{if(noMat(g))return;String(g["Matériel"]||"").split(/[;,]|\bet\b/i).map(s=>s.replace(/\(.*?\)/g,"").trim()).filter(t=>t&&!/^(aucun|option)/i.test(norm(t))).forEach(t=>{const kk=norm(t);(mats[kk]=mats[kk]||{t,c:[]}).c.push(g.Code||g.Titre)})});
+  const sum=(a,f)=>a.reduce((t,x)=>t+f(x.s),0);const two=SMETA.deux!==false;
+  return {items,ech:ph("ech"),c1:ph("c1"),c2:ph("c2"),mats:Object.values(mats),two,sum,
+    tot1:sum(items,m1)+(+SMETA.acc1||0),tot2:sum(items,m2)+(+SMETA.acc2||0)}}
+const lines=t=>String(t||"").split(/\n/).map(l=>l.replace(/^\s*[•\-–]\s*/,"").trim()).filter(Boolean);
+const capf=t=>t.charAt(0).toUpperCase()+t.slice(1);
+function sheetHTML(){const M=seModel(),S=SMETA,two=M.two;const ph=t=>`<i style="color:#8A93A3">${t}</i>`;const v=(x,p)=>x?esc(x):ph(p);
+  const tag=(a,b)=>`<span style="display:inline-flex;gap:3px"><span style="background:${C1};color:#fff;font-weight:700;padding:2px 9px;min-width:30px;text-align:center">${a}'</span>${two?`<span style="background:${C2};color:#fff;font-weight:700;padding:2px 9px;min-width:30px;text-align:center">${b}'</span>`:""}</span>`;
+  const band=(a,b,title,bg,col,body)=>`<div style="display:flex;align-items:center;gap:10px;background:${bg};padding:3px 8px 3px 0;margin-top:8px;font-size:12px;font-weight:700;color:${col}">${tag(a,b)}<span>${title}</span></div>${body||""}`;
+  let h=`<div class="sheet" style="font-size:13px;color:#2B2F36;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+  <div style="background:${NAVYC};color:#fff;display:grid;grid-template-columns:2fr 1.6fr 1.1fr 1.4fr;gap:14px;padding:12px 16px;align-items:center">
+   <div><b style="font-size:18px">${v(S.titre,"[Cycle n — Séance n]")}</b> <span style="color:#C9D1DE">${v(S.periode,"[période]")}</span><br><b>Thème :</b> <span style="color:#C9D1DE">${v(S.theme,"[thème de la séance]")}</span><br><b>Éducateurs :</b> <span style="color:#C9D1DE">${v(S.educ,"[prénoms]")}</span></div>
+   <div><b>Objectif général :</b> <span style="color:#C9D1DE">${v(S.objectif,"[ce que la séance doit permettre d'apprendre]")}</span></div>
+   <div style="text-align:center"><b>Dates :</b> <span style="color:#C9D1DE">${v(S.dates,"[jj mois]")}</span></div>
+   <div style="font-size:12px"><span style="color:${C1}">■</span> ${esc(S.g1||"Groupe 1")} – ${M.tot1} min${two?`<br><span style="color:${C2}">■</span> ${esc(S.g2||"Groupe 2")} – ${M.tot2} min`:""}</div></div>`;
+  h+=band(S.acc1||0,S.acc2||0,"ACCUEIL","#FDF3D3","#8A6D12");
+  if(M.ech.length)h+=band(M.sum(M.ech,m1),M.sum(M.ech,m2),"ÉCHAUFFEMENT"+(S.echNom?" — "+esc(S.echNom):""),"#E6F2E6","#2E6F3E",M.ech.map(({s,g})=>`<div style="padding:3px 8px;font-size:12px"><span style="color:${C1};font-weight:700">▸</span> <b>${esc(g.Titre)}</b> <span style="color:#6B7280">(${esc(g.Code||"")}${g.Code?" · ":""}${m1(s)}${two?"/"+m2(s):""} min)</span> — ${esc(g["Résumé"]||"")}</div>`).join(""));
+  const th=(t,c,f)=>`<div style="background:${f};color:${c};font-weight:700;font-size:11px;padding:5px 10px;border-bottom:1px solid #D5DAE5">${t}</div>`;
+  const exo=({s,g},n)=>{const L=t=>lines(t);const col=(t,c,sg,bg)=>`<div style="background:${bg};padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${L(t).map(x=>`<div style="margin-bottom:2px"><b style="color:${c}">${sg}</b> ${esc(x)}</div>`).join("")||ph("—")}</div>`;
+    return `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px"><b style="color:${C1}">▸</b> <b>${n}. ${esc(g.Titre)}</b> <span style="color:#6B7280;font-size:11px">(${esc(g.Code||"")}${g.Code?" · ":""}${m1(s)}${two?"/"+m2(s):""} min)</span><div style="margin:2px 0">${esc(g["Principe"]||g["Résumé"]||"")}</div><div style="color:#6B7280;font-size:11px;font-style:italic">${esc([g["Participants"],g["Espace"],g["Matériel"]&&"Matériel : "+g["Matériel"]].filter(Boolean).join(" · "))}</div></div>`+col(g["Plus difficile"],C2,"+","#FDF3F2")+col(g["Plus facile"],"#2E6F3E","–","#F1F8F2")+`<div style="background:#FDF3F2;padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${ph("✓ [critère observable]")}<br>${ph("✓ [critère observable]")}</div>`};
+  const blocks=[["c1",S.bloc1||"bloc 1"],["c2",S.bloc2||"bloc 2"]].filter(([k])=>M[k].length);
+  if(blocks.length){let n=0;h+=`<div style="display:grid;grid-template-columns:3.2fr 1.2fr 1.2fr 1.3fr;margin-top:10px"><div style="background:#fff;color:#2B5A9E;font-weight:700;font-size:11px;padding:5px 10px;border-bottom:1px solid #D5DAE5">EXERCICE / DÉFI / JEU</div>${th("PLUS DIFFICILE (+)","#B2543A","#FBE6E4")}${th("PLUS FACILE (–)","#2E6F3E","#E6F2E8")}${th("CRITÈRES DE RÉUSSITE","#B2263A","#FBE6E4")}`;
+    blocks.forEach(([k,t])=>{h+=`<div style="grid-column:1/4;background:#E3EEF8;padding:4px 10px;font-size:12px;font-weight:700;color:#2B5A9E"><span style="color:${C1}">${M.sum(M[k],m1)}'</span>${two?` <span style="color:${C2}">${M.sum(M[k],m2)}'</span>`:""} &nbsp;CORPS DE SÉANCE — ${esc(t)}</div><div style="background:#FDF3F2"></div>`;M[k].forEach(x=>{n++;h+=exo(x,n)})});h+=`</div>`}
+  const fb=(t,b,bg="#F2F3F5")=>`<div style="background:${bg};padding:8px 12px;font-size:12px;border-left:3px solid #fff"><b style="font-size:11px">${t}</b><br>${b}</div>`;
+  h+=`<div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.1fr 1.4fr;margin-top:12px">${fb("OBJECTIF COLLECTIF",S.objCol?esc(S.objCol).replace(/\n/g,"<br>"):ph("[ce que le groupe doit réussir]"))}${fb("MATÉRIEL",M.mats.length?M.mats.map(m=>`☐ ${esc(capf(m.t))} <span style="color:#8A93A3;font-size:10px">${m.c.map(esc).join(", ")}</span>`).join("<br>"):"Aucun matériel particulier.")}${fb("SÉCURITÉ",S.secu?esc(S.secu).replace(/\n/g,"<br>"):ph("[rappels : hauteur, tapis, pas de saut…]"))}${fb("RETOUR AU CALME",`<b style="color:${C1}">${esc(S.g1||"Groupe 1")} :</b> ${v(S.rc1,"[étirements, bilan…]")}`+(two?`<br><b style="color:${C2}">${esc(S.g2||"Groupe 2")} :</b> ${v(S.rc2,"[étirements, bilan…]")}`:""))}</div></div>`;
+  return h}
+function seanceView(){const M=seModel(),S=SMETA;
+  const head=`<h2 class="pt">Ma séance</h2><p class="lead">Composez votre séance avec les jeux (bouton « Ajouter à ma séance » sur chaque fiche). La fiche ci-dessous reprend la mise en page de votre modèle : deux groupes avec leur code couleur, accueil, échauffement et corps de séance. Elle est enregistrée dans ce navigateur : téléchargez-la en Word (à ouvrir dans Google Docs), imprimez-la en PDF ou copiez le texte.</p>`;
+  if(!M.items.length)return head+`<div class="box">Votre séance est vide. Ouvrez une fiche de jeu et cliquez sur <b>＋ Ajouter à ma séance</b>.<br><br><a class="chip" data-go="all" style="cursor:pointer;display:inline-block">Parcourir les jeux</a></div>`;
+  const inp=(k,l,p,span)=>`<label class="sml" style="${span?"grid-column:1/-1":""}">${l}<input data-sm="${k}" value="${esc(S[k])}" placeholder="${esc(p)}"></label>`;
+  const num=(k,l,c)=>`<label class="sml" style="border-left:4px solid ${c};padding-left:8px">${l}<input type="number" min="0" max="60" data-sm="${k}" data-n="1" value="${S[k]}"></label>`;
+  const txa=(k,l,p)=>`<label class="sml">${l}<textarea rows="2" data-sm="${k}" placeholder="${esc(p)}">${esc(S[k])}</textarea></label>`;
+  const opt=(cur)=>[["ech","Échauffement"],["c1","Corps — "+(S.bloc1||"bloc 1")],["c2","Corps — "+(S.bloc2||"bloc 2")]].map(([v,l])=>`<option value="${v}" ${cur===v?"selected":""}>${esc(l)}</option>`).join("");
+  const rows=M.items.map(({s,g,i})=>`<tr><td style="font-weight:700;width:30px">${i+1}</td><td><a class="lk" data-jeu="${esc(s.k)}" style="color:${famOf(g).d}">${esc(g.Code||"★")} · ${esc(g.Titre)}</a></td><td><select data-ph="${i}" style="padding:5px;border:1px solid #D5DAE5;border-radius:6px;font:inherit;max-width:170px">${opt(s.ph||"c1")}</select></td><td style="white-space:nowrap"><input type="number" min="0" max="120" value="${m1(s)}" data-m1="${i}" class="dur" style="border-color:${C1}">${M.two?` <input type="number" min="0" max="120" value="${m2(s)}" data-m2="${i}" class="dur" style="border-color:${C2}">`:""} min</td><td class="noprint" style="white-space:nowrap"><button class="chip" data-up="${i}">↑</button> <button class="chip" data-dn="${i}">↓</button> <button class="chip" data-rm="${i}">✕</button></td></tr>`).join("");
+  return head+`<div class="box noprint"><b>Informations de la séance</b>
+   <div class="smg">${inp("titre","Cycle et séance","Ex. Cycle 1 — Séance 4")}${inp("periode","Période","Ex. octobre")}${inp("theme","Thème","Ex. Pose de pieds & transfert de poids")}${inp("educ","Éducateurs","Prénoms")}${inp("objectif","Objectif général","Ce que la séance doit permettre d'apprendre",1)}${inp("dates","Dates","Ex. 7 & 10 octobre")}</div>
+   <div class="smg" style="margin-top:8px"><label class="fl" style="grid-column:1/-1"><input type="checkbox" id="smDeux" ${M.two?"checked":""}> Deux groupes (code couleur bleu / orange comme dans le modèle)</label>
+    <label class="sml" style="border-left:4px solid ${C1};padding-left:8px">Groupe 1<input data-sm="g1" value="${esc(S.g1)}"></label>${M.two?`<label class="sml" style="border-left:4px solid ${C2};padding-left:8px">Groupe 2<input data-sm="g2" value="${esc(S.g2)}"></label>`:"<span></span>"}
+    ${num("acc1","Accueil — groupe 1 (min)",C1)}${M.two?num("acc2","Accueil — groupe 2 (min)",C2):""}
+    ${inp("echNom","Nom de l'échauffement","Ex. Jeux de déplacement")}${inp("bloc1","Titre du bloc 1","Ex. Poser les pieds")}${inp("bloc2","Titre du bloc 2","Ex. Transférer le poids")}</div></div>
+  <div class="box noprint"><b>Jeux de la séance</b> <span style="color:#6B7280;font-size:13px">— choisissez la partie de la séance et la durée pour chaque groupe</span>
+   <table class="tl" style="margin-top:8px">${rows}</table></div>
+  <div class="box noprint"><b>Bas de fiche</b><div class="smg" style="margin-top:8px">${txa("objCol","Objectif collectif","Ce que le groupe doit réussir")}${txa("secu","Sécurité","Hauteur, tapis, pas de saut…")}${txa("rc1","Retour au calme — groupe 1","Étirements, bilan…")}${M.two?txa("rc2","Retour au calme — groupe 2","Étirements, bilan…"):""}</div></div>
+  <h3 class="noprint" style="margin:18px 0 8px;color:#26364D">Aperçu de la fiche</h3><div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheetHTML()}</div>
+  <div class="tools noprint" style="margin-top:14px"><a class="btn" id="sPrint" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" id="sWord" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a><a class="btn" id="sCopy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Copier le texte</a><a class="chip" id="sClear">Vider la séance</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>`}
+function seanceText(){const M=seModel(),S=SMETA;let t=(S.titre||"Ma séance")+(S.periode?" ("+S.periode+")":"")+"\n";if(S.theme)t+="Thème : "+S.theme+"\n";if(S.educ)t+="Éducateurs : "+S.educ+"\n";if(S.objectif)t+="Objectif : "+S.objectif+"\n";if(S.dates)t+="Dates : "+S.dates+"\n";
+  t+=`\nGroupes : ${S.g1}${M.two?" / "+S.g2:""}\nAccueil : ${S.acc1}${M.two?" / "+S.acc2:""} min\n`;
+  [["ech","ÉCHAUFFEMENT"+(S.echNom?" — "+S.echNom:"")],["c1","CORPS DE SÉANCE — "+(S.bloc1||"bloc 1")],["c2","CORPS DE SÉANCE — "+(S.bloc2||"bloc 2")]].forEach(([k,ti])=>{if(!M[k].length)return;t+=`\n${ti} [${M.sum(M[k],m1)}${M.two?"/"+M.sum(M[k],m2):""} min]\n`;M[k].forEach(({s,g})=>{t+=`- [${m1(s)}${M.two?"/"+m2(s):""} min] ${g.Code?g.Code+" · ":""}${g.Titre} — ${g["Résumé"]||""}\n`})});
+  t+=`\nDurée totale : ${M.tot1}${M.two?" / "+M.tot2:""} min\n`;if(M.mats.length)t+="Matériel : "+M.mats.map(m=>capf(m.t)).join(", ")+"\n";return t}
+function seanceBind(){const upd=()=>{const s=$("#sheet");if(s)s.innerHTML=sheetHTML()};
+  document.querySelectorAll("[data-sm]").forEach(i=>i.addEventListener("input",e=>{SMETA[i.dataset.sm]=i.dataset.n?Math.max(0,+e.target.value||0):e.target.value;saveMeta();upd()}));
+  const dx=$("#smDeux");if(dx)dx.addEventListener("change",e=>{SMETA.deux=e.target.checked;saveMeta();render()});
+  document.querySelectorAll("[data-m1]").forEach(i=>i.addEventListener("input",e=>{SEL[+i.dataset.m1].min=Math.max(0,+e.target.value||0);saveSel();upd()}));
+  document.querySelectorAll("[data-m2]").forEach(i=>i.addEventListener("input",e=>{SEL[+i.dataset.m2].min2=Math.max(0,+e.target.value||0);saveSel();upd()}));
+  document.querySelectorAll("[data-ph]").forEach(i=>i.addEventListener("change",e=>{SEL[+i.dataset.ph].ph=e.target.value;saveSel();upd()}));
+  const pr=$("#sPrint");if(pr)pr.addEventListener("click",()=>{document.body.classList.add("ps");const st=document.createElement("style");st.textContent="@page{size:A4 landscape;margin:8mm}";document.head.appendChild(st);window.print();setTimeout(()=>{document.body.classList.remove("ps");st.remove()},800)});
+  const wd=$("#sWord");if(wd)wd.addEventListener("click",seanceWord);
+  const cp=$("#sCopy");if(cp)cp.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(seanceText());$("#sMsg").textContent="Texte copié !"}catch(e){$("#sMsg").textContent="Copie impossible : sélectionnez le texte à la main."}});
+  const cl=$("#sClear");if(cl)cl.addEventListener("click",()=>{if(confirm("Vider la séance ?")){SEL=[];saveSel();buildNav();render()}})}
+/* ===== Export Word (reprend le modèle de fiche de séance) ===== */
+function loadDocx(){return new Promise((ok,ko)=>{if(window.docx)return ok();const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js";s.onload=()=>window.docx?ok():ko();s.onerror=ko;document.head.appendChild(s)})}
+function buildSeanceDoc(){const D=window.docx;const {Document,Paragraph,TextRun,Table,TableRow,TableCell,AlignmentType,WidthType,ShadingType,BorderStyle,VerticalAlign,PageOrientation,TableLayoutType}=D;
+  const FONT="Calibri",CW=15838,BLUE="3A8FB0",ORG="E8662F",NAVY="1E2630",V=VerticalAlign.CENTER;
+  const NONE={style:BorderStyle.NONE,size:0,color:"FFFFFF"},NOB={top:NONE,bottom:NONE,left:NONE,right:NONE};
+  const bd=(c,s=6)=>({style:BorderStyle.SINGLE,size:s,color:c}),sh=f=>({type:ShadingType.CLEAR,fill:f,color:"auto"});
+  const R=(t,o={})=>new TextRun({text:String(t).replace(/'/g,"’"),font:FONT,size:o.size||18,bold:o.b,italics:o.i,color:o.c||"2B2F36"});
+  const ph=(t,s=18)=>R(t,{i:true,c:"8A93A3",size:s});
+  const P=(ch,o={})=>new Paragraph({children:Array.isArray(ch)?ch:[ch],alignment:o.al,spacing:{before:0,after:o.af||0,line:252}});
+  const cell=(ch,o={})=>new TableCell({children:ch,width:{size:o.w,type:WidthType.DXA},columnSpan:o.span,shading:o.f?sh(o.f):undefined,verticalAlign:o.va,margins:o.m||{top:60,bottom:60,left:120,right:120},borders:o.b||NOB});
+  const tbl=(rows,w)=>new Table({rows,width:{size:w.reduce((a,b)=>a+b,0),type:WidthType.DXA},columnWidths:w,layout:TableLayoutType.FIXED,borders:{top:NONE,bottom:NONE,left:NONE,right:NONE,insideHorizontal:NONE,insideVertical:NONE}});
+  const row=(c,h)=>new TableRow({children:c,cantSplit:true,tableHeader:h});
+  const sp=()=>new Paragraph({spacing:{before:0,after:0,line:100,lineRule:D.LineRuleType.EXACT},children:[new TextRun({text:"",size:2})]});
+  const M=seModel(),S=SMETA,two=M.two;const out=[];
+  const txt=(t,p)=>t?R(t,{c:"FFFFFF"}):R(p,{i:true,c:"C9D1DE"});
+  const W=[6000,4900,2300,2638];
+  out.push(tbl([row([
+    cell([P([R(S.titre||"[Cycle n — Séance n]",{b:true,c:"FFFFFF",size:26}),R("  "+(S.periode||"[période]"),{i:!S.periode,c:S.periode?"FFFFFF":"C9D1DE",size:22})]),P([R("Thème : ",{b:true,c:"FFFFFF"}),txt(S.theme,"[thème de la séance]")]),P([R("Éducateurs : ",{b:true,c:"FFFFFF"}),txt(S.educ,"[prénoms]")])],{w:W[0],f:NAVY,va:V,m:{top:110,bottom:110,left:200,right:140}}),
+    cell([P([R("Objectif général : ",{b:true,c:"FFFFFF"}),txt(S.objectif,"[ce que la séance doit permettre d'apprendre]")])],{w:W[1],f:NAVY,va:V}),
+    cell([P([R("Dates : ",{c:"FFFFFF"}),txt(S.dates,"[jj mois]")],{al:AlignmentType.CENTER})],{w:W[2],f:NAVY,va:V}),
+    cell([P([R("■ ",{c:BLUE,b:true}),R((S.g1||"Groupe 1")+" – "+M.tot1+" min",{c:"FFFFFF",size:17})]),...(two?[P([R("■ ",{c:ORG,b:true}),R((S.g2||"Groupe 2")+" – "+M.tot2+" min",{c:"FFFFFF",size:17})])]:[])],{w:W[3],f:NAVY,va:V})])],W));
+  out.push(sp());
+  const bandW=[700,700,CW-1400];
+  const band=(a,b,title,fill,tcol)=>{const m={top:30,bottom:30,left:40,right:40};const cs=[cell([P([R(a+"'",{b:true,c:"FFFFFF"})],{al:AlignmentType.CENTER})],{w:two?bandW[0]:700,f:BLUE,va:V,m})];
+    if(two)cs.push(cell([P([R(b+"'",{b:true,c:"FFFFFF"})],{al:AlignmentType.CENTER})],{w:bandW[1],f:ORG,va:V,m}));
+    cs.push(cell([P([R(title,{b:true,c:tcol,size:17})])],{w:two?bandW[2]:CW-700,f:fill,va:V,m:{top:30,bottom:30,left:140,right:100}}));
+    return [tbl([row(cs)],two?bandW:[700,CW-700]),sp()]};
+  out.push(...band(S.acc1||0,S.acc2||0,"ACCUEIL","FDF3D3","8A6D12"));
+  if(M.ech.length){out.push(...band(M.sum(M.ech,m1),M.sum(M.ech,m2),"ÉCHAUFFEMENT"+(S.echNom?" — "+S.echNom:""),"E6F2E6","2E6F3E"));
+    M.ech.forEach(({s,g})=>out.push(P([R("▸ ",{c:BLUE,b:true}),R(g.Titre,{b:true,size:17}),R(" ("+(g.Code?g.Code+" · ":"")+m1(s)+(two?"/"+m2(s):"")+" min) — ",{c:"6B7280",size:16}),R(g["Résumé"]||"",{size:17})],{af:30})));out.push(sp())}
+  const T=[7600,2700,2700,CW-13000];
+  const hd=(t,c,f,w)=>cell([P([R(t,{b:true,c,size:16})])],{w,f,m:{top:50,bottom:50,left:140,right:100},b:{bottom:bd("D5DAE5")}});
+  const blocks=[["c1",S.bloc1||"bloc 1"],["c2",S.bloc2||"bloc 2"]].filter(([k])=>M[k].length);
+  if(blocks.length){const rows=[row([hd("EXERCICE / DÉFI / JEU","2B5A9E","FFFFFF",T[0]),hd("PLUS DIFFICILE (+)","B2543A","FBE6E4",T[1]),hd("PLUS FACILE (–)","2E6F3E","E6F2E8",T[2]),hd("CRITÈRES DE RÉUSSITE","B2263A","FBE6E4",T[3])],true)];let n=0;
+    const lines=t=>String(t||"").split(/\n/).map(l=>l.replace(/^\s*[•\-–]\s*/,"").trim()).filter(Boolean);
+    const bm=(t,c,sg)=>{const L=lines(t);return L.length?L.map(l=>P([R(sg+" ",{c,b:true}),R(l,{size:17})],{af:20})):[P([ph("—")])]};
+    blocks.forEach(([k,t])=>{rows.push(row([cell([P([R(M.sum(M[k],m1)+"'",{b:true,c:BLUE,size:17}),...(two?[R("  "),R(M.sum(M[k],m2)+"'",{b:true,c:ORG,size:17})]:[]),R("   CORPS DE SÉANCE — "+t,{b:true,c:"2B5A9E",size:17})])],{w:T[0]+T[1]+T[2],span:3,f:"E3EEF8",m:{top:40,bottom:40,left:140,right:100}}),cell([P([R("")])],{w:T[3],f:"FDF3F2"})]));
+      M[k].forEach(({s,g})=>{n++;const main=[P([R("▸ ",{c:BLUE,b:true}),R(n+". "+g.Titre,{b:true}),R("  ("+(g.Code?g.Code+" · ":"")+m1(s)+(two?"/"+m2(s):"")+" min)",{c:"6B7280",size:16})],{af:30})];
+        if(g["Principe"])main.push(P([R(g["Principe"],{size:17})],{af:30}));
+        const meta=[g["Participants"],g["Espace"],g["Matériel"]&&("Matériel : "+g["Matériel"])].filter(Boolean).join(" · ");if(meta)main.push(P([R(meta,{i:true,c:"6B7280",size:16})]));
+        rows.push(row([cell(main,{w:T[0],b:{bottom:bd("D5DAE5")}}),cell(bm(g["Plus difficile"],ORG,"+"),{w:T[1],f:"FDF3F2",b:{bottom:bd("D5DAE5")}}),cell(bm(g["Plus facile"],"2E6F3E","–"),{w:T[2],f:"F1F8F2",b:{bottom:bd("D5DAE5")}}),
+          cell([P([R("✓ ",{c:"2E6F3E",b:true}),ph("[critère observable]")],{af:60}),P([R("✓ ",{c:"2E6F3E",b:true}),ph("[critère observable]")])],{w:T[3],f:"FDF3F2",m:{top:60,bottom:60,left:120,right:100},va:VerticalAlign.TOP})]))})});
+    out.push(tbl(rows,T));out.push(sp())}
+  const F=[4600,3800,3300,CW-11700];
+  const fc=(t,body,w)=>cell([P([R(t,{b:true,c:"2B2F36",size:16})],{af:30}),...body],{w,f:"F2F3F5",b:{left:bd("FFFFFF",8)},m:{top:70,bottom:80,left:140,right:120},va:VerticalAlign.TOP});
+  const ml=(t,p)=>t?String(t).split("\n").map(l=>P([R(l,{size:17})])):[P([ph(p)])];
+  out.push(tbl([row([
+    fc("OBJECTIF COLLECTIF",ml(S.objCol,"[ce que le groupe doit réussir]"),F[0]),
+    fc("MATÉRIEL",M.mats.length?M.mats.map(m=>P([R("☐ "+capf(m.t),{size:17}),R("  "+m.c.join(", "),{c:"8A93A3",size:15})],{af:10})):[P([R("Aucun matériel particulier.",{size:17})])],F[1]),
+    fc("SÉCURITÉ",ml(S.secu,"[rappels : hauteur, tapis, pas de saut…]"),F[2]),
+    fc("RETOUR AU CALME",[P([R((S.g1||"Groupe 1")+" : ",{b:true,c:BLUE}),S.rc1?R(S.rc1):ph("[étirements, bilan…]")]),...(two?[P([R((S.g2||"Groupe 2")+" : ",{b:true,c:ORG}),S.rc2?R(S.rc2):ph("[étirements, bilan…]")])]:[])],F[3])])],F));
+  return new Document({creator:"Base de données des jeux d'escalade",title:S.titre||"Ma séance",styles:{default:{document:{run:{font:FONT,size:18}}}},sections:[{properties:{page:{size:{width:11906,height:16838,orientation:PageOrientation.LANDSCAPE},margin:{top:500,bottom:500,left:500,right:500}}},children:out}]})}
+async function seanceWord(){const m=$("#sMsg");try{m.textContent="Création du fichier…";await loadDocx();const blob=await window.docx.Packer.toBlob(buildSeanceDoc());
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=((SMETA.titre||"Ma-seance").replace(/[^\wàâäçéèêëîïôöùûüÀÉÈ\- ]/g,"").trim()||"Ma-seance")+".docx";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);m.textContent="Fichier Word téléchargé. Déposez-le dans votre Drive : clic droit › Ouvrir avec Google Docs."}catch(e){m.textContent="Création impossible (connexion internet nécessaire). Utilisez « Copier le texte » ou « Imprimer / PDF »."}}
 
 route();
 Promise.all([loadSheet(),loadRetours()]).then(()=>{buildNav();render();syncModal()});
