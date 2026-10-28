@@ -324,16 +324,21 @@ const ellipsePath=()=>"";
 /* ---- formes (coordonnées en « y vers le haut », converties à l'affichage) ---- */
 function limbSVG(p,q,col,lw){const d=`M${p[0]} ${EY(p[1])}L${q[0]} ${EY(q[1])}`;return `<path d="${d}" stroke="#fff" stroke-width="${lw+.38}" stroke-linecap="round" fill="none"/><path d="${d}" stroke="${col}" stroke-width="${lw}" stroke-linecap="round" fill="none"/>`}
 function headSVG(x,y,r,col){return `<circle cx="${x}" cy="${EY(y)}" r="${r}" fill="${col}" stroke="#fff" stroke-width=".2"/>`}
-function climberSVG(e){const {x,y,s}=e,col=CN(e.c||"blue"),lw=.42*Math.max(s,.75);const sh=[x,y+4.2*s];let o="";
-  e.hands.forEach(([hx,hy])=>{const t=[x+hx*s,y+hy*s];const mid=[(sh[0]+t[0])/2+(hx>0?.9:-.9)*s,(sh[1]+t[1])/2-.2*s];o+=limbSVG(sh,mid,col,lw)+limbSVG(mid,t,col,lw)+`<circle cx="${t[0]}" cy="${EY(t[1])}" r="${.6*s}" fill="${col}" stroke="#fff" stroke-width=".14"/>`});
-  e.feet.forEach(([fx,fy])=>{const f=[x+fx*s,y+fy*s];const knee=[(x+f[0])/2+(fx>0?1:-1)*s,(y+f[1])/2+.3*s];o+=limbSVG([x,y],knee,col,lw)+limbSVG(knee,f,col,lw)+`<circle cx="${f[0]}" cy="${EY(f[1])}" r="${.6*s}" fill="${col}" stroke="#fff" stroke-width=".14"/>`});
-  o+=limbSVG([x,y],sh,col,lw*1.35)+headSVG(x,y+6.1*s,1.5*s,col);return o}
-function standSVG(e){const {x,y,s}=e,col=CN(e.c||"blue"),lw=.42*Math.max(s,.75);const hip=[x,y+5*s],sh=[x,y+9.2*s];let o="";
-  [-1,1].forEach(k=>{o+=limbSVG(hip,[x+k*1.7*s,y],col,lw)});o+=limbSVG(hip,sh,col,lw*1.35);
-  [[-3,-3.4],[3,-3.4]].forEach(([ax,ay])=>{const t=[x+ax*s,sh[1]+ay*s];const mid=[(sh[0]+t[0])/2+(ax>0?.8:-.8)*s,(sh[1]+t[1])/2];o+=limbSVG(sh,mid,col,lw)+limbSVG(mid,t,col,lw)});
-  return o+headSVG(x,y+11*s,1.5*s,col)}
-function sitSVG(e){const {x,y,s}=e,col=CN(e.c||"blue"),lw=.42*Math.max(s,.75);const hip=[x,y+1.2*s],sh=[x,y+5.2*s],knee=[x+3*s,y+3.2*s];
-  return limbSVG(hip,knee,col,lw)+limbSVG(knee,[x+4.8*s,y+.8*s],col,lw)+limbSVG(hip,sh,col,lw*1.35)+limbSVG(sh,[x+2.8*s,y+3.6*s],col,lw)+headSVG(x,y+7*s,1.5*s,col)}
+const FIG={climber:{hip:0,tor:4.2,head:6.1,hands:[[-7,8.5],[7.5,7]],feet:[[-5.4,-5],[5.4,-5]]},
+  stand:{hip:5,tor:4.2,head:6,hands:[[-3.2,5.8],[3.2,5.8]],feet:[[-1.7,0],[1.7,0]]},
+  sit:{hip:1.2,tor:4,head:5.8,hands:[[3,3.2],[1,2.4]],feet:[[4.8,.8],[3.8,0]]}};
+function figFix(e){const d=FIG[e.t];if(d){if(!e.hands)e.hands=JSON.parse(JSON.stringify(d.hands));if(!e.feet)e.feet=JSON.parse(JSON.stringify(d.feet))}return e}
+function ik(r,t,L,pref){const dx=t[0]-r[0],dy=t[1]-r[1],d=Math.hypot(dx,dy)||.001;if(d>=2*L*.999)return [(r[0]+t[0])/2,(r[1]+t[1])/2];
+  const h=Math.sqrt(L*L-d*d/4),ux=dx/d,uy=dy/d,mx=(r[0]+t[0])/2,my=(r[1]+t[1])/2;const c1=[mx-uy*h,my+ux*h],c2=[mx+uy*h,my-ux*h];
+  const sc=c=>pref.x*(c[0]-mx)+pref.y*(c[1]-my);return sc(c1)>=sc(c2)?c1:c2}
+function figSVG(e,type){const G=FIG[type];if(!e.hands)e.hands=JSON.parse(JSON.stringify(G.hands));if(!e.feet)e.feet=JSON.parse(JSON.stringify(G.feet));
+  const {x,y,s}=e,col=CN(e.c||"blue"),lw=.42*Math.max(s,.75),ang=(e.lean||0)*Math.PI/180,rot=(l)=>[Math.sin(ang)*l,Math.cos(ang)*l];
+  const hip=[x,y+G.hip*s],tr=rot(G.tor*s),sh=[hip[0]+tr[0],hip[1]+tr[1]],hr=rot(G.head*s),hd=[hip[0]+hr[0],hip[1]+hr[1]];let o="";
+  e.feet.forEach(([fx,fy])=>{const f=[x+fx*s,y+fy*s];const k=ik(hip,f,5*s,{x:fx>=0?1:-1,y:type==="sit"?1:.3});o+=limbSVG(hip,k,col,lw)+limbSVG(k,f,col,lw)+`<circle cx="${f[0]}" cy="${EY(f[1])}" r="${.6*s}" fill="${col}" stroke="#fff" stroke-width=".14"/>`});
+  o+=limbSVG(hip,sh,col,lw*1.35);
+  e.hands.forEach(([hx,hy])=>{const t=[x+hx*s,y+hy*s];const m=ik(sh,t,4.4*s,{x:hx>=0?1:-1,y:-.6});o+=limbSVG(sh,m,col,lw)+limbSVG(m,t,col,lw)+`<circle cx="${t[0]}" cy="${EY(t[1])}" r="${.6*s}" fill="${col}" stroke="#fff" stroke-width=".14"/>`});
+  return o+headSVG(hd[0],hd[1],1.5*s,col)}
+const climberSVG=e=>figSVG(e,"climber"),standSVG=e=>figSVG(e,"stand"),sitSVG=e=>figSVG(e,"sit");
 function dieSVG(e){const {x,y,s}=e,z=6.5*s,o=z*.25;const P={1:[[0,0]],2:[[-o,o],[o,-o]],3:[[-o,o],[0,0],[o,-o]],4:[[-o,o],[o,o],[-o,-o],[o,-o]],5:[[-o,o],[o,o],[0,0],[-o,-o],[o,-o]],6:[[-o,o],[o,o],[-o,0],[o,0],[-o,-o],[o,-o]]};
   return `<rect x="${x-z/2}" y="${EY(y)-z/2}" width="${z}" height="${z}" rx="1" fill="#fff" stroke="${EINK}" stroke-width=".28"/>`+P[e.n||5].map(([dx,dy])=>`<circle cx="${x+dx}" cy="${EY(y+dy)}" r="${z*.075}" fill="${EINK}"/>`).join("")}
 function labSVG(e){if(!e.lab)return "";const x1=e.x1,y1=e.y1,x2=e.x2,y2=e.y2,mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,bd=e.bend||0;const cx=mx-dy*bd,cy=my-dx*bd*-1;const px=(x1+2*cx+x2)/4,py=(y1+2*(my+dx*bd)+y2)/4;const fs=1.5,w=String(e.lab).length*fs*.54+1.2;return `<rect x="${px-w/2}" y="${EY(py)-fs*.8}" width="${w}" height="${fs*1.6}" rx=".6" fill="#fff" fill-opacity=".95"/><text x="${px}" y="${EY(py)}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="700" fill="${CN(e.c==="ink"||!e.c?"ink":e.c)}" font-family="Calibri,Carlito,Arial,sans-serif">${esc(e.lab)}</text>`}
@@ -342,7 +347,7 @@ function elSVG0(e){
   switch(e.t){
     case "hold":return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${e.r}" fill="${e.c}" stroke="${darken(e.c)}" stroke-width=".17"/>`;
     case "ring":{const col=e.c==="amber"?EAMB:EGREEN;return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${e.r}" fill="none" stroke="${col}" stroke-width=".38"/>`}
-    case "climber":return climberSVG(e);case "stand":return standSVG(e);case "sit":return sitSVG(e);
+    case "climber":case "stand":case "sit":return climberSVG(e);
     case "hoopflat":return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${7*e.s}" fill="none" stroke="${EAMB}" stroke-width=".62"/>`;
     case "hoopfloor":return `<ellipse cx="${e.x}" cy="${EY(e.y)}" rx="${6*e.s}" ry="${1.7*e.s}" fill="none" stroke="${EAMB}" stroke-width=".56"/>`;
     case "hoopside":return `<ellipse cx="${e.x}" cy="${EY(e.y)}" rx="${1.7*e.s}" ry="${5.5*e.s}" fill="#FFF3D6" stroke="${EAMB}" stroke-width=".56"/>`;
@@ -389,13 +394,13 @@ function edSVGInner(withSel){let o=edDefs()+`<rect width="100" height="36" fill=
   ED.els.map((e,i)=>[e,i]).sort((a,b)=>order(a[0])-order(b[0])||a[1]-b[1]).forEach(([e])=>{o+=`<g data-id="${e.id}" style="cursor:move">${elSVG(e)}</g>`});
   return o}
 function edHandles(e){const h=[];
-  if(e.t==="climber"){h.push(...e.hands.map((p,i)=>({k:"h"+i,x:e.x+p[0]*e.s,y:e.y+p[1]*e.s})),...e.feet.map((p,i)=>({k:"f"+i,x:e.x+p[0]*e.s,y:e.y+p[1]*e.s})))}
+  if(["climber","stand","sit"].includes(e.t)){figFix(e);h.push(...e.hands.map((p,i)=>({k:"h"+i,x:e.x+p[0]*e.s,y:e.y+p[1]*e.s})),...e.feet.map((p,i)=>({k:"f"+i,x:e.x+p[0]*e.s,y:e.y+p[1]*e.s})))}
   if(isLine(e)){h.push({k:"a1",x:e.x1,y:e.y1},{k:"a2",x:e.x2,y:e.y2})}
   return h}
 function edRender(panel){const svg=$("#edsvg");if(!svg)return;svg.innerHTML=edSVGInner();
   const g=svg.querySelector(`[data-id="${ED.sel}"]`);
   if(g){const b=g.getBBox();const r=document.createElementNS("http://www.w3.org/2000/svg","rect");r.setAttribute("x",b.x-.6);r.setAttribute("y",b.y-.6);r.setAttribute("width",b.width+1.2);r.setAttribute("height",b.height+1.2);r.setAttribute("fill","none");r.setAttribute("stroke","#2F6FDB");r.setAttribute("stroke-width",".2");r.setAttribute("stroke-dasharray",".6 .4");r.setAttribute("pointer-events","none");svg.appendChild(r);
-    const e=ED.els.find(x=>x.id===ED.sel);edHandles(e).forEach(h=>{const c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("cx",h.x);c.setAttribute("cy",EY(h.y));c.setAttribute("r",1.1);c.setAttribute("fill","#fff");c.setAttribute("stroke","#2F6FDB");c.setAttribute("stroke-width",".3");c.setAttribute("data-h",h.k);c.style.cursor="crosshair";svg.appendChild(c)})}
+    const e=ED.els.find(x=>x.id===ED.sel);edHandles(e).forEach(h=>{const c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("cx",h.x);c.setAttribute("cy",EY(h.y));c.setAttribute("r",1.25);c.setAttribute("fill",h.k[0]==="f"?"#FFF3D6":"#fff");c.setAttribute("stroke",h.k[0]==="f"?"#E0A030":"#2F6FDB");c.setAttribute("stroke-width",".35");c.setAttribute("data-h",h.k);c.style.cursor="crosshair";svg.appendChild(c)})}
   edSave();if(panel)edPanel()}
 function edPanel(){const p=$("#edpanel");if(!p)return;const e=ED.els.find(x=>x.id===ED.sel);
   const sw=(list,cur,attr)=>list.map(([v,c,l])=>`<button class="swt ${cur===v?"on":""}" data-sw="${attr}:${v}" title="${l}" style="background:${c}"></button>`).join("");
@@ -409,7 +414,7 @@ function edPanel(){const p=$("#edpanel");if(!p)return;const e=ED.els.find(x=>x.i
   let h=`<h4>${T}</h4>`;
   if(e.t==="hold")h+=`<div class="sws">${sw(HOLDC.map((c,i)=>[c,c,HOLDN[i]]),e.c,"c")}</div><label class="fl2">Taille<input type="range" min="0.9" max="2.4" step="0.05" value="${e.r}" data-rg="r"></label>`;
   if(e.t==="ring")h+=`<div class="sws">${sw([["green",EGREEN,"Prise cible (vert)"],["amber",EAMB,"Prise imposée (ambre)"]],e.c,"c")}</div><label class="fl2">Taille<input type="range" min="1.5" max="4" step="0.1" value="${e.r}" data-rg="r"></label>`;
-  if(["climber","stand","sit"].includes(e.t))h+=`<div class="sws">${sw([["blue",EBLUE,"Équipe bleue"],["red",ERED,"Équipe rouge"],["grey",EGREY,"Éducateur"],["green",EGREEN,"Vert"]],e.c,"c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="1.8" step="0.05" value="${e.s}" data-rg="s"></label>`+(e.t==="climber"?'<p class="hint">Glissez les 4 points bleus pour placer les mains et les pieds.</p>':"");
+  if(["climber","stand","sit"].includes(e.t))h+=`<div class="sws">${sw([["blue",EBLUE,"Équipe bleue"],["red",ERED,"Équipe rouge"],["grey",EGREY,"Éducateur"],["green",EGREEN,"Vert"]],e.c,"c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="1.8" step="0.05" value="${e.s}" data-rg="s"></label>`+`<label class="fl2">Inclinaison du corps<input type="range" min="-60" max="60" step="1" value="${e.lean||0}" data-rg="lean"></label><label class="fl"><input type="checkbox" id="edSnapCk" ${ED.snap!==false?"checked":""}> Aimanter aux prises</label><p class="hint">Glissez les points sur les mains et les pieds pour les placer : ils se collent à la prise la plus proche.</p>`;
   if(["hoopflat","hoopfloor","hoopside","ball","watch","quickdraw","scarf","die"].includes(e.t))h+=`<label class="fl2">Taille<input type="range" min="0.5" max="2.5" step="0.05" value="${e.s}" data-rg="s"></label>`;
   if(e.t==="scarf")h+=`<div class="sws">${sw([[EBLUE,EBLUE,"bleu"],[ERED,ERED,"rouge"],["#F7D858","#F7D858","jaune"],["#7FCB8F","#7FCB8F","vert"]],e.c,"c")}</div>`;
   if(e.t==="die")h+=`<label class="fl2">Valeur<select data-sel="n">${[1,2,3,4,5,6].map(n=>`<option ${e.n==n?"selected":""}>${n}</option>`).join("")}</select></label>`;
@@ -430,6 +435,7 @@ function edPanel(){const p=$("#edpanel");if(!p)return;const e=ED.els.find(x=>x.i
   if(["rope","line"].includes(e.t))h+=`<label class="fl"><input type="checkbox" data-ck="dash" ${e.dash?"checked":""}> Pointillés</label><label class="fl2">Courbure<input type="range" min="-0.6" max="0.6" step="0.05" value="${e.bend||0}" data-rg="bend"></label><p class="hint">Glissez les deux points pour régler les extrémités.</p>`;
   h+=`<div class="rowb"><button class="chip" data-op="dup">Dupliquer</button><button class="chip" data-op="front">Devant</button><button class="chip" data-op="back">Derrière</button><button class="chip" data-op="del" style="color:#B2263A">Supprimer</button></div>`;
   p.innerHTML=h;
+  const sk=p.querySelector("#edSnapCk");if(sk)sk.onchange=ev=>{ED.snap=ev.target.checked};
   p.querySelectorAll("[data-rg]").forEach(i=>{i.onpointerdown=()=>edSnap();i.oninput=ev=>{e[i.dataset.rg]=+ev.target.value;edRender()}});
   p.querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>{const[k,v]=b.dataset.sw.split(":");edSnap();e[k]=v;edRender(true)});
   p.querySelectorAll("[data-sel]").forEach(s=>s.onchange=ev=>{edSnap();e[s.dataset.sel]=+ev.target.value;edRender()});
@@ -449,8 +455,8 @@ function edOp(op){const i=ED.els.findIndex(x=>x.id===ED.sel);if(i<0)return;edSna
 const EDP={
   hold:c=>({t:"hold",x:50,y:19,c,r:1.35}),
   ring:c=>({t:"ring",x:50,y:19,c,r:2.6}),
-  climber:c=>({t:"climber",x:50,y:15,c,s:1,hands:[[-7,8.5],[7.5,7]],feet:[[-5.4,-5],[5.4,-5]]}),
-  stand:c=>({t:"stand",x:50,y:5,c,s:1}),sit:c=>({t:"sit",x:50,y:5,c,s:1}),
+  climber:c=>({t:"climber",x:50,y:15,c,s:1,hip:0,hands:[[-7,8.5],[7.5,7]],feet:[[-5.4,-5],[5.4,-5]]}),
+  stand:c=>figFix({t:"stand",x:50,y:5,c,s:1}),sit:c=>figFix({t:"sit",x:50,y:5,c,s:1}),
   hoopflat:()=>({t:"hoopflat",x:50,y:19,s:1}),hoopfloor:()=>({t:"hoopfloor",x:50,y:6,s:1}),hoopside:()=>({t:"hoopside",x:50,y:19,s:1}),
   scarf:c=>({t:"scarf",x:50,y:19,s:1.5,c}),ball:()=>({t:"ball",x:50,y:19,s:1.5}),die:()=>({t:"die",x:50,y:19,s:1,n:5}),watch:()=>({t:"watch",x:86,y:29,s:1}),quickdraw:()=>({t:"quickdraw",x:50,y:19,s:1.2}),tape:()=>({t:"tape",x:50,y:19}),
   rope:c=>({t:"rope",x1:30,y1:30,x2:30,y2:6,c,bend:.15}),line:(c,d)=>({t:"line",x1:35,y1:19,x2:65,y2:19,c,dash:!!d}),
@@ -493,9 +499,10 @@ function edInit(){edLoad();edRender(true);const svg=$("#edsvg");
     else{ED.sel=null;edRender(true)}});
   svg.addEventListener("pointermove",ev=>{const d=ED.drag;if(!d)return;const p=pt(ev);
     if(d.k==="move"){const dx=p[0]-d.p0[0],dy=p[1]-d.p0[1];d.moved=true;const e=d.e;if(isLine(e)){e.x1=d.o.x1+dx;e.x2=d.o.x2+dx;e.y1=d.o.y1+dy;e.y2=d.o.y2+dy}else{e.x=+(d.o.x+dx).toFixed(2);e.y=+(d.o.y+dy).toFixed(2)}}
-    else{const e=d.e,h=d.h;if(h[0]==="a"){if(h==="a1"){e.x1=p[0];e.y1=p[1]}else{e.x2=p[0];e.y2=p[1]}}else{const i=+h[1],arr=h[0]==="h"?e.hands:e.feet;arr[i]=[+((p[0]-e.x)/e.s).toFixed(2),+((p[1]-e.y)/e.s).toFixed(2)]}}
+    else{const e=d.e,h=d.h;if(h[0]==="a"){if(h==="a1"){e.x1=p[0];e.y1=p[1]}else{e.x2=p[0];e.y2=p[1]}}else{let q=p;if(ED.snap!==false){let best=null,bd=3.2;ED.els.forEach(o=>{if(["hold","volume","ring","foot","handp"].includes(o.t)){const dd=Math.hypot(o.x-p[0],o.y-p[1]);if(dd<bd){bd=dd;best=[o.x,o.y]}}});if(best)q=best}const i=+h[1],arr=h[0]==="h"?e.hands:e.feet;arr[i]=[+((q[0]-e.x)/e.s).toFixed(2),+((q[1]-e.y)/e.s).toFixed(2)]}}
     edRender(false)});
-  const end=()=>{if(ED.drag){const d=ED.drag;ED.drag=null;if(d.k==="move"&&!d.moved)ED.hist.pop();edRender(true)}};
+  const end=()=>{if(ED.drag){const d=ED.drag;ED.drag=null;
+if(d.k==="move"&&!d.moved)ED.hist.pop();edRender(true)}};
   svg.addEventListener("pointerup",end);svg.addEventListener("pointercancel",end);
   $("#edpal").addEventListener("click",ev=>{const b=ev.target.closest("[data-pal]");if(b){const[k,a]=b.dataset.pal.split(":");let el;const pr=b.dataset.pal.split(":");if(k==="arrow"||k==="line")el=EDP[k](pr[1],pr[2]==="1");else el=EDP[k](a);
       el.x!==undefined&&(el.x+=Math.round((Math.random()-.5)*10),el.y+=Math.round((Math.random()-.5)*4));edAdd(el);return}
