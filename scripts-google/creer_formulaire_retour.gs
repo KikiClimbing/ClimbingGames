@@ -6,17 +6,33 @@
 function creerFormulaireRetour() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var form = FormApp.create("Retour terrain sur un jeu");
-  form.setDescription("Vous avez fait jouer un jeu de la base ? Dites-nous comment ça s'est passé : ça aide les autres éducateurs.");
+  form.setDescription(
+    "Vous avez fait jouer un jeu de la base ? Dites-nous comment ça s'est passé : ça aide les autres éducateurs."
+  );
   form.setCollectEmail(false);
 
-  form.addTextItem().setTitle("Code du jeu").setRequired(true)
+  form
+    .addTextItem()
+    .setTitle("Code du jeu")
+    .setRequired(true)
     .setHelpText("Le code figure sur la fiche, par exemple E4, C9 ou D11.");
-  form.addScaleItem().setTitle("Note").setBounds(1, 5).setLabels("Pas convaincant", "Très réussi").setRequired(true)
+  form
+    .addScaleItem()
+    .setTitle("Note")
+    .setBounds(1, 5)
+    .setLabels("Pas convaincant", "Très réussi")
+    .setRequired(true)
     .setHelpText("Votre impression globale sur le jeu.");
-  form.addTextItem().setTitle("Public").setRequired(false)
+  form
+    .addTextItem()
+    .setTitle("Public")
+    .setRequired(false)
     .setHelpText("Ex. : 8 enfants de 9 ans, ados débutants.");
   form.addParagraphTextItem().setTitle("Ce qui a bien marché").setRequired(false);
-  form.addParagraphTextItem().setTitle("À changer").setRequired(false)
+  form
+    .addParagraphTextItem()
+    .setTitle("À changer")
+    .setRequired(false)
     .setHelpText("Ce qui a coincé, une règle à clarifier, une variante que vous avez trouvée.");
   form.addTextItem().setTitle("Auteur").setRequired(true).setHelpText("Votre prénom.");
 

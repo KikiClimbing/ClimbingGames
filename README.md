@@ -25,8 +25,10 @@ features/             UNE FONCTIONNALITÉ = UN DOSSIER
   guides/               guides (sécurité, matériel, glossaire…)
   biblio/               bibliothèque de séances (dossier Drive)
   mes-seances/          page « Séances & cycles »
-  seance/               « Ma séance » : éditeur, fiche, export Word
-  editeur/              éditeur de schémas
+  seance/               « Ma séance » : modele.js (données et calculs), fiche.js (aperçu),
+                        formulaire.js (saisie), actions.js (boutons), export-word.js
+  editeur/              éditeur de schémas : etat, formes (dessin des pièces), rendu, panneau,
+                        palette, interactions (souris/clavier), export
 
 data/                 contenus (jeux.js, annexes.js) — générés depuis la base de données
 cartes/, schemas/     images des fiches (nommées par code de jeu : E4.jpg, E4.webp)
@@ -56,3 +58,11 @@ Les fichiers sont mis en cache par le navigateur. À chaque modification, **chan
 ## Tester en local
 
 Double-clic sur `index.html`, ou `python3 -m http.server` dans ce dossier puis http://localhost:8000.
+
+## Mise en forme du code
+
+Le code est formaté avec Prettier (réglages dans `.prettierrc`). Pour reformater après une modification :
+
+```
+npx prettier --write "core/**/*.js" "features/**/*.js" "features/**/*.css" "css/*.css"
+```

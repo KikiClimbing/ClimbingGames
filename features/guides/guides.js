@@ -1,28 +1,174 @@
 /* Guides : sécurité, matériel à préparer, séances types, cycle, compétences, équipes, glossaire */
-const GUIDES=[["secu","Règles de sécurité","⚠"],["materiel","Matériel à préparer","☑"],["seances","Séances types","◷"],["cycle","Progression sur un cycle","↗"],["comp","Compétences travaillées","◎"],["equipes","Former les équipes","⚑"],["gloss","Glossaire","Aa"]];
-function gsec(t,lead){return `<h2 class="pt">${t}</h2><p class="lead">${lead||""}</p>`}
-const MATREG={"Sifflet ou signal d'arrêt":/sifflet/,"Tapis supplémentaires":/tapis/,"Foulards":/foulard/,"Cerceaux":/cerceau/,"Bandeaux":/bandeau/,"Ballons en mousse ultra-légers":/ballon/,"Balles":/\bballes?\b/,"Chasubles de deux couleurs":/chasuble/,"Chronomètre":/chrono/,"Scotch ou ruban adhésif":/scotch|ruban/,"Élastiques":/elastique/,"Sangles de 1 m":/sangle/,"Bâtons":/baton/,"Dégaines et mousquetons":/degaine|mousqueton/,"Cordelette, plaquettes, corde, sangle":/cordelette|plaquette|\bcorde\b/,"Dés ou cartes numérotées":/\bdes?\b|carte/,"Feuille de points, tableau, feutres":/feuille|tableau|feutre/,"Béret ou objet à attraper":/beret/,"Aimant Géomag":/geomag|aimant/};
-function materielView(){
-  const rows=AX.MATOS.map(([m,q,c])=>({m,q,c:c.filter(x=>/^[ECDG]\d+$/.test(x)),all:c.some(x=>!/^[ECDG]\d+$/.test(x))}));
-  const extra={};
-  DATA.filter(g=>!isEmb(g)).forEach(g=>{const raw=String(g["Matériel"]||"");if(!raw||noMat(g))return;
-    raw.split(/[;,]|\bet\b|\bou\b/i).map(s=>s.replace(/\(.*?\)/g,"").trim()).filter(Boolean).forEach(tok=>{
-      const n=norm(tok);let hit=false;
-      rows.forEach(r=>{const re=MATREG[r.m];if(re&&re.test(n)){hit=true;if(!r.c.includes(g.Code||g.Titre))r.c.push(g.Code||g.Titre)}});
-      if(!hit&&!/^(aucun|option|facultatif)/.test(n)){(extra[tok]=extra[tok]||[]).push(g.Code||g.Titre)}})});
-  const links=c=>c.map(x=>/^[ECDG]\d+$/.test(x)?codeLk(x):`<a class="lk" data-jeu="${esc(x)}">${esc(x)}</a>`).join(" ");
-  let h=gsec("Matériel à préparer","Liste à cocher avant la séance, avec les jeux concernés. La liste se complète toute seule quand un éducateur ajoute un jeu. Quantités conseillées pour 12 enfants, à ajuster.")+`<table class="tl">`+rows.map(r=>`<tr><td style="font-size:18px">☐</td><td><b>${esc(r.m)}</b><br><span style="color:#6B7280;font-size:13px">${esc(r.q)}</span></td><td>${r.all?"Tous les jeux":links(r.c)}</td></tr>`).join("")+"</table>";
-  const ex=Object.entries(extra);
-  if(ex.length)h+=`<div class="sh">AJOUTÉ PAR LES ÉDUCATEURS</div><table class="tl">`+ex.map(([t,c])=>`<tr><td style="font-size:18px">☐</td><td><b>${esc(t.charAt(0).toUpperCase()+t.slice(1))}</b></td><td>${links(c)}</td></tr>`).join("")+"</table>";
-  return h}
-function guideView(k){
-  if(k==="secu")return gsec("Règles de sécurité","Huit repères à rappeler avant de lancer un jeu. Ils complètent le règlement de la salle, qui reste prioritaire.")+'<div class="g2">'+AX.SECU.map(([t,x],i)=>`<div class="xc"><h4><span class="num">${String(i+1).padStart(2,"0")}</span>${esc(t)}</h4><p>${esc(x)}</p></div>`).join("")+`</div><div class="box" style="margin-top:16px"><b>Avant chaque jeu</b><ul><li>Annoncer la zone de jeu et ses limites.</li><li>Rappeler le signal d'arrêt.</li><li>Vérifier tapis, sols et zones de réception.</li><li>Faire une démonstration courte avant de lancer.</li></ul></div>`;
-  if(k==="materiel")return materielView();
-  if(k==="seances")return gsec("Séances types","Trois déroulés prêts à l'emploi, construits avec les fiches du guide. Les durées sont indicatives.")+AX.SEANCES.map(s=>`<div class="box"><h3 style="margin:0 0 2px;color:#86690F">${esc(s.titre)}</h3><div style="font-size:14px;margin-bottom:10px"><b>Public :</b> ${esc(s.pub)} · <b>Matériel :</b> ${esc(s.mat)}</div><table class="tl">${s.rows.map(([t,ph,c,tip])=>`<tr><td>${esc(t)}</td><td><b>${esc(ph)}</b></td><td>${c?lk(c):"—"}</td><td>${esc(tip)}</td></tr>`).join("")}</table></div>`).join("");
-  if(k==="cycle")return gsec("Progression sur un cycle","Une proposition de 8 séances d'une heure, une par semaine, pour des enfants de 7 à 12 ans : accueil, échauffement, 2 à 3 jeux, retour au calme.")+AX.CYCLE.map(([t,o,c,tip],i)=>`<div class="box" style="display:grid;grid-template-columns:64px 1fr;gap:6px 16px"><div style="font-size:30px;font-weight:700;color:#E3C463">S${i+1}</div><div><b style="color:#86690F;font-size:18px">${esc(t)}</b><div style="font-size:14.5px">${esc(o)}</div><div style="margin:8px 0">${lks(c)}</div><div style="background:#FFF6DB;border-left:4px solid #E3C463;padding:6px 12px;font-size:14px"><b>À retenir</b> ${esc(tip)}</div></div></div>`).join("");
-  if(k==="comp")return gsec("Compétences travaillées","Pour chaque compétence, les jeux qui la font travailler (les dominantes, pas une liste exhaustive).")+AX.COMP.map(([t,d,c])=>`<div class="box"><b style="color:#86690F;font-size:17px">${esc(t)}</b><div style="font-size:14.5px;color:#6B7280;margin-bottom:6px">${esc(d)}</div>${lks(c)}</div>`).join("");
-  if(k==="equipes")return gsec("Former les équipes","Six façons rapides de répartir un groupe, à choisir selon l'âge et l'ambiance.")+'<div class="g2">'+AX.EQUIPES.map(([t,x],i)=>`<div class="xc"><h4><span class="num">${i+1}</span>${esc(t)}</h4><p>${esc(x)}</p></div>`).join("")+`</div><div class="box" style="margin-top:16px"><b>Pour équilibrer</b><ul>${AX.EQ_RULES.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div><div class="box"><b>Quelle taille d'équipe pour quel jeu</b><table class="tl" style="margin-top:8px">${AX.EQ_SIZES.map(([a,b])=>`<tr><td style="white-space:normal">${esc(a)}</td><td>${b.split(" · ").map(codeLk).join(" ")}</td></tr>`).join("")}</table></div>`;
-  if(k==="gloss")return gsec("Glossaire","Les mots utilisés dans les fiches.")+'<dl class="gl">'+AX.GLOSS.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")+"</dl>";
-  return '<div class="empty">Page introuvable.</div>'}
-registerNav({sec:"GUIDES",secOrder:40,order:0,html:()=>GUIDES.map(([k,l,i])=>navBtn("g/"+k,l,`<span class="ic">${i}</span>`)).join("")});
-registerView({match:v=>v.startsWith("g/"),html:v=>guideView(v.slice(2))});
+const GUIDES = [
+  ["secu", "Règles de sécurité", "⚠"],
+  ["materiel", "Matériel à préparer", "☑"],
+  ["seances", "Séances types", "◷"],
+  ["cycle", "Progression sur un cycle", "↗"],
+  ["comp", "Compétences travaillées", "◎"],
+  ["equipes", "Former les équipes", "⚑"],
+  ["gloss", "Glossaire", "Aa"],
+];
+function gsec(t, lead) {
+  return `<h2 class="pt">${t}</h2><p class="lead">${lead || ""}</p>`;
+}
+const MATREG = {
+  "Sifflet ou signal d'arrêt": /sifflet/,
+  "Tapis supplémentaires": /tapis/,
+  Foulards: /foulard/,
+  Cerceaux: /cerceau/,
+  Bandeaux: /bandeau/,
+  "Ballons en mousse ultra-légers": /ballon/,
+  Balles: /\bballes?\b/,
+  "Chasubles de deux couleurs": /chasuble/,
+  Chronomètre: /chrono/,
+  "Scotch ou ruban adhésif": /scotch|ruban/,
+  Élastiques: /elastique/,
+  "Sangles de 1 m": /sangle/,
+  Bâtons: /baton/,
+  "Dégaines et mousquetons": /degaine|mousqueton/,
+  "Cordelette, plaquettes, corde, sangle": /cordelette|plaquette|\bcorde\b/,
+  "Dés ou cartes numérotées": /\bdes?\b|carte/,
+  "Feuille de points, tableau, feutres": /feuille|tableau|feutre/,
+  "Béret ou objet à attraper": /beret/,
+  "Aimant Géomag": /geomag|aimant/,
+};
+function materielView() {
+  const rows = AX.MATOS.map(([m, q, c]) => ({
+    m,
+    q,
+    c: c.filter(x => /^[ECDG]\d+$/.test(x)),
+    all: c.some(x => !/^[ECDG]\d+$/.test(x)),
+  }));
+  const extra = {};
+  DATA.filter(g => !isEmb(g)).forEach(g => {
+    const raw = String(g["Matériel"] || "");
+    if (!raw || noMat(g)) return;
+    raw
+      .split(/[;,]|\bet\b|\bou\b/i)
+      .map(s => s.replace(/\(.*?\)/g, "").trim())
+      .filter(Boolean)
+      .forEach(tok => {
+        const n = norm(tok);
+        let hit = false;
+        rows.forEach(r => {
+          const re = MATREG[r.m];
+          if (re && re.test(n)) {
+            hit = true;
+            if (!r.c.includes(g.Code || g.Titre)) r.c.push(g.Code || g.Titre);
+          }
+        });
+        if (!hit && !/^(aucun|option|facultatif)/.test(n)) {
+          (extra[tok] = extra[tok] || []).push(g.Code || g.Titre);
+        }
+      });
+  });
+  const links = c =>
+    c
+      .map(x =>
+        /^[ECDG]\d+$/.test(x) ? codeLk(x) : `<a class="lk" data-jeu="${esc(x)}">${esc(x)}</a>`
+      )
+      .join(" ");
+  let h =
+    gsec(
+      "Matériel à préparer",
+      "Liste à cocher avant la séance, avec les jeux concernés. La liste se complète toute seule quand un éducateur ajoute un jeu. Quantités conseillées pour 12 enfants, à ajuster."
+    ) +
+    `<table class="tl">` +
+    rows
+      .map(
+        r =>
+          `<tr><td style="font-size:18px">☐</td><td><b>${esc(r.m)}</b><br><span style="color:#6B7280;font-size:13px">${esc(r.q)}</span></td><td>${r.all ? "Tous les jeux" : links(r.c)}</td></tr>`
+      )
+      .join("") +
+    "</table>";
+  const ex = Object.entries(extra);
+  if (ex.length)
+    h +=
+      `<div class="sh">AJOUTÉ PAR LES ÉDUCATEURS</div><table class="tl">` +
+      ex
+        .map(
+          ([t, c]) =>
+            `<tr><td style="font-size:18px">☐</td><td><b>${esc(t.charAt(0).toUpperCase() + t.slice(1))}</b></td><td>${links(c)}</td></tr>`
+        )
+        .join("") +
+      "</table>";
+  return h;
+}
+function guideView(k) {
+  if (k === "secu")
+    return (
+      gsec(
+        "Règles de sécurité",
+        "Huit repères à rappeler avant de lancer un jeu. Ils complètent le règlement de la salle, qui reste prioritaire."
+      ) +
+      '<div class="g2">' +
+      AX.SECU.map(
+        ([t, x], i) =>
+          `<div class="xc"><h4><span class="num">${String(i + 1).padStart(2, "0")}</span>${esc(t)}</h4><p>${esc(x)}</p></div>`
+      ).join("") +
+      `</div><div class="box" style="margin-top:16px"><b>Avant chaque jeu</b><ul><li>Annoncer la zone de jeu et ses limites.</li><li>Rappeler le signal d'arrêt.</li><li>Vérifier tapis, sols et zones de réception.</li><li>Faire une démonstration courte avant de lancer.</li></ul></div>`
+    );
+  if (k === "materiel") return materielView();
+  if (k === "seances")
+    return (
+      gsec(
+        "Séances types",
+        "Trois déroulés prêts à l'emploi, construits avec les fiches du guide. Les durées sont indicatives."
+      ) +
+      AX.SEANCES.map(
+        s =>
+          `<div class="box"><h3 style="margin:0 0 2px;color:#86690F">${esc(s.titre)}</h3><div style="font-size:14px;margin-bottom:10px"><b>Public :</b> ${esc(s.pub)} · <b>Matériel :</b> ${esc(s.mat)}</div><table class="tl">${s.rows.map(([t, ph, c, tip]) => `<tr><td>${esc(t)}</td><td><b>${esc(ph)}</b></td><td>${c ? lk(c) : "—"}</td><td>${esc(tip)}</td></tr>`).join("")}</table></div>`
+      ).join("")
+    );
+  if (k === "cycle")
+    return (
+      gsec(
+        "Progression sur un cycle",
+        "Une proposition de 8 séances d'une heure, une par semaine, pour des enfants de 7 à 12 ans : accueil, échauffement, 2 à 3 jeux, retour au calme."
+      ) +
+      AX.CYCLE.map(
+        ([t, o, c, tip], i) =>
+          `<div class="box" style="display:grid;grid-template-columns:64px 1fr;gap:6px 16px"><div style="font-size:30px;font-weight:700;color:#E3C463">S${i + 1}</div><div><b style="color:#86690F;font-size:18px">${esc(t)}</b><div style="font-size:14.5px">${esc(o)}</div><div style="margin:8px 0">${lks(c)}</div><div style="background:#FFF6DB;border-left:4px solid #E3C463;padding:6px 12px;font-size:14px"><b>À retenir</b> ${esc(tip)}</div></div></div>`
+      ).join("")
+    );
+  if (k === "comp")
+    return (
+      gsec(
+        "Compétences travaillées",
+        "Pour chaque compétence, les jeux qui la font travailler (les dominantes, pas une liste exhaustive)."
+      ) +
+      AX.COMP.map(
+        ([t, d, c]) =>
+          `<div class="box"><b style="color:#86690F;font-size:17px">${esc(t)}</b><div style="font-size:14.5px;color:#6B7280;margin-bottom:6px">${esc(d)}</div>${lks(c)}</div>`
+      ).join("")
+    );
+  if (k === "equipes")
+    return (
+      gsec(
+        "Former les équipes",
+        "Six façons rapides de répartir un groupe, à choisir selon l'âge et l'ambiance."
+      ) +
+      '<div class="g2">' +
+      AX.EQUIPES.map(
+        ([t, x], i) =>
+          `<div class="xc"><h4><span class="num">${i + 1}</span>${esc(t)}</h4><p>${esc(x)}</p></div>`
+      ).join("") +
+      `</div><div class="box" style="margin-top:16px"><b>Pour équilibrer</b><ul>${AX.EQ_RULES.map(r => `<li>${esc(r)}</li>`).join("")}</ul></div><div class="box"><b>Quelle taille d'équipe pour quel jeu</b><table class="tl" style="margin-top:8px">${AX.EQ_SIZES.map(([a, b]) => `<tr><td style="white-space:normal">${esc(a)}</td><td>${b.split(" · ").map(codeLk).join(" ")}</td></tr>`).join("")}</table></div>`
+    );
+  if (k === "gloss")
+    return (
+      gsec("Glossaire", "Les mots utilisés dans les fiches.") +
+      '<dl class="gl">' +
+      AX.GLOSS.map(([a, b]) => `<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("") +
+      "</dl>"
+    );
+  return '<div class="empty">Page introuvable.</div>';
+}
+registerNav({
+  sec: "GUIDES",
+  secOrder: 40,
+  order: 0,
+  html: () =>
+    GUIDES.map(([k, l, i]) => navBtn("g/" + k, l, `<span class="ic">${i}</span>`)).join(""),
+});
+registerView({ match: v => v.startsWith("g/"), html: v => guideView(v.slice(2)) });

@@ -1,4 +1,86 @@
 /* Adaptations mobile et impression */
-@media(max-width:860px){.side{transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 30px rgba(0,0,0,.25)}.side.open{transform:none}.shade.open{display:block}.bar{display:flex}main{margin-left:0;padding:18px 14px 50px}.hero{padding:22px 18px}.hero h2{font-size:25px}.gl{grid-template-columns:1fr}.lst .hm{display:none}}
-@media(max-width:640px){.facts,.var{grid-template-columns:1fr}.fh .code{min-width:76px;font-size:32px}.fh h2{font-size:22px}.pane{padding:16px}}
-@media print{body.ps main{display:block!important;margin:0;padding:0}body.ps .noprint,body.ps .tools,body.ps .lead{display:none!important}body.ps .box{box-shadow:none;border:1px solid #ddd}.side,.bar,.x,.tabs,.foot,main,.shade{display:none!important}.ov{position:static;display:block;background:none;padding:0}.pane{display:block!important}.fiche{box-shadow:none}}
+@media (max-width: 860px) {
+  .side {
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.25);
+  }
+  .side.open {
+    transform: none;
+  }
+  .shade.open {
+    display: block;
+  }
+  .bar {
+    display: flex;
+  }
+  main {
+    margin-left: 0;
+    padding: 18px 14px 50px;
+  }
+  .hero {
+    padding: 22px 18px;
+  }
+  .hero h2 {
+    font-size: 25px;
+  }
+  .gl {
+    grid-template-columns: 1fr;
+  }
+  .lst .hm {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .facts,
+  .var {
+    grid-template-columns: 1fr;
+  }
+  .fh .code {
+    min-width: 76px;
+    font-size: 32px;
+  }
+  .fh h2 {
+    font-size: 22px;
+  }
+  .pane {
+    padding: 16px;
+  }
+}
+@media print {
+  body.ps main {
+    display: block !important;
+    margin: 0;
+    padding: 0;
+  }
+  body.ps .noprint,
+  body.ps .tools,
+  body.ps .lead {
+    display: none !important;
+  }
+  body.ps .box {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  .side,
+  .bar,
+  .x,
+  .tabs,
+  .foot,
+  main,
+  .shade {
+    display: none !important;
+  }
+  .ov {
+    position: static;
+    display: block;
+    background: none;
+    padding: 0;
+  }
+  .pane {
+    display: block !important;
+  }
+  .fiche {
+    box-shadow: none;
+  }
+}

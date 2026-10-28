@@ -8,8 +8,12 @@ function doPost(e) {
   try {
     const d = JSON.parse(e.postData.contents);
     if (d.key !== MOT_DE_PASSE) return rep({ ok: false, error: "mot de passe incorrect" });
-    if (!d.data || d.data.length > 8000000) return rep({ ok: false, error: "image absente ou trop lourde" });
-    const nom = String(d.name || "schema.png").replace(/[^\w\- .àâäçéèêëîïôöùûüÀÉÈ]/g, "").slice(0, 80) || "schema.png";
+    if (!d.data || d.data.length > 8000000)
+      return rep({ ok: false, error: "image absente ou trop lourde" });
+    const nom =
+      String(d.name || "schema.png")
+        .replace(/[^\w\- .àâäçéèêëîïôöùûüÀÉÈ]/g, "")
+        .slice(0, 80) || "schema.png";
     const blob = Utilities.newBlob(Utilities.base64Decode(d.data), "image/png", nom);
     const f = dossier().createFile(blob);
     f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
@@ -23,4 +27,8 @@ function dossier() {
   const it = DriveApp.getFoldersByName("Schémas jeux escalade");
   return it.hasNext() ? it.next() : DriveApp.createFolder("Schémas jeux escalade");
 }
-function rep(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function rep(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(
+    ContentService.MimeType.JSON
+  );
+}
