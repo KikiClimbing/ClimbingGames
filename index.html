@@ -246,11 +246,11 @@ function seanceView(){
   <div class="tools noprint"><a class="btn" id="sPrint" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" id="sCopy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Copier le texte</a><a class="chip" id="sClear">Vider la séance</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>`}
 function seanceText(){const items=SEL.map(s=>({s,g:DATA.find(x=>key(x)===s.k)})).filter(x=>x.g);let t=(SMETA.titre||"Ma séance")+(SMETA.public?" — "+SMETA.public:"")+"\n\n";items.forEach(({s,g},i)=>{t+=`${i+1}. [${s.min} min] ${g.Code?g.Code+" · ":""}${g.Titre} — ${g["Résumé"]||""}\n`});t+=`\nDurée totale : ${items.reduce((a,x)=>a+(+x.s.min||0),0)} min\n`;return t}
 function render(){const v=VIEW;let h;
-  if(v==="home")h=homeView();else if(v==="mes")h=mesView();else if(v==="biblio")h=biblioView();else if(v==="seance")h=seanceView();else if(v==="editeur")h=editorHTML();else if(v.startsWith("g/"))h=guideView(v.slice(2));else h=listView(v);
+  if(v==="home")h=homeView();else if(v==="mes")h=mesView();else if(v==="biblio")h=biblioView();else if(v==="seance")h=seanceView();else if(v==="editeur"){try{h=editorHTML()}catch(err){h=`<div class="box"><b>Erreur dans l'éditeur :</b> ${esc(err.message)}</div>`}}else if(v.startsWith("g/"))h=guideView(v.slice(2));else h=listView(v);
   $("#main").innerHTML=h;
   const hq=$("#hq");if(hq)hq.addEventListener("keydown",e=>{if(e.key==="Enter"){S.q=hq.value;go("all")}});
   const q=$("#q");if(q)q.addEventListener("input",e=>{S.q=e.target.value;const L=filterGames(VIEW);$("#cnt").textContent=L.length+" jeu"+(L.length>1?"x":"");$("#res").innerHTML=gridHTML(L)});
-  if(v==="editeur")edInit();
+  if(v==="editeur"){try{edInit()}catch(err){try{localStorage.removeItem("edSchema")}catch(e){}ED.els=[];try{edInit()}catch(e2){$("#main").insertAdjacentHTML("afterbegin",`<div class="box" style="border:2px solid #E0485A"><b>Erreur dans l'éditeur :</b> ${esc(e2.message)}</div>`)}}}
   if(v==="seance"){
     const t=$("#smTitre");if(t)t.addEventListener("input",e=>{SMETA.titre=e.target.value;saveMeta();const p=document.querySelector(".printtitle");if(p)p.textContent=(SMETA.titre||"Ma séance")+(SMETA.public?" — "+SMETA.public:"")});
     const p=$("#smPublic");if(p)p.addEventListener("input",e=>{SMETA.public=e.target.value;saveMeta();const q=document.querySelector(".printtitle");if(q)q.textContent=(SMETA.titre||"Ma séance")+(SMETA.public?" — "+SMETA.public:"")});
@@ -302,8 +302,6 @@ document.addEventListener("click",e=>{
 $("#burger").addEventListener("click",()=>{$("#side").classList.add("open");$("#shade").classList.add("open")});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&MODAL)closeFiche()});
 if(CONFIG.FORM_URL)$("#propose").href=CONFIG.FORM_URL;else $("#propose").style.display="none";
-route();
-Promise.all([loadSheet(),loadRetours()]).then(()=>{buildNav();render();syncModal()});
 
 /* ================= ÉDITEUR DE SCHÉMAS ================= */
 const ED={els:[],sel:null,hist:[],redo:[],next:1,opt:{face:true,mur:true,tapis:true,legende:"",vue:"VUE DE FACE"},drag:null};
@@ -314,7 +312,7 @@ const darken=(c,k=.72)=>{c=c.replace("#","");const r=[0,2,4].map(i=>Math.round(p
 const CN=n=>({ink:EINK,blue:EBLUE,red:ERED,green:EGREEN,amber:EAMB,grey:EGREY,brown:"#B45309"}[n]||n||EINK);
 const isLine=e=>["arrow","rope","line"].includes(e.t);
 const EY=y=>+(36-y).toFixed(3);
-function edLoad(){try{const s=JSON.parse(localStorage.getItem("edSchema")||"null");if(s&&s.els){ED.els=s.els;ED.opt=Object.assign(ED.opt,s.opt||{});ED.next=Math.max(1,...ED.els.map(e=>e.id+1))}}catch(e){}}
+function edLoad(){try{const s=JSON.parse(localStorage.getItem("edSchema")||"null");if(s&&Array.isArray(s.els)){s.els=s.els.filter(x=>x&&x.t&&typeof x.id==="number");ED.els=s.els;ED.opt=Object.assign(ED.opt,s.opt||{});ED.next=Math.max(1,...ED.els.map(e=>e.id+1))}}catch(e){}}
 function edSave(){try{localStorage.setItem("edSchema",JSON.stringify({els:ED.els,opt:ED.opt}))}catch(e){}}
 function edSnap(){ED.hist.push(JSON.stringify({els:ED.els,opt:ED.opt}));if(ED.hist.length>60)ED.hist.shift();ED.redo=[]}
 function edUndo(){if(!ED.hist.length)return;ED.redo.push(JSON.stringify({els:ED.els,opt:ED.opt}));const s=JSON.parse(ED.hist.pop());ED.els=s.els;ED.opt=s.opt;ED.sel=null;edRender(true)}
@@ -536,4 +534,7 @@ function edUpload(){const msg=$("#edUpMsg"),url=CONFIG.SCHEMA_UPLOAD_URL;
     fetch(url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({name:name+".png",data,key:CONFIG.SCHEMA_UPLOAD_KEY||""})}).then(r=>r.json()).then(j=>{
       if(!j.ok)throw new Error(j.error||"refusé");msg.innerHTML=`✓ Envoyé. Lien à coller dans « Schéma (lien) » : <input readonly id="edLink" value="${esc(j.url)}" style="width:100%;margin-top:6px;padding:6px;border:1px solid #D5DAE5;border-radius:6px"> <button class="chip" id="edCopyLk" style="margin-top:6px">Copier le lien</button>`;
       $("#edCopyLk").onclick=()=>{const i=$("#edLink");i.select();try{navigator.clipboard.writeText(i.value)}catch(e){document.execCommand("copy")}$("#edCopyLk").textContent="Copié !"}}).catch(e=>{msg.textContent="Échec de l'envoi ("+e.message+"). Exportez le PNG et déposez-le à la main dans le Drive."})};fr.readAsDataURL(blob)},()=>{msg.textContent="Image impossible à générer."})}
+
+route();
+Promise.all([loadSheet(),loadRetours()]).then(()=>{buildNav();render();syncModal()});
 </script></body></html>
