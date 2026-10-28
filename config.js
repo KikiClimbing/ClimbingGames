@@ -15,6 +15,9 @@ window.SITE_CONFIG = {
   TEMPLATE_CYCLE_URL: "https://docs.google.com/document/d/1OvSgeQXyU3YDCAdxFFYZohFId479vbyN/edit",
   // Lien du dossier Drive partagé (bibliothèque de séances)
   LIBRARY_URL: "https://drive.google.com/drive/folders/1o2a7sFKQOjJM0rBjcsw-zf8PsFbUFqVV",
+  // Ajout automatique d'un jeu libre à la bibliothèque (script ajouter_jeu.gs) : adresse de l'application web et mot de passe
+  GAME_ADD_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec",
+  GAME_ADD_KEY: "AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv",
   // Envoi des schémas dans le Drive : adresse de l'application web (script recevoir_schemas.gs) et mot de passe choisi
   SCHEMA_UPLOAD_URL: "https://script.google.com/macros/s/AKfycbwMqIdCGTGX4fIyNpbbYqOEuYRf-XlJO4HhtY_8hxzfs4rXlnscAsGs2dU_3mOVEYsK/exec",
   SCHEMA_UPLOAD_KEY: "AKfycbwMqIdCGTGX4fIyNpbbYqOEuYRf-XlJO4HhtY_8hxzfs4rXlnscAsGs2dU_3mOVEYsK"
