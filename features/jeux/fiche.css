@@ -1,0 +1,18 @@
+/* Fenêtre de détail d'un jeu */
+.ov{position:fixed;inset:0;background:rgba(20,28,40,.55);display:none;z-index:20;overflow:auto;padding:24px 12px}.ov.open{display:block}
+.fiche{max-width:900px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.fh{display:flex;background:var(--l)}.fh .code{background:var(--m);color:var(--d);font-size:46px;font-weight:700;display:flex;align-items:center;justify-content:center;min-width:110px}
+.fh .tt{padding:16px 20px;flex:1}.fh .fam{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--d)}.fh h2{margin:2px 0 4px;font-size:30px;color:var(--d)}.fh .br{font-style:italic;color:var(--muted)}
+.x{border:0;background:transparent;font-size:30px;cursor:pointer;color:var(--d);padding:0 18px;align-self:flex-start}
+.tabs{display:flex;gap:2px;background:var(--l);padding:0 14px;border-bottom:3px solid var(--m);overflow-x:auto}
+.tab{border:0;background:transparent;padding:11px 18px;font:inherit;font-weight:700;color:var(--d);cursor:pointer;border-radius:10px 10px 0 0;white-space:nowrap}.tab.on{background:#fff;box-shadow:0 -3px 0 var(--a) inset}
+.pane{padding:20px 24px 26px;display:none;line-height:1.5}.pane.on{display:block}
+.pane p{margin:0 0 12px;white-space:pre-wrap}.pane img{width:100%;border:3px solid var(--m);border-radius:10px;margin-top:6px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fact{background:var(--l);padding:10px 14px;border-radius:8px}.fact b{display:block;font-size:11px;letter-spacing:1px;color:var(--d)}
+.obj{grid-column:1/-1;background:var(--m);font-weight:700;color:var(--d)}
+.var{display:grid;grid-template-columns:1fr 1fr;gap:14px}.var>div{background:var(--l);padding:12px 16px;border-top:4px solid var(--a);border-radius:6px;white-space:pre-wrap}.var>div:last-child{background:var(--m);border-color:var(--d)}.var h4{margin:0 0 6px;color:var(--d);letter-spacing:1px;font-size:13px}
+.tip{background:#FFF6DB;border-left:5px solid #E3C463;padding:12px 16px;border-radius:4px;margin-bottom:14px}
+.voir a{display:inline-block;margin:0 10px 6px 0;font-weight:700;color:var(--d);cursor:pointer}
+.comp{background:var(--l);padding:12px 16px;border-radius:8px;white-space:pre-wrap;font-size:15px}
+.foot{padding:12px 24px;background:#F7F8FB;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.warn{background:#FDEBE3;padding:10px 20px;margin:0;font-size:14px;display:none}
