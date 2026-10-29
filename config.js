@@ -21,6 +21,6 @@ window.SITE_CONFIG = {
   GAME_ADD_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec",
   GAME_ADD_KEY: "kiki0673",
   // Envoi des schémas dans le Drive : adresse de l'application web (script recevoir_schemas.gs) et mot de passe choisi
-  SCHEMA_UPLOAD_URL: "https://script.google.com/macros/s/AKfycbwMqIdCGTGX4fIyNpbbYqOEuYRf-XlJO4HhtY_8hxzfs4rXlnscAsGs2dU_3mOVEYsK/exec",
-  SCHEMA_UPLOAD_KEY: "kiki0673"
+  SCHEMA_UPLOAD_URL: "",
+  SCHEMA_UPLOAD_KEY: ""
 };
