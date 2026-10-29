@@ -7,6 +7,7 @@ function itemView(it) {
     return {
       titre: g.Titre,
       code: g.Code || "",
+      url: gameUrl(key(g)),
       desc: g["Principe"] || g["Résumé"] || "",
       meta: [g["Participants"], g["Espace"], g["Matériel"] && "Matériel : " + g["Matériel"]]
         .filter(Boolean)
@@ -108,12 +109,47 @@ function sheetHTML() {
     `<span style="display:inline-flex;gap:3px">${a.map(x => `<span style="background:${x.c};color:#fff;font-weight:700;padding:2px 9px;min-width:30px;text-align:center">${x.t}</span>`).join("")}</span>`;
   const band = (a, title, bg, col, body) =>
     `<div style="display:flex;align-items:center;gap:10px;background:${bg};padding:3px 8px 3px 0;margin-top:8px;font-size:12px;font-weight:700;color:${col}">${tagbox(a)}<span>${title}</span></div>${body || ""}`;
+  const cl = "color:#C9D1DE";
+  const lignes = [];
+  const l1 = [
+    S.titre ? `<b style="font-size:18px">${esc(S.titre)}</b>` : "",
+    S.periode ? `<span style="${cl}">${esc(S.periode)}</span>` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  if (l1) lignes.push(l1);
+  if (S.theme) lignes.push(`<b>Thème :</b> <span style="${cl}">${esc(S.theme)}</span>`);
+  if (S.educ) lignes.push(`<b>Éducateurs :</b> <span style="${cl}">${esc(S.educ)}</span>`);
+  const cols = [],
+    cases = [];
+  if (S.logo) {
+    cols.push("auto");
+    cases.push(
+      `<div><img src="${esc(S.logo)}" alt="Logo" style="max-height:54px;max-width:150px;display:block"></div>`
+    );
+  }
+  if (lignes.length) {
+    cols.push("2fr");
+    cases.push(`<div>${lignes.join("<br>")}</div>`);
+  }
+  if (S.objectif) {
+    cols.push("1.6fr");
+    cases.push(
+      `<div><b>Objectif général :</b> <span style="${cl}">${esc(S.objectif)}</span></div>`
+    );
+  }
+  if (S.dates) {
+    cols.push("1.1fr");
+    cases.push(
+      `<div style="text-align:center"><b>Dates :</b> <span style="${cl}">${esc(S.dates)}</span></div>`
+    );
+  }
+  cols.push("1.4fr");
+  cases.push(
+    `<div style="font-size:12px"><span style="color:${C1}">■</span> ${esc(S.g1 || "Groupe 1")} – ${M.tot1} min${two ? `<br><span style="color:${C2}">■</span> ${esc(S.g2 || "Groupe 2")} – ${M.tot2} min` : ""}</div>`
+  );
   let h = `<div class="sheet" style="font-size:13px;color:#2B2F36;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact">
-  <div style="background:${NAVYC};color:#fff;display:grid;grid-template-columns:2fr 1.6fr 1.1fr 1.4fr;gap:14px;padding:12px 16px;align-items:center">
-   <div><b style="font-size:18px">${v(S.titre, "[Cycle n — Séance n]")}</b> <span style="color:#C9D1DE">${v(S.periode, "[période]")}</span><br><b>Thème :</b> <span style="color:#C9D1DE">${v(S.theme, "[thème de la séance]")}</span><br><b>Éducateurs :</b> <span style="color:#C9D1DE">${v(S.educ, "[prénoms]")}</span></div>
-   <div><b>Objectif général :</b> <span style="color:#C9D1DE">${v(S.objectif, "[ce que la séance doit permettre d'apprendre]")}</span></div>
-   <div style="text-align:center"><b>Dates :</b> <span style="color:#C9D1DE">${v(S.dates, "[jj mois]")}</span></div>
-   <div style="font-size:12px"><span style="color:${C1}">■</span> ${esc(S.g1 || "Groupe 1")} – ${M.tot1} min${two ? `<br><span style="color:${C2}">■</span> ${esc(S.g2 || "Groupe 2")} – ${M.tot2} min` : ""}</div></div>`;
+  <div style="background:${NAVYC};color:#fff;display:grid;grid-template-columns:${cols.join(" ")};gap:14px;padding:12px 16px;align-items:center">${cases.join("")}</div>`;
   h += band(tgs(M, S.acc1 || 0, S.acc2 || 0), "ACCUEIL", "#FDF3D3", "#8A6D12");
   if (M.ech.on)
     h += band(
@@ -149,9 +185,9 @@ function sheetHTML() {
     const cr = L(v.crit);
     const first = x.same
       ? `<div style="margin:0 0 3px">${x.steps.map(l => `<div><b style="color:${C1}">▸</b> ${esc(l)}</div>`).join("")}</div>`
-      : `<b style="color:${C1}">▸</b> <b>${n}. ${nm}</b>${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}<div style="margin:2px 0;white-space:pre-line">${esc(v.desc)}</div>`;
+      : `<b style="color:${C1}">▸</b> ${v.url ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted"><b>${n}. ${nm}</b></a>` : `<b>${n}. ${nm}</b>`}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}<div style="margin:2px 0;white-space:pre-line">${esc(v.desc)}</div>`;
     return (
-      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? "Fiche " + esc(v.code) + " · " : ""}${esc(v.meta)}</div></div>` +
+      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">Fiche ${esc(v.code)} ↗</a> · ` : ""}${esc(v.meta)}</div></div>` +
       col(v.plus, C2, "+", "#FDF3F2") +
       col(v.moins, "#2E6F3E", "–", "#F1F8F2") +
       `<div style="background:#FDF3F2;padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${cr.length ? cr.map(l => `<div><b style="color:#2E6F3E">✓</b> ${esc(l)}</div>`).join("") : ph("✓ [critère observable]") + "<br>" + ph("✓ [critère observable]")}</div>`

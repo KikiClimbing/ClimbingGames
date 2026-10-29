@@ -55,8 +55,42 @@ registerClick(e => {
     closeFiche();
     return true;
   }
-  if (e.target.closest(".print")) window.print();
+  if (e.target.closest(".print")) {
+    printFiche();
+    return true;
+  }
 });
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && MODAL) closeFiche();
 });
+
+/* Impression d'une fiche de jeu : tout le contenu sur une seule page A4 */
+function printFiche() {
+  const f = $("#fiche");
+  if (!f) return;
+  const titres = { p1: "PRINCIPE", p2: "PRATIQUE", p3: "VARIANTES", p4: "CONSEILS" };
+  document.querySelectorAll(".pane").forEach(p => {
+    p.dataset.t = titres[p.id] || "";
+    p.classList.toggle("pe", !p.textContent.trim() && !p.querySelector("img"));
+  });
+  const st = document.createElement("style");
+  st.textContent = "@page{size:A4 portrait;margin:8mm}";
+  document.head.appendChild(st);
+  document.body.classList.add("fpm");
+  f.style.zoom = 1;
+  const dispo = 1000; /* hauteur disponible en pixels (A4 moins les marges, avec une réserve) */
+  const h = f.scrollHeight;
+  if (h > dispo) f.style.zoom = (dispo / h).toFixed(3);
+  document.body.classList.add("fp");
+  const fin = () => {
+    document.body.classList.remove("fp", "fpm");
+    f.style.zoom = "";
+    st.remove();
+    window.removeEventListener("afterprint", fin);
+  };
+  window.addEventListener("afterprint", fin);
+  window.print();
+  setTimeout(() => {
+    if (document.body.classList.contains("fp")) fin();
+  }, 60000);
+}

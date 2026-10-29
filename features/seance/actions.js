@@ -117,20 +117,9 @@ function seanceBind() {
       render();
     });
   const pr = $("#sPrint");
-  if (pr)
-    pr.addEventListener("click", () => {
-      document.body.classList.add("ps");
-      const st = document.createElement("style");
-      st.textContent = "@page{size:A4 landscape;margin:8mm}";
-      document.head.appendChild(st);
-      window.print();
-      setTimeout(() => {
-        document.body.classList.remove("ps");
-        st.remove();
-      }, 800);
-    });
+  if (pr) pr.addEventListener("click", imprimerSeance);
   const wd = $("#sWord");
-  if (wd) wd.addEventListener("click", seanceWord);
+  if (wd) wd.addEventListener("click", () => seanceWord());
   const cp = $("#sCopy");
   if (cp)
     cp.addEventListener("click", async () => {
@@ -144,15 +133,44 @@ function seanceBind() {
   const cl = $("#sClear");
   if (cl)
     cl.addEventListener("click", () => {
-      if (confirm("Tout effacer (informations et jeux) ?")) {
+      if (
+        confirm(
+          "Effacer tout le contenu de cette séance (informations, échauffement, sous-sections et exercices) ?\n\nLe logo de la salle est conservé."
+        )
+      ) {
         SE = seNew();
         seSave();
         SMETA = {};
-        localStorage.removeItem("maSeanceMeta");
+        try {
+          localStorage.removeItem("maSeanceMeta");
+        } catch (e) {}
         buildNav();
         render();
       }
     });
+  const lg = $("#sLogo");
+  if (lg)
+    lg.addEventListener("change", e => {
+      const f = e.target.files[0];
+      if (f)
+        logoDepuisFichier(f, url => {
+          SMETA.logo = url;
+          saveMeta();
+          try {
+            localStorage.setItem("logoSalle", url);
+          } catch (er) {}
+          render();
+        });
+    });
+  const lo = $("#sLogoOff");
+  if (lo)
+    lo.addEventListener("click", () => {
+      SMETA.logo = "";
+      saveMeta();
+      render();
+    });
+  const sv = $("#sSave");
+  if (sv) sv.addEventListener("click", enregistrerSeance);
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-sa]");
@@ -224,3 +242,34 @@ document.addEventListener("click", e => {
     render();
   }
 });
+
+/* imprime uniquement la fiche de séance (A4 paysage) */
+function imprimerSeance() {
+  document.body.classList.add("ps");
+  const st = document.createElement("style");
+  st.textContent = "@page{size:A4 landscape;margin:8mm}";
+  document.head.appendChild(st);
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove("ps");
+    st.remove();
+  }, 800);
+}
+/* réduit un logo téléversé (hauteur 120 px max) pour qu'il reste léger */
+function logoDepuisFichier(file, cb) {
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 120 / img.naturalHeight, 360 / img.naturalWidth);
+      const c = document.createElement("canvas");
+      c.width = Math.max(1, Math.round(img.naturalWidth * k));
+      c.height = Math.max(1, Math.round(img.naturalHeight * k));
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      cb(c.toDataURL(/png|svg|gif/.test(file.type) ? "image/png" : "image/jpeg", 0.88));
+    };
+    img.onerror = () => alert("Image illisible.");
+    img.src = r.result;
+  };
+  r.readAsDataURL(file);
+}

@@ -10,7 +10,7 @@ function loadDocx() {
     document.head.appendChild(s);
   });
 }
-function buildSeanceDoc() {
+function buildSeanceDoc(logo) {
   const D = window.docx;
   const {
     Document,
@@ -89,61 +89,75 @@ function buildSeanceDoc() {
     two = M.two;
   const out = [];
   const txt = (t, p) => (t ? R(t, { c: "FFFFFF" }) : R(p, { i: true, c: "C9D1DE" }));
-  const W = [6000, 4900, 2300, 2638];
+  const gris = t => R(t, { c: "C9D1DE" });
+  const colonnes = [];
+  if (logo)
+    colonnes.push({
+      w: 2000,
+      body: [
+        new Paragraph({
+          children: [
+            new D.ImageRun({
+              type: logo.type,
+              data: logo.data,
+              transformation: { width: logo.w, height: logo.h },
+            }),
+          ],
+        }),
+      ],
+    });
+  const l1 = [];
+  if (S.titre) l1.push(R(S.titre, { b: true, c: "FFFFFF", size: 26 }));
+  if (S.periode) l1.push(R((S.titre ? "  " : "") + S.periode, { c: "C9D1DE", size: 22 }));
+  const lignesMain = [];
+  if (l1.length) lignesMain.push(P(l1));
+  if (S.theme) lignesMain.push(P([R("Thème : ", { b: true, c: "FFFFFF" }), gris(S.theme)]));
+  if (S.educ) lignesMain.push(P([R("Éducateurs : ", { b: true, c: "FFFFFF" }), gris(S.educ)]));
+  const reste = CW - (logo ? 2000 : 0) - 2500 - (S.objectif ? 4000 : 0) - (S.dates ? 1900 : 0);
+  if (lignesMain.length) colonnes.push({ w: reste, body: lignesMain, main: true });
+  if (S.objectif)
+    colonnes.push({
+      w: 4000,
+      body: [P([R("Objectif général : ", { b: true, c: "FFFFFF" }), gris(S.objectif)])],
+    });
+  if (S.dates)
+    colonnes.push({
+      w: 1900,
+      body: [P([R("Dates : ", { c: "FFFFFF" }), gris(S.dates)], { al: AlignmentType.CENTER })],
+    });
+  colonnes.push({
+    w: 2500,
+    body: [
+      P([
+        R("■ ", { c: BLUE, b: true }),
+        R((S.g1 || "Groupe 1") + " – " + M.tot1 + " min", { c: "FFFFFF", size: 17 }),
+      ]),
+      ...(two
+        ? [
+            P([
+              R("■ ", { c: ORG, b: true }),
+              R((S.g2 || "Groupe 2") + " – " + M.tot2 + " min", { c: "FFFFFF", size: 17 }),
+            ]),
+          ]
+        : []),
+    ],
+  });
+  /* si la colonne principale est absente, son espace est rendu à la dernière colonne */
+  if (!lignesMain.length) colonnes[colonnes.length - 1].w += reste;
+  const W = colonnes.map(c => c.w);
   out.push(
     tbl(
       [
-        row([
-          cell(
-            [
-              P([
-                R(S.titre || "[Cycle n — Séance n]", { b: true, c: "FFFFFF", size: 26 }),
-                R("  " + (S.periode || "[période]"), {
-                  i: !S.periode,
-                  c: S.periode ? "FFFFFF" : "C9D1DE",
-                  size: 22,
-                }),
-              ]),
-              P([R("Thème : ", { b: true, c: "FFFFFF" }), txt(S.theme, "[thème de la séance]")]),
-              P([R("Éducateurs : ", { b: true, c: "FFFFFF" }), txt(S.educ, "[prénoms]")]),
-            ],
-            { w: W[0], f: NAVY, va: V, m: { top: 110, bottom: 110, left: 200, right: 140 } }
-          ),
-          cell(
-            [
-              P([
-                R("Objectif général : ", { b: true, c: "FFFFFF" }),
-                txt(S.objectif, "[ce que la séance doit permettre d'apprendre]"),
-              ]),
-            ],
-            { w: W[1], f: NAVY, va: V }
-          ),
-          cell(
-            [
-              P([R("Dates : ", { c: "FFFFFF" }), txt(S.dates, "[jj mois]")], {
-                al: AlignmentType.CENTER,
-              }),
-            ],
-            { w: W[2], f: NAVY, va: V }
-          ),
-          cell(
-            [
-              P([
-                R("■ ", { c: BLUE, b: true }),
-                R((S.g1 || "Groupe 1") + " – " + M.tot1 + " min", { c: "FFFFFF", size: 17 }),
-              ]),
-              ...(two
-                ? [
-                    P([
-                      R("■ ", { c: ORG, b: true }),
-                      R((S.g2 || "Groupe 2") + " – " + M.tot2 + " min", { c: "FFFFFF", size: 17 }),
-                    ]),
-                  ]
-                : []),
-            ],
-            { w: W[3], f: NAVY, va: V }
-          ),
-        ]),
+        row(
+          colonnes.map((c, i) =>
+            cell(c.body, {
+              w: c.w,
+              f: NAVY,
+              va: V,
+              m: i === 0 ? { top: 110, bottom: 110, left: 200, right: 140 } : undefined,
+            })
+          )
+        ),
       ],
       W
     )
@@ -289,7 +303,14 @@ function buildSeanceDoc() {
               P(
                 [
                   R("▸ ", { c: BLUE, b: true }),
-                  R(n + ". " + x.name, { b: true }),
+                  ...(v.url
+                    ? [
+                        new D.ExternalHyperlink({
+                          link: v.url,
+                          children: [R(n + ". " + x.name, { b: true, c: "2B5A9E" })],
+                        }),
+                      ]
+                    : [R(n + ". " + x.name, { b: true })]),
                   ...(v.code ? [R("  (" + v.code + ")", { c: "6B7280", size: 16 })] : []),
                 ],
                 { af: 30 }
@@ -302,11 +323,16 @@ function buildSeanceDoc() {
         if (v.meta || (x.same && v.code))
           main.push(
             P([
-              R((x.same && v.code ? "Fiche " + v.code + " · " : "") + (v.meta || ""), {
-                i: true,
-                c: "6B7280",
-                size: 16,
-              }),
+              ...(x.same && v.code
+                ? [
+                    new D.ExternalHyperlink({
+                      link: v.url,
+                      children: [R("Fiche " + v.code + " ↗", { c: "2B5A9E", size: 16 })],
+                    }),
+                    R(" · ", { i: true, c: "6B7280", size: 16 }),
+                  ]
+                : []),
+              R(v.meta || "", { i: true, c: "6B7280", size: 16 }),
             ])
           );
         const cr = lines(v.crit);
@@ -414,16 +440,42 @@ function buildSeanceDoc() {
     ],
   });
 }
-async function seanceWord() {
+/* lit un logo (adresse de données) : octets, type et taille d'affichage (hauteur 50 px) */
+function logoInfo(dataUrl) {
+  return new Promise(ok => {
+    if (!dataUrl) return ok(null);
+    const img = new Image();
+    img.onload = () => {
+      const h = 50,
+        w = Math.max(10, Math.round((img.naturalWidth / img.naturalHeight) * h));
+      const bin = atob(dataUrl.split(",")[1]),
+        data = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) data[i] = bin.charCodeAt(i);
+      ok({ data, type: /image\/png/.test(dataUrl) ? "png" : "jpg", w: Math.min(w, 160), h });
+    };
+    img.onerror = () => ok(null);
+    img.src = dataUrl;
+  });
+}
+/* rec : séance de la bibliothèque {meta, se} ; sinon la séance en cours */
+async function seanceWord(rec) {
   const m = $("#sMsg");
+  const msg = t => {
+    if (m) m.textContent = t;
+  };
   try {
-    m.textContent = "Création du fichier…";
+    msg("Création du fichier…");
     await loadDocx();
-    const blob = await window.docx.Packer.toBlob(buildSeanceDoc());
+    const meta = rec ? rec.meta : SMETA;
+    const logo = await logoInfo(meta.logo);
+    const doc = rec
+      ? withSeance(rec.meta, rec.se, () => buildSeanceDoc(logo))
+      : buildSeanceDoc(logo);
+    const blob = await window.docx.Packer.toBlob(doc);
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download =
-      ((SMETA.titre || "Ma-seance").replace(/[^\wàâäçéèêëîïôöùûüÀÉÈ\- ]/g, "").trim() ||
+      ((meta.titre || "Ma-seance").replace(/[^\wàâäçéèêëîïôöùûüÀÉÈ\- ]/g, "").trim() ||
         "Ma-seance") + ".docx";
     document.body.appendChild(a);
     a.click();
@@ -431,10 +483,12 @@ async function seanceWord() {
       URL.revokeObjectURL(a.href);
       a.remove();
     }, 500);
-    m.textContent =
-      "Fichier Word téléchargé. Déposez-le dans votre Drive : clic droit › Ouvrir avec Google Docs.";
+    msg(
+      "Fichier Word téléchargé. Déposez-le dans votre Drive : clic droit › Ouvrir avec Google Docs."
+    );
   } catch (e) {
-    m.textContent =
-      "Création impossible (connexion internet nécessaire). Utilisez « Copier le texte » ou « Imprimer / PDF ».";
+    msg(
+      "Création impossible (connexion internet nécessaire). Utilisez « Copier le texte » ou « Imprimer / PDF »."
+    );
   }
 }

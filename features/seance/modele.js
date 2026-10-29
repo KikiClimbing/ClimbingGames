@@ -93,7 +93,31 @@ function seFind(id) {
 }
 const inSel = seHas,
   addSel = seAdd;
+/* adresse d'un jeu dans l'application (pour les liens des PDF et des fichiers Word) */
+const gameUrl = c => location.href.split("#")[0] + "#/jeu/" + encodeURIComponent(c);
+/* logo de la salle : le dernier logo téléversé sert par défaut à chaque nouvelle séance */
+const defaultLogo = () => {
+  try {
+    return localStorage.getItem("logoSalle") || "";
+  } catch (e) {
+    return "";
+  }
+};
+/* exécute fn avec une autre séance (bibliothèque de séances) à la place de la séance en cours */
+function withSeance(meta, se, fn) {
+  const a = SMETA,
+    b = SE;
+  SMETA = meta;
+  SE = se;
+  try {
+    return fn();
+  } finally {
+    SMETA = a;
+    SE = b;
+  }
+}
 function seDefaults() {
+  if (SMETA.logo === undefined) SMETA.logo = defaultLogo();
   const d = {
     titre: "",
     periode: "",

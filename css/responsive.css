@@ -47,6 +47,38 @@
     padding: 16px;
   }
 }
+/* Mesure de la fiche avant impression (même mise en page que l'impression) */
+body.fpm .fiche {
+  width: 730px;
+  max-width: none;
+}
+body.fpm .tabs,
+body.fpm .x,
+body.fpm .foot {
+  display: none !important;
+}
+body.fpm .pane {
+  display: block !important;
+  padding: 8px 20px 4px;
+  line-height: 1.4;
+  font-size: 14px;
+}
+body.fpm .pane.pe {
+  display: none !important;
+}
+body.fpm .pane::before {
+  content: attr(data-t);
+  display: block;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--d);
+  margin-bottom: 4px;
+}
+body.fpm .pane img {
+  max-height: 300px;
+  object-fit: contain;
+}
 @media print {
   body.ps main {
     display: block !important;
@@ -64,23 +96,26 @@
   }
   .side,
   .bar,
-  .x,
-  .tabs,
-  .foot,
-  main,
-  .shade {
+  .shade,
+  main {
     display: none !important;
   }
-  .ov {
-    position: static;
-    display: block;
-    background: none;
-    padding: 0;
-  }
-  .pane {
+  body.ps main {
     display: block !important;
   }
-  .fiche {
+  .ov {
+    display: none !important;
+  }
+  body.fp .ov {
+    display: block !important;
+    position: static;
+    background: none;
+    padding: 0;
+    overflow: visible;
+  }
+  body.fp .fiche {
     box-shadow: none;
+    margin: 0;
+    border-radius: 0;
   }
 }

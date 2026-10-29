@@ -144,6 +144,9 @@ registerClick(e => {
   const m = e.target.closest("[data-mode]");
   if (m) {
     S.mode = m.dataset.mode;
+    try {
+      localStorage.setItem("modeJeux", S.mode);
+    } catch (e) {}
     render();
     return true;
   }

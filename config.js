@@ -15,6 +15,8 @@ window.SITE_CONFIG = {
   TEMPLATE_CYCLE_URL: "https://docs.google.com/document/d/1OvSgeQXyU3YDCAdxFFYZohFId479vbyN/edit",
   // Lien du dossier Drive partagé (bibliothèque de séances)
   LIBRARY_URL: "https://drive.google.com/drive/folders/1o2a7sFKQOjJM0rBjcsw-zf8PsFbUFqVV",
+  // adresse CSV publiée de l'onglet « Séances » (lecture des séances enregistrées)
+  SEANCES_CSV_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec", 
   // Ajout automatique d'un jeu libre à la bibliothèque (script ajouter_jeu.gs) : adresse de l'application web et mot de passe
   GAME_ADD_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec",
   GAME_ADD_KEY: "AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv",

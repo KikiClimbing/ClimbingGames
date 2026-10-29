@@ -8,6 +8,7 @@ const CONFIG = Object.assign(
     TEMPLATE_SEANCE_URL: "",
     TEMPLATE_CYCLE_URL: "",
     LIBRARY_URL: "",
+    SEANCES_CSV_URL: "",
     GAME_ADD_URL: "",
     GAME_ADD_KEY: "",
     SCHEMA_UPLOAD_URL: "",

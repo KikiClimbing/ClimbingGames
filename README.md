@@ -66,3 +66,11 @@ Le code est formaté avec Prettier (réglages dans `.prettierrc`). Pour reformat
 ```
 npx prettier --write "core/**/*.js" "features/**/*.js" "features/**/*.css" "css/*.css"
 ```
+
+
+## Séances enregistrées (base de données)
+- `features/biblio/seances.js` : enregistrement (`enregistrerSeance`), liste, page détail (`#/sb/<id>`), « utiliser comme modèle ».
+- `features/biblio/seances.css` : style (message, lignes cliquables).
+- Côté Google : `scripts-google/ajouter_jeu.gs` (action `seance`) crée l'onglet « Séances ». Publier cet onglet en CSV et mettre l'adresse dans `config.js` : `SEANCES_CSV_URL`.
+- Attention : un onglet publié sur le web est lisible par toute personne qui a l'adresse.
+- Prettier : ajouter les nouveaux fichiers au même glob (déjà couverts par `features/**`).

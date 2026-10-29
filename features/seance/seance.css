@@ -69,3 +69,11 @@
   border-radius: 8px;
   font: inherit;
 }
+.durs {
+  display: flex;
+  gap: 10px;
+}
+.durs .sml {
+  flex: 1;
+  min-width: 120px;
+}
