@@ -54,7 +54,21 @@ function filterGames(v) {
       const hay = norm(Object.values(g).join(" "));
       return q.split(/\s+/).every(w => hay.includes(w));
     });
-  return L;
+  return L.sort(parCode);
+}
+/* tri par code : lettres puis numéro (C2 avant C10) ; les jeux sans code à la fin */
+function parCode(a, b) {
+  const p = g => {
+    const m = String(g.Code || "").match(/^([A-Za-zÀ-ÿ]*)(\d*)/);
+    return [m[1].toUpperCase() || "\uffff", +m[2] || 0];
+  };
+  const x = p(a),
+    y = p(b);
+  return x[0] === y[0]
+    ? x[1] - y[1] || String(a.Titre).localeCompare(b.Titre)
+    : x[0] < y[0]
+      ? -1
+      : 1;
 }
 function gridHTML(L) {
   if (!L.length)

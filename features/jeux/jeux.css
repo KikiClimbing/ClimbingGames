@@ -186,7 +186,7 @@ table.lst {
 }
 .auto .ah {
   background: var(--m);
-  padding: 4cqw 6cqw 3cqw;
+  padding: 3.5cqw 5cqw 3cqw;
   display: grid;
   grid-template-columns: auto 1fr;
   column-gap: 4cqw;
@@ -194,25 +194,25 @@ table.lst {
 }
 .auto .af {
   grid-column: 2;
-  font-size: 3cqw;
+  font-size: 2.2cqw;
   letter-spacing: 0.3cqw;
   font-weight: 700;
 }
 .auto .ac {
   grid-row: 1 / span 3;
-  font-size: 14cqw;
+  font-size: 8.5cqw;
   font-weight: 700;
   line-height: 1;
 }
 .auto .at {
   grid-column: 2;
-  font-size: 6.4cqw;
+  font-size: 4.2cqw;
   font-weight: 700;
   line-height: 1.1;
 }
 .auto .ar {
   grid-column: 2;
-  font-size: 3.4cqw;
+  font-size: 2.5cqw;
   font-style: italic;
   opacity: 0.85;
   display: -webkit-box;
@@ -246,6 +246,6 @@ table.lst {
   background: var(--m);
   border-radius: 99px;
   padding: 0.8cqw 3cqw;
-  font-size: 3.2cqw;
+  font-size: 2.6cqw;
   font-weight: 700;
 }
