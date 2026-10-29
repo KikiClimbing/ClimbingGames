@@ -309,6 +309,7 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-29 | 26 | Administration : aperçu du schéma du jeu dans la fiche à valider |
 | 2026-10-29 | 25 | Administration : dessiner / modifier le schéma d'un jeu avec l'éditeur (nouveaux jeux seulement), enregistrement direct dans le dépôt et dans la feuille |
 | 2026-10-29 | 24 | Documentation intégrée (Administration > Documentation) |
 | 2026-10-29 | 23 | Administration : édition de tous les jeux, retrait du site ; vignettes automatiques à taille corrigée ; tri par code ; documentation intégrée |
