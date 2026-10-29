@@ -1,11 +1,14 @@
 /* Catalogue : listes de jeux (toutes, par famille, par objectif…) et vignettes */
+/* vignette : image de la carte pour les jeux intégrés, sinon carte générée automatiquement
+   (famille, code, titre, résumé, schéma s'il existe, durée / effectif / intensité) */
 function thumb(g) {
-  const fb = `<div class="gen"><div class="c">${esc(g.Code || "★")}</div><div class="t">${esc(g.Titre)}</div></div>`;
   if (isEmb(g)) return `<img loading="lazy" src="cartes/${esc(g.Code)}.jpg" alt="${esc(g.Titre)}">`;
   const s = driveImg(g["Schéma (lien)"] || g["Schéma"]);
-  return s
-    ? `<img loading="lazy" src="${esc(s)}" alt="${esc(g.Titre)}" onerror="this.outerHTML=this.dataset.f" data-f="${esc(fb)}">`
-    : fb;
+  const puces = [g["Durée"], g["Effectif court"] || g.Participants, g["Intensité"]]
+    .filter(Boolean)
+    .map(x => `<span>${esc(x)}</span>`)
+    .join("");
+  return `<div class="auto"><div class="ah"><div class="af">${esc((g.Famille || "").toUpperCase())}</div><div class="ac">${esc(g.Code || "★")}</div><div class="at">${esc(g.Titre)}</div><div class="ar">${esc(g["Résumé"])}</div></div>${s ? `<div class="ai"><img loading="lazy" src="${esc(s)}" alt="" onerror="this.parentNode.remove()"></div>` : ""}<div class="ap">${puces}</div></div>`;
 }
 function viewTitle(v) {
   if (v === "home") return ["Accueil", ""];
@@ -68,15 +71,7 @@ function gridHTML(L) {
   return (
     '<div class="grid">' +
     L.map(
-      g =>
-        `<div class="card" style="${style(g)}" data-jeu="${esc(key(g))}">${thumb(g)}${
-          isEmb(g)
-            ? ""
-            : `<div class="meta">${[g.Code || "Nouveau", g["Durée"], g["Effectif court"]]
-                .filter(Boolean)
-                .map(x => `<span>${esc(x)}</span>`)
-                .join("")}</div>`
-        }</div>`
+      g => `<div class="card" style="${style(g)}" data-jeu="${esc(key(g))}">${thumb(g)}</div>`
     ).join("") +
     "</div>"
   );
