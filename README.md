@@ -1,5 +1,7 @@
 # Jeux d'escalade — site pour éducateurs
 
+> **Documentation complète : `docs/maintenance.md`** (aussi dans le site : Administration > Documentation). À mettre à jour à chaque changement.
+
 Site statique (aucun outil de compilation) hébergé sur GitHub Pages. Il fonctionne aussi en ouvrant `index.html` directement dans un navigateur.
 
 ## Organisation

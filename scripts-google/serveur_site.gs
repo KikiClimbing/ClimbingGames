@@ -234,3 +234,26 @@ function rep(o) {
     ContentService.MimeType.JSON
   );
 }
+
+/* ---------- test : lancez « testerConnexions » dans l'éditeur (menu des fonctions > Exécuter) ---------- */
+// Demande les autorisations si besoin, puis affiche dans le journal ce qui marche ou non.
+function testerConnexions() {
+  const sh = feuilleJeux();
+  Logger.log(sh ? "✓ Feuille des jeux trouvée : « " + sh.getName() + " »" : "✗ Feuille des jeux introuvable");
+  if (!GITHUB_JETON) return Logger.log("✗ GITHUB_JETON est vide");
+  const r = UrlFetchApp.fetch("https://api.github.com/repos/" + GITHUB_DEPOT, {
+    headers: { Authorization: "Bearer " + GITHUB_JETON, "User-Agent": "site-jeux-escalade" },
+    muteHttpExceptions: true,
+  });
+  const c = r.getResponseCode();
+  Logger.log(
+    c === 200
+      ? "✓ GitHub : dépôt " + GITHUB_DEPOT + " accessible"
+      : "✗ GitHub a répondu " + c + " : vérifiez GITHUB_DEPOT et le jeton"
+  );
+  Logger.log(
+    CLE_SITE === "changez-moi" || MOT_DE_PASSE_ADMIN === "changez-moi-aussi"
+      ? "⚠ Pensez à changer CLE_SITE et MOT_DE_PASSE_ADMIN"
+      : "✓ Mots de passe personnalisés"
+  );
+}
