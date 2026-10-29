@@ -74,3 +74,8 @@ npx prettier --write "core/**/*.js" "features/**/*.js" "features/**/*.css" "css/
 - Côté Google : `scripts-google/ajouter_jeu.gs` (action `seance`) crée l'onglet « Séances ». Publier cet onglet en CSV et mettre l'adresse dans `config.js` : `SEANCES_CSV_URL`.
 - Attention : un onglet publié sur le web est lisible par toute personne qui a l'adresse.
 - Prettier : ajouter les nouveaux fichiers au même glob (déjà couverts par `features/**`).
+
+## Administration et serveur Google
+- `scripts-google/serveur_site.gs` remplace `ajouter_jeu.gs` et `recevoir_schemas.gs` : un seul script pour les jeux proposés, les séances (enregistrer / supprimer), les schémas (envoyés dans `schemas/` du dépôt GitHub) et l'administration.
+- `features/admin/admin.js` : page « Jeux en attente » (mot de passe administrateur, jamais dans config.js).
+- Le site utilise `GAME_ADD_URL` / `GAME_ADD_KEY` pour tout (`SCHEMA_UPLOAD_*` restent possibles pour l'ancien script).

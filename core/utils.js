@@ -45,6 +45,15 @@ function parseCSV(t) {
     .filter(x => x.some(y => y.trim()))
     .map(x => Object.fromEntries(h.map((k, i) => [k, (x[i] || "").trim()])));
 }
+/* « • » devant chaque ligne (inutile de les saisir à la main) */
+const puces = t =>
+  String(t || "")
+    .split(/\n/)
+    .map(l => l.replace(/^\s*[•\-–▸]\s*/, "").trim())
+    .filter(Boolean)
+    .map(l => "• " + l)
+    .join("\n");
+const puceHTML = t => esc(puces(t)).replace(/\n/g, "<br>");
 function driveImg(u) {
   const m = String(u || "").match(/(?:\/d\/|[?&]id=)([\w-]{15,})/);
   return m && /drive\.google/.test(u)

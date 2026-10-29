@@ -40,10 +40,10 @@ function edExport(kind) {
 }
 function edUpload() {
   const msg = $("#edUpMsg"),
-    url = CONFIG.SCHEMA_UPLOAD_URL;
+    url = CONFIG.SCHEMA_UPLOAD_URL || CONFIG.GAME_ADD_URL;
   if (!url) {
     msg.innerHTML =
-      "L'envoi dans le Drive n'est pas encore configuré (voir le guide : <i>SCHEMA_UPLOAD_URL</i> dans config.js). En attendant, exportez le PNG et déposez-le à la main dans le Drive.";
+      "L'envoi n'est pas encore configuré (<i>GAME_ADD_URL</i> dans config.js). En attendant, exportez le PNG et déposez-le à la main dans le dossier schemas/ du dépôt.";
     return;
   }
   const name =
@@ -57,12 +57,19 @@ function edUpload() {
         fetch(url, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ name: name + ".png", data, key: CONFIG.SCHEMA_UPLOAD_KEY || "" }),
+          body: JSON.stringify({
+            action: "schema",
+            name: name + ".png",
+            data,
+            key: CONFIG.SCHEMA_UPLOAD_URL
+              ? CONFIG.SCHEMA_UPLOAD_KEY || ""
+              : CONFIG.GAME_ADD_KEY || "",
+          }),
         })
           .then(r => r.json())
           .then(j => {
             if (!j.ok) throw new Error(j.error || "refusé");
-            msg.innerHTML = `✓ Envoyé. Lien à coller dans « Schéma (lien) » : <input readonly id="edLink" value="${esc(j.url)}" style="width:100%;margin-top:6px;padding:6px;border:1px solid #D5DAE5;border-radius:6px"> <button class="chip" id="edCopyLk" style="margin-top:6px">Copier le lien</button>`;
+            msg.innerHTML = `✓ Envoyé (visible sur le site dans environ une minute). Lien à coller dans « Schéma (lien) » : <input readonly id="edLink" value="${esc(j.url)}" style="width:100%;margin-top:6px;padding:6px;border:1px solid #D5DAE5;border-radius:6px"> <button class="chip" id="edCopyLk" style="margin-top:6px">Copier le lien</button>`;
             $("#edCopyLk").onclick = () => {
               const i = $("#edLink");
               i.select();
@@ -78,7 +85,7 @@ function edUpload() {
             msg.textContent =
               "Échec de l'envoi (" +
               e.message +
-              "). Exportez le PNG et déposez-le à la main dans le Drive.";
+              "). Exportez le PNG et déposez-le à la main dans le dossier schemas/ du dépôt.";
           });
       };
       fr.readAsDataURL(blob);

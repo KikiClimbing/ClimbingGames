@@ -37,8 +37,8 @@ function creerFormulaire() {
   texte("Espace", "Ex. : pan de mur, traversée basse.", false, false);
   texte("Durée", "Ex. : 10 min.", true, false);
   texte("Objectif", "Ce que le jeu fait travailler, en quelques mots.", false, false);
-  texte("Plus facile", "2 à 3 idées, une par ligne, avec « • » devant.", true, true);
-  texte("Plus difficile", "2 à 3 idées, une par ligne, avec « • » devant.", true, true);
+  texte("Plus facile", "2 à 3 idées, une par ligne (la puce « • » est ajoutée automatiquement).", true, true);
+  texte("Plus difficile", "2 à 3 idées, une par ligne (la puce « • » est ajoutée automatiquement).", true, true);
   texte("Conseil", "Sécurité ou astuce d'animation, 1 à 2 phrases.", false, true);
   texte(
     "Voir aussi",

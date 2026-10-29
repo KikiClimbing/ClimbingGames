@@ -79,16 +79,21 @@ body.fpm .pane img {
   max-height: 300px;
   object-fit: contain;
 }
+@page seance {
+  size: A4 landscape;
+  margin: 8mm;
+}
 @media print {
   body.ps main {
     display: block !important;
     margin: 0;
     padding: 0;
   }
-  body.ps .noprint,
-  body.ps .tools,
-  body.ps .lead {
+  body.ps main > :not(#sheet) {
     display: none !important;
+  }
+  body.ps main {
+    page: seance;
   }
   body.ps .box {
     box-shadow: none;

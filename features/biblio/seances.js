@@ -33,12 +33,29 @@ async function loadSeances() {
   }
 }
 registerLoader(loadSeances);
-/* toutes les séances connues : celles de la feuille + celles enregistrées depuis ce navigateur */
+const LS_DEL = "seancesSupprimees";
+const sbSupprimees = () => {
+  try {
+    return JSON.parse(localStorage.getItem(LS_DEL) || "[]");
+  } catch (e) {
+    return [];
+  }
+};
+const sbMemo = (cle, liste) => {
+  try {
+    localStorage.setItem(cle, JSON.stringify(liste));
+  } catch (e) {}
+};
+/* toutes les séances connues : celles de la feuille + celles enregistrées depuis ce navigateur (la plus récente gagne) */
 function sbAll() {
   const m = new Map();
-  sbLocal().forEach(x => m.set(x.id, x));
+  const garde = r => {
+    const o = m.get(r.id);
+    if (!o || String(r.ts) >= String(o.ts)) m.set(r.id, r);
+  };
+  sbLocal().forEach(garde);
   SEANCES.forEach(x =>
-    m.set(x.id, {
+    garde({
       id: x.id,
       titre: x["Titre"],
       theme: x["Thème"],
@@ -49,7 +66,10 @@ function sbAll() {
       data: x["Données"],
     })
   );
-  return [...m.values()].sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
+  const del = new Set(sbSupprimees());
+  return [...m.values()]
+    .filter(r => !del.has(r.id))
+    .sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
 }
 function sbParse(rec) {
   try {
@@ -86,6 +106,10 @@ async function enregistrerSeance() {
     data,
   };
   seSave();
+  sbMemo(
+    LS_DEL,
+    sbSupprimees().filter(x => x !== rec.id)
+  );
   const garde = sbLocal().filter(x => x.id !== rec.id);
   garde.push(rec);
   try {
@@ -112,10 +136,11 @@ async function enregistrerSeance() {
   }
 }
 /* reprend une séance de la bibliothèque comme point de départ d'une nouvelle séance (copie) */
-function sbAdopter(d) {
+function sbAdopter(d, id) {
   SMETA = JSON.parse(JSON.stringify(d.meta));
   SE = JSON.parse(JSON.stringify(d.se));
-  delete SE.id;
+  if (id) SE.id = id;
+  else delete SE.id;
   let mx = 0;
   SE.subs.forEach(s => {
     mx = Math.max(mx, s.id || 0);
@@ -130,21 +155,65 @@ function seancesListeHTML() {
   if (!CONFIG.SEANCES_CSV_URL && !sbLocal().length)
     return `<div class="box">La base de séances n'est pas encore configurée. L'administrateur du site doit renseigner <b>SEANCES_CSV_URL</b> et <b>GAME_ADD_URL</b> dans <i>config.js</i>. En attendant, les séances enregistrées depuis ce navigateur apparaissent ici.</div>`;
   const q = norm(SBQ);
-  const L = sbAll().filter(
-    r => !q || norm([r.titre, r.theme, r.educ, r.dates].join(" ")).includes(q)
-  );
+  const L = sbAll()
+    .map(r => {
+      const d = sbParse(r),
+        m = (d && d.meta) || {};
+      return {
+        id: r.id,
+        titre: m.titre || r.titre || "Séance sans titre",
+        educ: m.educ || r.educ || "",
+        dates: m.dates || r.dates || "",
+        theme: m.theme || r.theme || "",
+        obj: m.objectif || "",
+      };
+    })
+    .filter(r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj].join(" ")).includes(q));
+  const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     r =>
-      `<tr class="r" data-go="sb/${esc(r.id)}"><td><b>${esc(r.titre)}</b><br><span style="color:#6B7280;font-size:13px">${esc(r.theme || "")}</span></td><td>${esc(r.educ || "")}</td><td>${esc(r.dates || "")}</td><td style="text-align:center">${esc(r.nb || "")}</td></tr>`
+      `<tr class="r" data-go="sb/${esc(r.id)}">${cel(r.titre).replace("<td", '<td style="font-weight:700"')}${cel(r.educ)}${cel(r.dates)}${cel(r.theme)}${cel(r.obj)}<td style="text-align:right"><a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a></td></tr>`
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px"></div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<table class="lst sbl"><thead><tr><th>SÉANCE</th><th>ÉDUCATEURS</th><th>DATES</th><th>EXERCICES</th></tr></thead><tbody>${rows}</tbody></table>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Ma séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
-  <p style="color:#6B7280;font-size:14px">Les séances s'affichent directement ici, sans passer par un fichier. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Ma séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "";
+async function sbSupprimer(id) {
+  const r = sbAll().find(x => x.id === id);
+  const d = r && sbParse(r);
+  const nom = (d && d.meta.titre) || (r && r.titre) || "cette séance";
+  if (!confirm("Supprimer définitivement la séance « " + nom + " » ?")) return false;
+  sbMemo(LS_DEL, [...sbSupprimees(), id]);
+  sbMemo(
+    LS_SB,
+    sbLocal().filter(x => x.id !== id)
+  );
+  if (SE && SE.id === id) {
+    delete SE.id;
+    seSave();
+  }
+  render();
+  if (CONFIG.GAME_ADD_URL) {
+    try {
+      const rep = await fetch(CONFIG.GAME_ADD_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "seance_suppr", id }),
+      });
+      const j = await rep.json();
+      if (!j.ok) throw new Error(j.error || "refusé");
+      toast("Séance supprimée.");
+    } catch (e) {
+      toast("Supprimée ici, mais pas dans la feuille Google (" + e.message + ").");
+    }
+  } else toast("Séance supprimée.");
+  return true;
+}
 /* ---------- une séance ---------- */
-let SBCUR = null;
+let SBCUR = null,
+  SBID = "";
 function seanceFicheView(id) {
   const rec = sbAll().find(r => r.id === id);
   const d = rec && sbParse(rec);
@@ -154,8 +223,9 @@ function seanceFicheView(id) {
     return back + `<div class="box">Cette séance est introuvable ou illisible.</div>`;
   }
   SBCUR = d;
+  SBID = id;
   const sheet = withSeance(d.meta, d.se, () => sheetHTML());
-  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a><a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Utiliser comme modèle (copie dans « Ma séance »)</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>
+  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a><a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a><a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Utiliser comme modèle (copie)</a><a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>
   <div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheet}</div>`;
 }
 registerView({
@@ -163,14 +233,25 @@ registerView({
   html: v => seanceFicheView(decodeURIComponent(v.slice(3))),
 });
 registerClick(e => {
+  const del = e.target.closest("[data-sbdel]");
+  if (del) {
+    sbSupprimer(del.dataset.sbdel);
+    return true;
+  }
   const b = e.target.closest("[data-sb]");
   if (!b || !SBCUR) return;
-  if (b.dataset.sb === "print") imprimerSeance();
-  else if (b.dataset.sb === "word") seanceWord(SBCUR);
-  else if (b.dataset.sb === "copy") {
-    if (!confirm("Remplacer le contenu de « Ma séance » par une copie de cette séance ?"))
-      return true;
-    sbAdopter(SBCUR);
+  const k = b.dataset.sb;
+  if (k === "print") imprimerSeance();
+  else if (k === "word") seanceWord(SBCUR);
+  else if (k === "del") {
+    sbSupprimer(SBID).then(ok => ok && go("biblio"));
+  } else if (k === "copy" || k === "edit") {
+    const txt =
+      k === "edit"
+        ? "Ouvrir cette séance dans « Ma séance » pour la modifier ? Le contenu actuel de « Ma séance » sera remplacé. Enregistrez ensuite pour mettre à jour la séance de la bibliothèque."
+        : "Remplacer le contenu de « Ma séance » par une copie de cette séance ?";
+    if (!confirm(txt)) return true;
+    sbAdopter(SBCUR, k === "edit" ? SBID : "");
     go("seance");
   }
   return true;

@@ -26,3 +26,41 @@
     display: none;
   }
 }
+.sbl {
+  table-layout: fixed;
+  width: 100%;
+}
+.sbl td,
+.sbl th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sbl th:nth-child(1) {
+  width: 20%;
+}
+.sbl th:nth-child(2) {
+  width: 11%;
+}
+.sbl th:nth-child(3) {
+  width: 11%;
+}
+.sbl th:nth-child(4) {
+  width: 22%;
+}
+.sbl th:last-child {
+  width: 56px;
+}
+.sbl td:first-child {
+  width: auto;
+  padding: 10px 12px;
+  text-align: left;
+}
+.sbl td:last-child {
+  overflow: visible;
+  text-overflow: clip;
+  padding-right: 8px;
+}
+.sbl .chip {
+  padding: 4px 9px;
+}

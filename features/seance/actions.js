@@ -3,7 +3,13 @@ function seToLib(id) {
   const f = seFind(id);
   if (!f) return;
   const it = f.s.items[f.i],
-    m = $("#sMsg");
+    m = {
+      set textContent(t) {
+        toast(t);
+        const e = $("#sMsg");
+        if (e) e.textContent = t;
+      },
+    };
   if (!it.titre || !it.desc) {
     alert("Renseignez au moins le nom de l'exercice et la consigne.");
     return;
@@ -23,12 +29,12 @@ function seToLib(id) {
     Participants: it.part || "—",
     Matériel: it.mat || "Aucun",
     Durée: ((f.s.d && f.s.d[0]) || "") + " min",
-    "Plus facile": it.moins || "",
-    "Plus difficile": it.plus || "",
+    "Plus facile": puces(it.moins),
+    "Plus difficile": puces(it.plus),
     Auteur: auteur,
   };
   if (CONFIG.GAME_ADD_URL) {
-    m.textContent = "Envoi en cours…";
+    m.textContent = "Envoi de l'exercice en cours…";
     fetch(CONFIG.GAME_ADD_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -204,6 +210,13 @@ function seanceBind() {
         render();
       }
     });
+  const sc = $("#sSaveCopy");
+  if (sc)
+    sc.addEventListener("click", async () => {
+      delete SE.id;
+      await enregistrerSeance();
+      render();
+    });
   const lg = $("#sLogo");
   if (lg)
     lg.addEventListener("change", e => {
@@ -226,7 +239,11 @@ function seanceBind() {
       render();
     });
   const sv = $("#sSave");
-  if (sv) sv.addEventListener("click", enregistrerSeance);
+  if (sv)
+    sv.addEventListener("click", async () => {
+      await enregistrerSeance();
+      render();
+    });
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-sa]");
@@ -305,11 +322,17 @@ function imprimerSeance() {
   const st = document.createElement("style");
   st.textContent = "@page{size:A4 landscape;margin:8mm}";
   document.head.appendChild(st);
-  window.print();
-  setTimeout(() => {
+  let fini = false;
+  const nettoyer = () => {
+    if (fini) return;
+    fini = true;
     document.body.classList.remove("ps");
     st.remove();
-  }, 800);
+    window.removeEventListener("afterprint", nettoyer);
+  };
+  window.addEventListener("afterprint", nettoyer);
+  setTimeout(nettoyer, 60000);
+  window.print();
 }
 /* réduit un logo téléversé (hauteur 120 px max) pour qu'il reste léger */
 function logoDepuisFichier(file, cb) {
