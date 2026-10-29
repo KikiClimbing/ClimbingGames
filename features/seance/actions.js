@@ -22,7 +22,7 @@ function seToLib(id) {
     Principe: it.desc,
     Participants: it.part || "—",
     Matériel: it.mat || "Aucun",
-    Durée: (f.s.d1 || "") + " min",
+    Durée: ((f.s.d && f.s.d[0]) || "") + " min",
     "Plus facile": it.moins || "",
     "Plus difficile": it.plus || "",
     Auteur: auteur,
@@ -102,13 +102,69 @@ function seanceBind() {
       render();
     })
   );
-  const dx = $("#smDeux");
-  if (dx)
-    dx.addEventListener("change", e => {
-      SMETA.deux = e.target.checked;
+  const num = (el, e) => (el.dataset.n ? Math.max(0, +e.target.value || 0) : e.target.value);
+  document.querySelectorAll("[data-gm]").forEach(i =>
+    i.addEventListener("input", e => {
+      SMETA.groups[+i.dataset.gi][i.dataset.gm] = num(i, e);
       saveMeta();
+      upd();
+    })
+  );
+  document.querySelectorAll("[data-gd]").forEach(i =>
+    i.addEventListener("input", e => {
+      const t = i.dataset.gd === "ech" ? SE.ech : sub(i.dataset.sub);
+      t.d[+i.dataset.gi] = num(i, e);
+      seSave();
+      upd();
+    })
+  );
+  document.querySelectorAll("[data-gt]").forEach(i =>
+    i.addEventListener("input", e => {
+      SE.ech.gtxt[+i.dataset.gi] = e.target.value;
+      seSave();
+      upd();
+    })
+  );
+  document.querySelectorAll("[data-gs]").forEach(i =>
+    i.addEventListener("change", () => {
+      const s = sub(i.dataset.sub),
+        n = SMETA.groups.length;
+      const set = new Set(s.gs || SMETA.groups.map((_, k) => k));
+      if (i.checked) set.add(+i.dataset.gi);
+      else set.delete(+i.dataset.gi);
+      s.gs = set.size && set.size < n ? [...set].sort() : null;
+      seSave();
+      render();
+    })
+  );
+  const ep = $("#seEchPer");
+  if (ep)
+    ep.addEventListener("change", e => {
+      SE.ech.per = e.target.checked;
+      if (SE.ech.per && SE.ech.gtxt.every(x => !x)) SE.ech.gtxt = SE.ech.gtxt.map(() => SE.ech.txt);
+      seSave();
       render();
     });
+  const ga = $("#gAdd");
+  if (ga)
+    ga.addEventListener("click", () => {
+      SMETA.groups.push({ nom: "Groupe " + (SMETA.groups.length + 1), acc: 5, rc: "" });
+      saveMeta();
+      seDefaults();
+      seSave();
+      render();
+    });
+  document.querySelectorAll("[data-grm]").forEach(i =>
+    i.addEventListener("click", () => {
+      const g = SMETA.groups[+i.dataset.grm];
+      if (!confirm("Retirer le groupe « " + (g.nom || "sans nom") + " » de toute la séance ?"))
+        return;
+      seDropGroup(+i.dataset.grm);
+      saveMeta();
+      seSave();
+      render();
+    })
+  );
   const eo = $("#seEchOn");
   if (eo)
     eo.addEventListener("change", e => {
@@ -184,7 +240,7 @@ document.addEventListener("click", e => {
   };
   let re = true;
   if (a === "addsub")
-    SE.subs.push({ id: SEUID++, titre: "", g: "both", d1: 10, d2: 10, items: [] });
+    SE.subs.push({ id: SEUID++, titre: "", gs: null, d: SMETA.groups.map(() => 10), items: [] });
   else if (a === "srm") {
     if (
       SE.subs.find(s => s.id === sid).items.length &&

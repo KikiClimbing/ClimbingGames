@@ -2,11 +2,14 @@
 const C1 = "#3A8FB0",
   C2 = "#E8662F",
   NAVYC = "#1E2630";
+/* couleurs des groupes (2 par défaut, 4 au maximum) */
+const GCOL = [C1, C2, "#4E9A5B", "#8A55B5"],
+  GMAX = 4;
 let SE = null;
 let SEUID = 1;
 const seNew = () => ({
-  ech: { on: true, nom: "", d1: 10, d2: 10, txt: "" },
-  subs: [{ id: SEUID++, titre: "", g: "both", d1: 15, d2: 15, items: [] }],
+  ech: { on: true, nom: "", d: [10, 10], txt: "", per: false, gtxt: [] },
+  subs: [{ id: SEUID++, titre: "", gs: null, d: [15, 15], items: [] }],
 });
 function seLoad() {
   try {
@@ -34,15 +37,13 @@ function seLoad() {
               (g(s)["Résumé"] || "")
           )
           .join("\n");
-        SE.ech.d1 = one(ech, "min");
-        SE.ech.d2 = ech.reduce((t, s) => t + (+m2(s) || 0), 0);
+        SE.ech.d = [one(ech, "min"), ech.reduce((t, s) => t + (+m2(s) || 0), 0)];
       }
       const mk = (arr, t) => ({
         id: SEUID++,
         titre: t,
-        g: "both",
-        d1: one(arr, "min"),
-        d2: arr.reduce((a, s) => a + (+m2(s) || 0), 0),
+        gs: null,
+        d: [one(arr, "min"), arr.reduce((a, s) => a + (+m2(s) || 0), 0)],
         items: arr.map(s => ({ id: SEUID++, t: "lib", k: s.k, crit: "" })),
       });
       SE.subs = [];
@@ -76,7 +77,7 @@ function seAdd(c, subId) {
   if (!g || seHas(c)) return;
   let s = SE.subs.find(x => x.id === subId) || SE.subs[SE.subs.length - 1];
   if (!s) {
-    s = { id: SEUID++, titre: "", g: "both", d1: 15, d2: 15, items: [] };
+    s = { id: SEUID++, titre: "", gs: null, d: [15, 15], items: [] };
     SE.subs.push(s);
   }
   s.items.push({ id: SEUID++, t: "lib", k: c, crit: "" });
@@ -116,8 +117,15 @@ function withSeance(meta, se, fn) {
     SE = b;
   }
 }
+/* complète ou met à jour les données (anciennes séances à 2 groupes fixes → groupes libres) */
+const fit = (a, n, def) => {
+  const r = Array.isArray(a) ? a.slice(0, n) : [];
+  while (r.length < n) r.push(r.length ? r[r.length - 1] : def);
+  return r.map(x => (+x >= 0 ? +x : def));
+};
 function seDefaults() {
-  if (SMETA.logo === undefined) SMETA.logo = defaultLogo();
+  const S = SMETA;
+  if (S.logo === undefined) S.logo = defaultLogo();
   const d = {
     titre: "",
     periode: "",
@@ -125,18 +133,60 @@ function seDefaults() {
     educ: "",
     objectif: "",
     dates: "",
-    deux: true,
-    g1: "Enfants (8–10 ans)",
-    g2: "Ados (11–14 ans)",
-    acc1: 5,
-    acc2: 5,
     objCol: "",
     secu: "",
-    rc1: "",
-    rc2: "",
   };
   Object.keys(d).forEach(k => {
-    if (SMETA[k] === undefined) SMETA[k] = d[k];
+    if (S[k] === undefined) S[k] = d[k];
+  });
+  if (!Array.isArray(S.groups) || !S.groups.length) {
+    const g = (nom, acc, rc) => ({
+      nom,
+      acc: acc === undefined ? 5 : acc,
+      rc: rc || "",
+    });
+    S.groups = [g(S.g1 === undefined ? "Enfants (8–10 ans)" : S.g1, S.acc1, S.rc1)];
+    if (S.deux !== false)
+      S.groups.push(g(S.g2 === undefined ? "Ados (11–14 ans)" : S.g2, S.acc2, S.rc2));
+    ["g1", "g2", "acc1", "acc2", "rc1", "rc2", "deux"].forEach(k => delete S[k]);
+  }
+  S.groups = S.groups.slice(0, GMAX);
+  const n = S.groups.length;
+  const E = SE.ech;
+  if (E.d1 !== undefined || E.d2 !== undefined) {
+    E.d = [E.d1 === undefined ? 10 : E.d1, E.d2 === undefined ? 10 : E.d2];
+    delete E.d1;
+    delete E.d2;
+  }
+  E.d = fit(E.d, n, 10);
+  E.gtxt = Array.isArray(E.gtxt) ? E.gtxt.slice(0, n) : [];
+  while (E.gtxt.length < n) E.gtxt.push("");
+  E.per = !!E.per && n > 1;
+  SE.subs.forEach(s => {
+    if (s.d1 !== undefined || s.d2 !== undefined) {
+      s.d = [s.d1 === undefined ? 15 : s.d1, s.d2 === undefined ? 15 : s.d2];
+      delete s.d1;
+      delete s.d2;
+    }
+    if (s.g !== undefined) {
+      s.gs = s.g === "1" ? [0] : s.g === "2" ? [Math.min(1, n - 1)] : null;
+      delete s.g;
+    }
+    s.d = fit(s.d, n, 15);
+    if (Array.isArray(s.gs)) {
+      s.gs = s.gs.filter(i => i >= 0 && i < n);
+      if (!s.gs.length || s.gs.length === n) s.gs = null;
+    } else s.gs = null;
+  });
+}
+/* retire un groupe de toute la séance */
+function seDropGroup(i) {
+  SMETA.groups.splice(i, 1);
+  SE.ech.d.splice(i, 1);
+  SE.ech.gtxt.splice(i, 1);
+  SE.subs.forEach(s => {
+    s.d.splice(i, 1);
+    if (s.gs) s.gs = s.gs.filter(x => x !== i).map(x => (x > i ? x - 1 : x));
   });
 }
 const stepsOf = (v, it) => {

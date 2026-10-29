@@ -77,3 +77,26 @@
   flex: 1;
   min-width: 120px;
 }
+
+.grps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+.grp {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+.grp .sml:first-child {
+  flex: 2;
+}
+.grp .sml:nth-child(2) {
+  flex: 0 0 140px;
+}
+.gchk {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}

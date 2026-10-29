@@ -85,8 +85,7 @@ function buildSeanceDoc(logo) {
       children: [new TextRun({ text: "", size: 2 })],
     });
   const M = seModel(),
-    S = SMETA,
-    two = M.two;
+    S = SMETA;
   const out = [];
   const txt = (t, p) => (t ? R(t, { c: "FFFFFF" }) : R(p, { i: true, c: "C9D1DE" }));
   const gris = t => R(t, { c: "C9D1DE" });
@@ -127,20 +126,12 @@ function buildSeanceDoc(logo) {
     });
   colonnes.push({
     w: 2500,
-    body: [
+    body: M.G.map(g =>
       P([
-        R("■ ", { c: BLUE, b: true }),
-        R((S.g1 || "Groupe 1") + " – " + M.tot1 + " min", { c: "FFFFFF", size: 17 }),
-      ]),
-      ...(two
-        ? [
-            P([
-              R("■ ", { c: ORG, b: true }),
-              R((S.g2 || "Groupe 2") + " – " + M.tot2 + " min", { c: "FFFFFF", size: 17 }),
-            ]),
-          ]
-        : []),
-    ],
+        R("■ ", { c: g.c.slice(1), b: true }),
+        R(g.nom + " – " + M.tot[g.i] + " min", { c: "FFFFFF", size: 17 }),
+      ])
+    ),
   });
   /* si la colonne principale est absente, son espace est rendu à la dernière colonne */
   if (!lignesMain.length) colonnes[colonnes.length - 1].w += reste;
@@ -163,12 +154,7 @@ function buildSeanceDoc(logo) {
     )
   );
   out.push(sp());
-  const tg = (d1, d2, g = "both") => {
-    const a = [];
-    if (g !== "2") a.push({ t: d1 + "'", c: BLUE });
-    if (two && g !== "1") a.push({ t: d2 + "'", c: ORG });
-    return a;
-  };
+  const tg = (d, idx) => tgs(M, d, idx).map(x => ({ t: x.t, c: x.c.slice(1) }));
   const band = (tags, title, fill, tcol) => {
     const m = { top: 30, bottom: 30, left: 40, right: 40 };
     const ws = [...tags.map(() => 700), CW - 700 * tags.length];
@@ -190,34 +176,50 @@ function buildSeanceDoc(logo) {
     );
     return [tbl([row(cs)], ws), sp()];
   };
-  out.push(...band(tg(S.acc1 || 0, S.acc2 || 0), "ACCUEIL", "FDF3D3", "8A6D12"));
+  out.push(
+    ...band(
+      tg(
+        M.G.map(g => g.acc),
+        M.all
+      ),
+      "ACCUEIL",
+      "FDF3D3",
+      "8A6D12"
+    )
+  );
   if (M.ech.on) {
     out.push(
       ...band(
-        tg(M.ech.d1 || 0, M.ech.d2 || 0),
+        tg(M.ech.d, M.all),
         "ÉCHAUFFEMENT" + (M.ech.nom ? " — " + M.ech.nom : ""),
         "E6F2E6",
         "2E6F3E"
       )
     );
-    const L = String(M.ech.txt || "")
-      .split("\n")
-      .map(l => l.replace(/^\s*[•\-–▸]\s*/, "").trim())
-      .filter(Boolean);
-    (L.length ? L : [null]).forEach(l =>
-      out.push(
+    const etapes = (txt, c) => {
+      const L = String(txt || "")
+        .split("\n")
+        .map(l => l.replace(/^\s*[•\-–▸]\s*/, "").trim())
+        .filter(Boolean);
+      return (L.length ? L : [null]).map(l =>
         P(
           [
-            R("▸ ", { c: BLUE, b: true, size: 18 }),
+            R("▸ ", { c, b: true, size: 18 }),
             l ? R(l, { size: 18 }) : ph("[Décrire le déroulé : qui fait quoi, combien de temps]"),
           ],
           { af: 30 }
         )
-      )
-    );
+      );
+    };
+    if (M.ech.per)
+      M.G.forEach(g => {
+        out.push(P([R("■ " + g.nom, { c: g.c.slice(1), b: true, size: 17 })], { af: 10 }));
+        out.push(...etapes(M.ech.gtxt[g.i], g.c.slice(1)));
+      });
+    else out.push(...etapes(M.ech.txt, BLUE));
     out.push(sp());
   }
-  out.push(...band(tg(M.c1, M.c2), "CORPS DE SÉANCE", "E3EEF8", "2B5A9E"));
+  out.push(...band(tg(M.c, M.all), "CORPS DE SÉANCE", "E3EEF8", "2B5A9E"));
   const T = [7600, 2700, 2700, CW - 13000];
   const hd = (t, c, f, w) =>
     cell([P([R(t, { b: true, c, size: 16 })])], {
@@ -252,7 +254,7 @@ function buildSeanceDoc(logo) {
     };
     M.subs.forEach((s, k) => {
       const runs = [];
-      tg(s.d1 || 0, s.d2 || 0, s.g).forEach(x => {
+      tg(s.d, s.idx).forEach(x => {
         runs.push(
           new TextRun({
             text: "\u00A0" + x.t + "\u00A0",
@@ -273,9 +275,9 @@ function buildSeanceDoc(logo) {
               P([
                 ...runs,
                 R(s.titre || "Sous-section " + (k + 1), { b: true, c: "5B4BA8", size: 17 }),
-                ...(two && s.g !== "both"
+                ...(s.idx.length < M.G.length
                   ? [
-                      R("  · " + (s.g === "1" ? S.g1 : S.g2) + " seulement", {
+                      R("  · " + nomsGroupes(M, s.idx) + " seulement", {
                         c: "5B4BA8",
                         size: 16,
                       }),
@@ -402,20 +404,12 @@ function buildSeanceDoc(logo) {
           fc("SÉCURITÉ", ml(S.secu, "[rappels : hauteur, tapis, pas de saut…]"), F[2]),
           fc(
             "RETOUR AU CALME",
-            [
+            M.G.map(g =>
               P([
-                R((S.g1 || "Groupe 1") + " : ", { b: true, c: BLUE }),
-                S.rc1 ? R(S.rc1) : ph("[étirements, bilan…]"),
-              ]),
-              ...(two
-                ? [
-                    P([
-                      R((S.g2 || "Groupe 2") + " : ", { b: true, c: ORG }),
-                      S.rc2 ? R(S.rc2) : ph("[étirements, bilan…]"),
-                    ]),
-                  ]
-                : []),
-            ],
+                R(g.nom + " : ", { b: true, c: g.c.slice(1) }),
+                g.rc ? R(g.rc) : ph("[étirements, bilan…]"),
+              ])
+            ),
             F[3]
           ),
         ]),

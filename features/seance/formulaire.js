@@ -5,7 +5,8 @@ function seanceView() {
   const M = seModel(),
     S = SMETA,
     two = M.two;
-  const head = `<h2 class="pt">Ma séance</h2><p class="lead">Construisez votre séance comme dans votre modèle : accueil, échauffement, puis un corps de séance découpé en autant de sous-sections que vous voulez, pour les deux groupes ou pour un seul. Les exercices viennent de la bibliothèque de jeux ou s'écrivent librement. Tout est enregistré dans ce navigateur ; exportez en Word, en PDF ou en texte.</p>`;
+  const gl = i => esc(M.G[i].nom);
+  const head = `<h2 class="pt">Ma séance</h2><p class="lead">Construisez votre séance comme dans votre modèle : accueil, échauffement, puis un corps de séance découpé en autant de sous-sections que vous voulez, pour tous les groupes ou seulement certains (deux groupes par défaut, quatre au maximum). Les exercices viennent de la bibliothèque de jeux ou s'écrivent librement. Tout est enregistré dans ce navigateur ; exportez en Word, en PDF ou en texte.</p>`;
   const inp = (k, l, p, span) =>
     `<label class="sml" style="${span ? "grid-column:1/-1" : ""}">${l}<input data-sm="${k}" value="${esc(S[k])}" placeholder="${esc(p)}"></label>`;
   const colf = (cls, c) => `border-left:4px solid ${c};padding-left:8px`;
@@ -15,10 +16,10 @@ function seanceView() {
     `<label class="sml">${l}<textarea rows="2" data-sm="${k}" placeholder="${esc(p)}">${esc(S[k])}</textarea></label>`;
   const E = SE.ech;
   const subHTML = (s, k) => {
-    const gsel = two
-      ? `<label class="sml">Pour<select data-sa-set="g" data-sub="${s.id}"><option value="both" ${s.g === "both" ? "selected" : ""}>les 2 groupes</option><option value="1" ${s.g === "1" ? "selected" : ""}>${esc(S.g1 || "Groupe 1")} seulement</option><option value="2" ${s.g === "2" ? "selected" : ""}>${esc(S.g2 || "Groupe 2")} seulement</option></select></label>`
-      : "";
     const sv = M.subs[k];
+    const gsel = two
+      ? `<div class="sml">Pour<div class="gchk">${M.G.map(g => `<label class="fl"><input type="checkbox" data-gs="1" data-sub="${s.id}" data-gi="${g.i}" ${sv.idx.includes(g.i) ? "checked" : ""}><span style="color:${g.c};font-weight:700">■</span> ${esc(g.nom)}</label>`).join("")}</div></div>`
+      : "";
     const items = sv.items
       .map((it, j) => {
         const v = itemView(it);
@@ -33,7 +34,7 @@ function seanceView() {
         return `<div class="sit free"><div class="sith"><b>✎ Exercice libre</b>${mv}</div><div class="smg">${f("titre", "Nom de l'exercice", "Ex. Le pied muet")}${nmf}${f("part", "Participants", "Ex. binômes")}${f("mat", "Matériel", "Aucun")}${f("desc", "Consigne / déroulé", "Qui joue, ce qu'on fait, comment on gagne…", 3)}${f("plus", "Plus difficile (+) — un par ligne", "• …", 2)}${f("moins", "Plus facile (–) — un par ligne", "• …", 2)}${f("crit", "Critères de réussite — un par ligne", "Ex. Le pied est posé sans bruit", 2)}</div><div style="margin-top:6px"><a class="chip" data-sa="tolib" data-id="${it.id}" style="cursor:pointer">＋ Ajouter cet exercice à la bibliothèque</a></div></div>`;
       })
       .join("");
-    return `<div class="ssub"><div class="smg" style="align-items:end"><label class="sml" style="grid-column:span 2">Titre de la sous-section<input data-ss="titre" data-sub="${s.id}" value="${esc(s.titre)}" placeholder="Ex. Poser les pieds"></label>${gsel}<div class="durs">${s.g !== "2" ? num(`data-ss="d1" data-n="1" data-sub="${s.id}"`, "Durée — " + esc(S.g1 || "groupe 1") + " (min)", s.d1, C1) : ""}${two && s.g !== "1" ? num(`data-ss="d2" data-n="1" data-sub="${s.id}"`, "Durée — " + esc(S.g2 || "groupe 2") + " (min)", s.d2, C2) : ""}</div>
+    return `<div class="ssub"><div class="smg" style="align-items:end"><label class="sml" style="grid-column:span 2">Titre de la sous-section<input data-ss="titre" data-sub="${s.id}" value="${esc(s.titre)}" placeholder="Ex. Poser les pieds"></label>${gsel}<div class="durs">${sv.idx.map(i => num(`data-gd="sub" data-n="1" data-sub="${s.id}" data-gi="${i}"`, "Durée" + (two ? " — " + gl(i) : "") + " (min)", s.d[i], M.G[i].c)).join("")}</div>
      <span class="noprint" style="white-space:nowrap;padding-bottom:8px"><button class="chip" data-sa="sup" data-sub="${s.id}">↑</button> <button class="chip" data-sa="sdn" data-sub="${s.id}">↓</button> <button class="chip" data-sa="srm" data-sub="${s.id}">✕ Supprimer</button></span></div>
      ${items || '<p class="hint" style="margin:8px 0">Aucun exercice dans cette sous-section.</p>'}
      <div class="sadd"><input list="gl" data-lib="${s.id}" placeholder="Chercher un exercice de la bibliothèque (code ou nom)…"><button class="chip" data-sa="addlib" data-sub="${s.id}">＋ Ajouter</button><button class="chip" data-sa="addfree" data-sub="${s.id}">＋ Exercice libre</button></div></div>`;
@@ -45,41 +46,48 @@ function seanceView() {
     bar +
     `<div class="box noprint"><b>Informations de la séance</b>
    <div class="smg">${inp("titre", "Cycle et séance", "Ex. Cycle 1 — Séance 4")}${inp("periode", "Période", "Ex. octobre")}${inp("theme", "Thème", "Ex. Pose de pieds & transfert de poids")}${inp("educ", "Éducateurs", "Prénoms")}${inp("objectif", "Objectif général", "Ce que la séance doit permettre d'apprendre", 1)}${inp("dates", "Dates", "Ex. 7 & 10 octobre")}</div>
-   <div class="smg" style="margin-top:8px"><label class="fl" style="grid-column:1/-1"><input type="checkbox" id="smDeux" ${two ? "checked" : ""}> Deux groupes (code couleur bleu / orange comme dans le modèle)</label>
-    <label class="sml" style="${colf(0, C1)}">Groupe 1<input data-sm="g1" value="${esc(S.g1)}"></label>${two ? `<label class="sml" style="${colf(0, C2)}">Groupe 2<input data-sm="g2" value="${esc(S.g2)}"></label>` : "<span></span>"}
-    <div class="durs">${num('data-sm="acc1" data-n="1"', "Accueil — " + esc(S.g1 || "groupe 1") + " (min)", S.acc1, C1)}${two ? num('data-sm="acc2" data-n="1"', "Accueil — " + esc(S.g2 || "groupe 2") + " (min)", S.acc2, C2) : ""}</div></div></div>
+   <div class="grps">${M.G.map(g => `<div class="grp"><label class="sml" style="${colf(0, g.c)}">Groupe ${g.i + 1}<input data-gm="nom" data-gi="${g.i}" value="${esc(S.groups[g.i].nom)}" placeholder="Groupe ${g.i + 1}"></label>${num(`data-gm="acc" data-n="1" data-gi="${g.i}"`, "Accueil (min)", g.acc, g.c)}${two ? `<a class="chip" data-grm="${g.i}" title="Retirer ce groupe" style="cursor:pointer">✕</a>` : ""}</div>`).join("")}${M.G.length < GMAX ? `<a class="chip" id="gAdd" style="cursor:pointer;align-self:flex-start">＋ Ajouter un groupe</a>` : ""}</div></div>
   <div class="box noprint" style="border-left:6px solid #7FCB8F"><label class="fl" style="margin:0 0 8px"><input type="checkbox" id="seEchOn" ${E.on ? "checked" : ""}> <b>Échauffement</b></label>
-   ${E.on ? `<div class="smg"><label class="sml" style="grid-column:span 2">Nom de l'échauffement<input data-se="nom" value="${esc(E.nom)}" placeholder="Ex. Jeux de déplacement"></label><div class="durs">${num('data-se="d1" data-n="1"', "Durée — " + esc(S.g1 || "groupe 1") + " (min)", E.d1, C1)}${two ? num('data-se="d2" data-n="1"', "Durée — " + esc(S.g2 || "groupe 2") + " (min)", E.d2, C2) : ""}</div><label class="sml" style="grid-column:1/-1">Déroulé (texte libre, une ligne par étape)<textarea rows="3" data-se="txt" placeholder="Qui fait quoi, combien de temps. Un jeu du site peut servir : ex. G1 · Jacadi, C2 · Le loup glacé">${esc(E.txt)}</textarea></label></div>` : ""}</div>
-  <div class="box noprint" style="border-left:6px solid #6EA8DC"><b>Corps de séance</b> <span style="color:#6B7280;font-size:13px">— total : <b style="color:${C1}">${M.c1} min</b>${two ? ` · <b style="color:${C2}">${M.c2} min</b>` : ""}</span>
+   ${
+     E.on
+       ? `<div class="smg"><label class="sml" style="grid-column:span 2">Nom de l'échauffement<input data-se="nom" value="${esc(E.nom)}" placeholder="Ex. Jeux de déplacement"></label><div class="durs">${M.G.map(g => num(`data-gd="ech" data-n="1" data-gi="${g.i}"`, "Durée" + (two ? " — " + gl(g.i) : "") + " (min)", E.d[g.i], g.c)).join("")}</div>
+   ${two ? `<label class="fl" style="grid-column:1/-1"><input type="checkbox" id="seEchPer" ${E.per ? "checked" : ""}> Échauffement différent selon les groupes</label>` : ""}
+   ${E.per ? M.G.map(g => `<label class="sml" style="grid-column:1/-1;${colf(0, g.c)}">Déroulé — ${esc(g.nom)} (une ligne par étape)<textarea rows="3" data-gt="1" data-gi="${g.i}" placeholder="Qui fait quoi, combien de temps.">${esc(E.gtxt[g.i])}</textarea></label>`).join("") : `<label class="sml" style="grid-column:1/-1">Déroulé (texte libre, une ligne par étape)<textarea rows="3" data-se="txt" placeholder="Qui fait quoi, combien de temps. Un jeu du site peut servir : ex. G1 · Jacadi, C2 · Le loup glacé">${esc(E.txt)}</textarea></label>`}</div>`
+       : ""
+   }</div>
+  <div class="box noprint" style="border-left:6px solid #6EA8DC"><b>Corps de séance</b> <span style="color:#6B7280;font-size:13px">— total : ${M.G.map(g => `<b style="color:${g.c}">${M.c[g.i]} min</b>`).join(" · ")}</span>
    <div style="margin-top:8px">${SE.subs.map(subHTML).join("")}</div><div style="margin-top:10px"><a class="chip" data-sa="addsub" style="cursor:pointer;background:#26364D;color:#fff">＋ Ajouter une sous-section</a></div>${dl}</div>
-  <div class="box noprint"><b>Bas de fiche</b><div class="smg" style="margin-top:8px">${txa("objCol", "Objectif collectif", "Ce que le groupe doit réussir")}${txa("secu", "Sécurité", "Hauteur, tapis, pas de saut…")}${txa("rc1", "Retour au calme — " + (S.g1 || "groupe 1"), "Étirements, bilan…")}${two ? txa("rc2", "Retour au calme — " + (S.g2 || "groupe 2"), "Étirements, bilan…") : ""}</div></div>
+  <div class="box noprint"><b>Bas de fiche</b><div class="smg" style="margin-top:8px">${txa("objCol", "Objectif collectif", "Ce que le groupe doit réussir")}${txa("secu", "Sécurité", "Hauteur, tapis, pas de saut…")}${M.G.map(g => `<label class="sml" style="${colf(0, g.c)}">Retour au calme${two ? " — " + esc(g.nom) : ""}<textarea rows="2" data-gm="rc" data-gi="${g.i}" placeholder="Étirements, bilan…">${esc(g.rc)}</textarea></label>`).join("")}</div></div>
   <h3 class="noprint" style="margin:18px 0 8px;color:#26364D">Aperçu de la fiche</h3><div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheetHTML()}</div>
   <div class="tools noprint" style="margin-top:14px"><a class="btn" id="sPrint" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" id="sWord" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a><a class="btn" id="sCopy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Copier le texte</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>`
   );
 }
 function seanceText() {
   const M = seModel(),
-    S = SMETA,
-    two = M.two;
+    S = SMETA;
   let t = (S.titre || "Ma séance") + (S.periode ? " (" + S.periode + ")" : "") + "\n";
   if (S.theme) t += "Thème : " + S.theme + "\n";
   if (S.educ) t += "Éducateurs : " + S.educ + "\n";
   if (S.objectif) t += "Objectif : " + S.objectif + "\n";
   if (S.dates) t += "Dates : " + S.dates + "\n";
-  const d = (a, b) => a + (two ? "/" + b : "");
-  t += `\nGroupes : ${S.g1}${two ? " / " + S.g2 : ""}\nAccueil [${d(S.acc1, S.acc2)} min]\n`;
+  const d = (a, idx = M.all) => idx.map(i => a[i] || 0).join("/");
+  t += `\nGroupes : ${M.G.map(g => g.nom).join(" / ")}\nAccueil [${d(M.G.map(g => g.acc))} min]\n`;
   if (M.ech.on) {
-    t += `\nÉCHAUFFEMENT${M.ech.nom ? " — " + M.ech.nom : ""} [${d(M.ech.d1, M.ech.d2)} min]\n`;
-    if (M.ech.txt) t += M.ech.txt + "\n";
+    t += `\nÉCHAUFFEMENT${M.ech.nom ? " — " + M.ech.nom : ""} [${d(M.ech.d)} min]\n`;
+    if (M.ech.per)
+      M.G.forEach(g => {
+        if (M.ech.gtxt[g.i]) t += g.nom + " :\n" + M.ech.gtxt[g.i] + "\n";
+      });
+    else if (M.ech.txt) t += M.ech.txt + "\n";
   }
-  t += `\nCORPS DE SÉANCE [${d(M.c1, M.c2)} min]\n`;
+  t += `\nCORPS DE SÉANCE [${d(M.c)} min]\n`;
   M.subs.forEach((s, k) => {
-    t += `\n${s.titre || "Sous-section " + (k + 1)}${two && s.g !== "both" ? " · " + (s.g === "1" ? S.g1 : S.g2) + " seulement" : ""} [${s.g === "1" ? s.d1 : s.g === "2" ? s.d2 : d(s.d1, s.d2)} min]\n`;
+    t += `\n${s.titre || "Sous-section " + (k + 1)}${s.idx.length < M.G.length ? " · " + nomsGroupes(M, s.idx) + " seulement" : ""} [${d(s.d, s.idx)} min]\n`;
     s.views.forEach(x => {
       t += `- ${x.name}${x.v.code ? " (" + x.v.code + ")" : ""} — ${x.v.resume}\n`;
     });
   });
-  t += `\nDurée totale : ${d(M.tot1, M.tot2)} min\n`;
+  t += `\nDurée totale : ${d(M.tot)} min\n`;
   if (M.mats.length) t += "Matériel : " + M.mats.map(m => capf(m.t)).join(", ") + "\n";
   return t;
 }

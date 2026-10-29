@@ -54,6 +54,7 @@ function sbAll() {
 function sbParse(rec) {
   try {
     const d = JSON.parse(rec.data);
+    if (d && d.meta && d.meta.logo === undefined) d.meta.logo = "";
     return d && d.meta && d.se ? d : null;
   } catch (e) {
     return null;
