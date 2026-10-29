@@ -1,5 +1,6 @@
 /* Administration : relire, corriger, valider ou refuser les jeux proposés (protégé par mot de passe) */
 const ADM = {
+  tab: "jeux",
   pw: "",
   list: null,
   cols: [],
@@ -83,8 +84,8 @@ function schemaApercu(v) {
 }
 function admView() {
   const head = gsec(
-    "Administration des jeux",
-    "Relisez, corrigez, publiez ou retirez les jeux, sans ouvrir la feuille Google. Réservé à l'administrateur."
+    "Administration",
+    "Gestion des jeux et documentation technique. Réservé à l'administrateur."
   );
   const msg = ADM.msg ? `<p style="font-weight:700;color:#B2263A">${esc(ADM.msg)}</p>` : "";
   if (!CONFIG.GAME_ADD_URL)
@@ -122,13 +123,16 @@ function admView() {
       ${ouvert ? `${schemaApercu(v)}<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}${v.Code && !isEmb(v) ? `<a class="btn" data-adm="schema" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner / modifier le schéma</a>` : ""}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
     })
     .join("");
+  const onglets = `<div class="tools"><div class="seg"><button data-adm="tab" data-t="jeux" class="${ADM.tab === "doc" ? "" : "on"}">Gérer les jeux</button><button data-adm="tab" data-t="doc" class="${ADM.tab === "doc" ? "on" : ""}">Documentation</button></div><span class="grow" style="flex:1"></span><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>`;
+  if (ADM.tab === "doc") return head + onglets + docHTML();
   return (
     head +
-    `<div class="tools"><div class="seg"><button data-adm="mode" data-m="0" class="${ADM.tous ? "" : "on"}">En attente</button><button data-adm="mode" data-m="1" class="${ADM.tous ? "on" : ""}">Tous les jeux</button></div><input class="search" id="admq" type="search" placeholder="Rechercher (code, titre, auteur)…" value="${esc(ADM.q)}" style="max-width:300px"><a class="chip" data-adm="reload" style="cursor:pointer">↻ Actualiser</a><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>${msg}<p class="count">${visibles.length} jeu${visibles.length > 1 ? "x" : ""}${ADM.tous ? "" : " en attente"}</p>${cartes || '<div class="empty">Aucun jeu.</div>'}<p style="color:#6B7280;font-size:14px">Un jeu validé apparaît dans le catalogue après la mise à jour de la feuille publiée (quelques minutes). Une puce « • » est ajoutée automatiquement devant chaque ligne de « Plus facile » et « Plus difficile ».</p>`
+    onglets +
+    `<div class="tools"><div class="seg"><button data-adm="mode" data-m="0" class="${ADM.tous ? "" : "on"}">En attente</button><button data-adm="mode" data-m="1" class="${ADM.tous ? "on" : ""}">Tous les jeux</button></div><input class="search" id="admq" type="search" placeholder="Rechercher (code, titre, auteur)…" value="${esc(ADM.q)}" style="max-width:300px"><a class="chip" data-adm="reload" style="cursor:pointer">↻ Actualiser</a></div>${msg}<p class="count">${visibles.length} jeu${visibles.length > 1 ? "x" : ""}${ADM.tous ? "" : " en attente"}</p>${cartes || '<div class="empty">Aucun jeu.</div>'}<p style="color:#6B7280;font-size:14px">Un jeu validé apparaît dans le catalogue après la mise à jour de la feuille publiée (quelques minutes). Une puce « • » est ajoutée automatiquement devant chaque ligne de « Plus facile » et « Plus difficile ».</p>`
   );
 }
 registerView({
-  match: v => v === "attente",
+  match: v => ["admin", "attente", "doc"].includes(v),
   html: () => admView(),
   bind: () => {
     document.querySelectorAll("[data-af]").forEach(i =>
@@ -160,7 +164,7 @@ registerNav({
   sec: "ADMINISTRATION",
   secOrder: 50,
   order: 1,
-  html: () => navBtn("attente", "Gérer les jeux", '<span class="ic">✓</span>'),
+  html: () => navBtn("admin", "Administration", '<span class="ic">⚙</span>'),
 });
 registerClick(e => {
   const b = e.target.closest("[data-adm]");
@@ -174,12 +178,17 @@ registerClick(e => {
   } else if (a === "logout") {
     ADM.pw = "";
     ADM.list = null;
+    ADM.tab = "jeux";
+    DOCMD = null;
     try {
       sessionStorage.removeItem("admPw");
     } catch (x) {}
     render();
   } else if (a === "schema" && g) {
     edOuvrirPourJeu({ code: g.valeurs.Code, titre: g.valeurs.Titre, ligne: g.ligne, orig: g.orig });
+  } else if (a === "tab") {
+    ADM.tab = b.dataset.t;
+    render();
   } else if (a === "reload") admCharger();
   else if (a === "mode") {
     ADM.tous = b.dataset.m === "1";

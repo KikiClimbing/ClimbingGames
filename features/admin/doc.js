@@ -9,7 +9,7 @@ async function chargerDoc() {
   } catch (e) {
     DOCERR = e.message;
   }
-  if (VIEW === "doc") render();
+  if (VIEW === "admin") render();
 }
 /* mini convertisseur Markdown → HTML : titres, listes, tableaux, code, gras, liens, citations */
 function mdInline(t) {
@@ -83,11 +83,9 @@ function mdHTML(md) {
   }
   return { html: out.join("\n"), toc };
 }
-function docView() {
-  const head = gsec(
-    "Documentation technique",
-    "Architecture, données, échanges GitHub / Google, procédures et dépannage. Fichier source : docs/maintenance.md dans le dépôt."
-  );
+/* contenu de l'onglet « Documentation » de la page Administration (affiché seulement après connexion) */
+function docHTML() {
+  const head = "";
   if (DOCMD === null) {
     if (!DOCERR) chargerDoc();
     return (
@@ -101,13 +99,6 @@ function docView() {
     `<div class="box"><b>Sommaire</b><ol class="mdtoc">${d.toc.map(t => `<li><a data-doc="${t.id}" style="cursor:pointer">${mdInline(t.txt)}</a></li>`).join("")}</ol></div><div class="md">${d.html}</div>`
   );
 }
-registerView({ match: v => v === "doc", html: () => docView() });
-registerNav({
-  sec: "ADMINISTRATION",
-  secOrder: 50,
-  order: 2,
-  html: () => navBtn("doc", "Documentation", '<span class="ic">📖</span>'),
-});
 registerClick(e => {
   const a = e.target.closest("[data-doc]");
   if (!a) return;

@@ -105,7 +105,7 @@ function edCtxHTML() {
 function edCtxBind() {
   const c = ED.ctx;
   if (!c) return;
-  $("#edCtxBack").onclick = () => go("attente");
+  $("#edCtxBack").onclick = () => go("admin");
   $("#edCtxSave").onclick = () => {
     const m = $("#edCtxMsg");
     if (!ED.els.length) {

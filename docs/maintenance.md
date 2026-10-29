@@ -170,7 +170,7 @@ Chaque fonctionnalité se déclare elle-même :
 Affichage immédiat avec les données intégrées (`route()`), puis `Promise.all` de tous les loaders ; ensuite menu et page sont reconstruits (`buildNav(); render()`). Une page qui lève une exception affiche un cadre rouge au lieu de planter le site.
 
 ### 6.5 Navigation
-Routage par l'ancre : `#/home`, `#/all`, `#/fam/Défis`, `#/jeu/E4` (fenêtre de détail), `#/seance`, `#/biblio`, `#/sb/<id>` (séance de la bibliothèque), `#/attente` (administration), `#/doc` (documentation)…  `go(v)` change l'ancre ; `route()` réagit à `hashchange`.
+Routage par l'ancre : `#/home`, `#/all`, `#/fam/Défis`, `#/jeu/E4` (fenêtre de détail), `#/seance`, `#/biblio`, `#/sb/<id>` (séance de la bibliothèque), `#/admin` (administration : onglets « Gérer les jeux » et « Documentation »)…  `go(v)` change l'ancre ; `route()` réagit à `hashchange`.
 
 ### 6.6 Les jeux (`core/games.js`, `features/jeux/`)
 - `DATA` (état global) = jeux affichés. `key(g)` = `Code` sinon `Titre`.
@@ -214,10 +214,10 @@ SE = { id?,                                       // présent si la séance est 
 Éditeur SVG maison : `etat.js` (état, annulation), `formes.js` (dessin des pièces : prises, personnages, flèches…), `rendu.js`, `panneau.js` (propriétés), `palette.js`, `interactions.js` (souris/clavier), `export.js` (PNG/SVG, envoi). L'envoi appelle l'action `schema` ; la réponse contient l'URL à coller dans `Schéma (lien)`. Brouillon : `localStorage.edSchema`.
 
 ### 6.10 Administration (`features/admin/`)
-- Page « Gérer les jeux » (`admin.js`) : le mot de passe administrateur est envoyé au script à chaque requête (champ `admin`) et gardé seulement dans `sessionStorage` (`admPw`, effacé à la fermeture de l'onglet). **La vérification est faite côté script** : sans le bon mot de passe, rien n'est lisible ni modifiable.
+- Page « Administration » (`admin.js`), un seul lien dans le menu ; après saisie du mot de passe, deux onglets : « Gérer les jeux » et « Documentation ». Gestion des jeux : : le mot de passe administrateur est envoyé au script à chaque requête (champ `admin`) et gardé seulement dans `sessionStorage` (`admPw`, effacé à la fermeture de l'onglet). **La vérification est faite côté script** : sans le bon mot de passe, rien n'est lisible ni modifiable.
 - Onglets : « En attente » et « Tous les jeux » ; édition de tous les champs ; valider/publier, enregistrer, retirer, refuser. Code proposé automatiquement (prochain numéro de la famille).
 - Schéma d'un jeu : le bouton « ✏ Dessiner / modifier le schéma » (jeux dont le code n'est **pas** dans `EMBED`) ouvre l'éditeur lié au jeu (`ED.ctx`, `edOuvrirPourJeu()` dans `features/editeur/export.js`). Il recharge le dessin source `schemas/CODE.json` (ou la copie locale `edSrc_CODE` si elle date de moins de 10 min, le temps que GitHub Pages publie), puis « Enregistrer dans le jeu » envoie l'image et la source (`admin_schema`). Les 36 schémas d'origine ne sont que des images : non modifiables avec l'outil. Cliquer « Dessiner un schéma » dans le menu supprime le lien avec le jeu.
-- Page « Documentation » (`doc.js`) : affiche ce fichier. Il est public (dans le dépôt), cette page n'est pas protégée.
+- Onglet « Documentation » (`doc.js`, `docHTML()`) : affiche ce fichier, uniquement après connexion. **Attention** : la restriction ne concerne que l'interface ; le fichier `docs/maintenance.md` reste lisible par quiconque ouvre le dépôt public ou connaît son adresse. Il ne doit donc contenir aucun secret (mots de passe, jeton). Pour le rendre vraiment privé, il faudrait le sortir du dépôt public.
 
 ### 6.11 Clés `localStorage` / `sessionStorage`
 
@@ -309,6 +309,7 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-29 | 27 | Un seul lien « Administration » ; après connexion, onglets « Gérer les jeux » et « Documentation » |
 | 2026-10-29 | 26 | Administration : aperçu du schéma du jeu dans la fiche à valider |
 | 2026-10-29 | 25 | Administration : dessiner / modifier le schéma d'un jeu avec l'éditeur (nouveaux jeux seulement), enregistrement direct dans le dépôt et dans la feuille |
 | 2026-10-29 | 24 | Documentation intégrée (Administration > Documentation) |
