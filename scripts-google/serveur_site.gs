@@ -35,7 +35,7 @@ function doPost(e) {
     if (action.indexOf("admin_") === 0) {
       if (d.admin !== MOT_DE_PASSE_ADMIN)
         return rep({ ok: false, error: "mot de passe administrateur incorrect" });
-      if (action === "admin_liste") return adminListe();
+      if (action === "admin_liste") return adminListe(d.tous);
       if (action === "admin_enregistrer") return adminEnregistrer(d);
       if (action === "admin_refuser") return adminRefuser(d);
       return rep({ ok: false, error: "action inconnue" });
@@ -97,8 +97,8 @@ function ajouterJeu(jeu) {
 function estPublie(v) {
   return /^(oui|yes|true|1|x|✓)$/i.test(String(v || "").trim());
 }
-// Jeux en attente = lignes dont « Publié » n'est ni OUI ni REFUSÉ
-function adminListe() {
+// Jeux en attente = lignes dont « Publié » n'est ni OUI ni REFUSÉ ; avec tous = true : tous les jeux
+function adminListe(tous) {
   const sh = feuilleJeux();
   if (!sh) return rep({ ok: false, error: "feuille des fiches introuvable" });
   const n = sh.getLastRow();
@@ -109,10 +109,11 @@ function adminListe() {
     vals.forEach((r, i) => {
       const pub = String(r[head.indexOf("Publié")] || "").trim();
       const titre = String(r[head.indexOf("Titre")] || "").trim();
-      if (!titre || estPublie(pub) || /^refus/i.test(pub)) return;
+      if (!titre) return;
+      if (!tous && (estPublie(pub) || /^refus/i.test(pub))) return;
       const o = {};
       head.forEach((h, k) => (o[h] = r[k]));
-      jeux.push({ ligne: i + 2, valeurs: o });
+      jeux.push({ ligne: i + 2, valeurs: o, publie: estPublie(pub) });
     });
   }
   return rep({ ok: true, colonnes: head, jeux: jeux });
@@ -133,6 +134,7 @@ function adminEnregistrer(d) {
     sh.getRange(l, k + 1).setValue(x);
   });
   if (d.publier) sh.getRange(l, head.indexOf("Publié") + 1).setValue("OUI");
+  if (d.retirer) sh.getRange(l, head.indexOf("Publié") + 1).setValue("");
   return rep({ ok: true });
 }
 function adminRefuser(d) {

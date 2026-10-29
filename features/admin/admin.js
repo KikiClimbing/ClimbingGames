@@ -1,5 +1,14 @@
 /* Administration : relire, corriger, valider ou refuser les jeux proposés (protégé par mot de passe) */
-const ADM = { pw: "", list: null, cols: [], open: new Set(), msg: "", busy: false };
+const ADM = {
+  pw: "",
+  list: null,
+  cols: [],
+  open: new Set(),
+  msg: "",
+  busy: false,
+  tous: false,
+  q: "",
+};
 try {
   ADM.pw = sessionStorage.getItem("admPw") || "";
 } catch (e) {}
@@ -48,7 +57,7 @@ async function admCharger() {
   ADM.msg = "Chargement…";
   render();
   try {
-    const j = await admPost("admin_liste");
+    const j = await admPost("admin_liste", { tous: ADM.tous });
     ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre }));
     ADM.cols = j.colonnes;
     ADM.msg = "";
@@ -65,8 +74,8 @@ async function admCharger() {
 }
 function admView() {
   const head = gsec(
-    "Jeux en attente de validation",
-    "Relisez, corrigez puis publiez les jeux proposés. Réservé à l'administrateur."
+    "Administration des jeux",
+    "Relisez, corrigez, publiez ou retirez les jeux, sans ouvrir la feuille Google. Réservé à l'administrateur."
   );
   const msg = ADM.msg ? `<p style="font-weight:700;color:#B2263A">${esc(ADM.msg)}</p>` : "";
   if (!CONFIG.GAME_ADD_URL)
@@ -79,7 +88,15 @@ function admView() {
       head +
       `<div class="box" style="max-width:420px"><label class="sml">Mot de passe administrateur<input type="password" id="admPw" autocomplete="current-password"></label><div style="margin-top:10px"><a class="btn" data-adm="login" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Se connecter</a></div>${msg}</div>`
     );
-  const cartes = ADM.list
+  const q = norm(ADM.q);
+  const visibles = ADM.list.filter(
+    g =>
+      !q ||
+      norm(
+        [g.valeurs.Titre, g.valeurs.Code, g.valeurs.Famille, g.valeurs.Auteur].join(" ")
+      ).includes(q)
+  );
+  const cartes = visibles
     .map(g => {
       const v = g.valeurs,
         ouvert = ADM.open.has(g.ligne);
@@ -92,13 +109,13 @@ function admView() {
             : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
         )
         .join("");
-      return `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(v.Titre)}</b><span style="color:#6B7280;font-size:13px">${esc(v.Famille || "")} · ${esc(v.Auteur || "")} · ${esc(v.Horodateur || "")}</span><a class="chip" data-adm="open" data-l="${g.ligne}" style="cursor:pointer">${ouvert ? "Fermer" : "Relire / modifier"}</a></div>
-      ${ouvert ? `<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px"><a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a><a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer sans publier</a><a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a></div>` : ""}</div>`;
+      return `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(v.Code ? v.Code + " · " : "")}${esc(v.Titre)}${g.publie ? ' <span style="color:#2E7D4F;font-size:12px">● publié</span>' : ' <span style="color:#B2543A;font-size:12px">● en attente</span>'}</b><span style="color:#6B7280;font-size:13px">${esc(v.Famille || "")} · ${esc(v.Auteur || "")} · ${esc(v.Horodateur || "")}</span><a class="chip" data-adm="open" data-l="${g.ligne}" style="cursor:pointer">${ouvert ? "Fermer" : "Relire / modifier"}</a></div>
+      ${ouvert ? `<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
     })
     .join("");
   return (
     head +
-    `<div class="tools"><a class="chip" data-adm="reload" style="cursor:pointer">↻ Actualiser</a><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>${msg}<p class="count">${ADM.list.length} jeu${ADM.list.length > 1 ? "x" : ""} en attente</p>${cartes || '<div class="empty">Aucun jeu en attente.</div>'}<p style="color:#6B7280;font-size:14px">Un jeu validé apparaît dans le catalogue après la mise à jour de la feuille publiée (quelques minutes). Une puce « • » est ajoutée automatiquement devant chaque ligne de « Plus facile » et « Plus difficile ».</p>`
+    `<div class="tools"><div class="seg"><button data-adm="mode" data-m="0" class="${ADM.tous ? "" : "on"}">En attente</button><button data-adm="mode" data-m="1" class="${ADM.tous ? "on" : ""}">Tous les jeux</button></div><input class="search" id="admq" type="search" placeholder="Rechercher (code, titre, auteur)…" value="${esc(ADM.q)}" style="max-width:300px"><a class="chip" data-adm="reload" style="cursor:pointer">↻ Actualiser</a><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>${msg}<p class="count">${visibles.length} jeu${visibles.length > 1 ? "x" : ""}${ADM.tous ? "" : " en attente"}</p>${cartes || '<div class="empty">Aucun jeu.</div>'}<p style="color:#6B7280;font-size:14px">Un jeu validé apparaît dans le catalogue après la mise à jour de la feuille publiée (quelques minutes). Une puce « • » est ajoutée automatiquement devant chaque ligne de « Plus facile » et « Plus difficile ».</p>`
   );
 }
 registerView({
@@ -111,6 +128,15 @@ registerView({
         if (g) g.valeurs[i.dataset.af] = i.value;
       })
     );
+    const aq = $("#admq");
+    if (aq)
+      aq.addEventListener("input", () => {
+        ADM.q = aq.value;
+        render();
+        const n = $("#admq");
+        n.focus();
+        n.setSelectionRange(n.value.length, n.value.length);
+      });
     const pw = $("#admPw");
     if (pw)
       pw.addEventListener("keydown", e => {
@@ -125,7 +151,7 @@ registerNav({
   sec: "ADMINISTRATION",
   secOrder: 50,
   order: 1,
-  html: () => navBtn("attente", "Jeux en attente", '<span class="ic">✓</span>'),
+  html: () => navBtn("attente", "Gérer les jeux", '<span class="ic">✓</span>'),
 });
 registerClick(e => {
   const b = e.target.closest("[data-adm]");
@@ -144,11 +170,20 @@ registerClick(e => {
     } catch (x) {}
     render();
   } else if (a === "reload") admCharger();
-  else if (a === "open") {
+  else if (a === "mode") {
+    ADM.tous = b.dataset.m === "1";
+    ADM.open.clear();
+    admCharger();
+  } else if (a === "open") {
     ADM.open.has(l) ? ADM.open.delete(l) : ADM.open.add(l);
     render();
-  } else if (g && (a === "pub" || a === "save" || a === "no")) {
+  } else if (g && (a === "pub" || a === "save" || a === "no" || a === "unpub")) {
     if (ADM.busy) return true;
+    if (
+      a === "unpub" &&
+      !confirm("Retirer « " + g.valeurs.Titre + " » du site ? Il repassera en attente.")
+    )
+      return true;
     if (a === "no" && !confirm("Refuser « " + g.valeurs.Titre + " » ? Il ne sera pas publié."))
       return true;
     if (a === "pub" && !g.valeurs.Code && !confirm("Ce jeu n'a pas de code. Publier quand même ?"))
@@ -163,6 +198,7 @@ registerClick(e => {
             titreAvant: orig,
             valeurs: g.valeurs,
             publier: a === "pub",
+            retirer: a === "unpub",
           });
     req
       .then(async () => {
@@ -171,7 +207,9 @@ registerClick(e => {
             ? "✓ Jeu publié."
             : a === "no"
               ? "Jeu refusé."
-              : "✓ Modifications enregistrées."
+              : a === "unpub"
+                ? "Jeu retiré du site."
+                : "✓ Modifications enregistrées."
         );
         ADM.busy = false;
         ADM.open.delete(l);
