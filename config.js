@@ -19,8 +19,8 @@ window.SITE_CONFIG = {
   SEANCES_CSV_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec", 
   // Ajout automatique d'un jeu libre à la bibliothèque (script ajouter_jeu.gs) : adresse de l'application web et mot de passe
   GAME_ADD_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec",
-  GAME_ADD_KEY: "AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv",
+  GAME_ADD_KEY: "kiki0673",
   // Envoi des schémas dans le Drive : adresse de l'application web (script recevoir_schemas.gs) et mot de passe choisi
   SCHEMA_UPLOAD_URL: "https://script.google.com/macros/s/AKfycbwMqIdCGTGX4fIyNpbbYqOEuYRf-XlJO4HhtY_8hxzfs4rXlnscAsGs2dU_3mOVEYsK/exec",
-  SCHEMA_UPLOAD_KEY: "AKfycbwMqIdCGTGX4fIyNpbbYqOEuYRf-XlJO4HhtY_8hxzfs4rXlnscAsGs2dU_3mOVEYsK"
+  SCHEMA_UPLOAD_KEY: "kiki0673"
 };
