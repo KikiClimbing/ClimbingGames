@@ -100,3 +100,16 @@
   flex-wrap: wrap;
   gap: 4px 14px;
 }
+.gchk {
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  margin-top: 4px;
+}
+.gchk .fl {
+  margin: 0;
+  white-space: nowrap;
+}
+.ssub .smg > .durs {
+  grid-column: 1/-1;
+  flex-wrap: wrap;
+}

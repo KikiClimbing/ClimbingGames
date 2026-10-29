@@ -18,7 +18,7 @@ function seanceView() {
   const subHTML = (s, k) => {
     const sv = M.subs[k];
     const gsel = two
-      ? `<div class="sml">Pour<div class="gchk">${M.G.map(g => `<label class="fl"><input type="checkbox" data-gs="1" data-sub="${s.id}" data-gi="${g.i}" ${sv.idx.includes(g.i) ? "checked" : ""}><span style="color:${g.c};font-weight:700">■</span> ${esc(g.nom)}</label>`).join("")}</div></div>`
+      ? `<div class="sml" style="grid-column:1/-1">Pour<div class="gchk">${M.G.map(g => `<label class="fl"><input type="checkbox" data-gs="1" data-sub="${s.id}" data-gi="${g.i}" ${sv.idx.includes(g.i) ? "checked" : ""}><span style="color:${g.c};font-weight:700">■</span> ${esc(g.nom)}</label>`).join("")}</div></div>`
       : "";
     const items = sv.items
       .map((it, j) => {
