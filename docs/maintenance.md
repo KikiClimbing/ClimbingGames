@@ -41,7 +41,7 @@ Points clés :
 | Textes annexes (familles, objectifs, guides…) | `data/annexes.js` (constante `AX`) | vous | site |
 | Vignettes des 36 jeux | `cartes/CODE.jpg` | vous | liste des jeux |
 | Schémas des 36 jeux | `schemas/CODE.webp` | vous | fiche d'un jeu |
-| Nouveaux schémas | `schemas/NOM.png` dans le dépôt | script Apps Script (API GitHub) | fiche d'un jeu (via « Schéma (lien) ») |
+| Nouveaux schémas | `schemas/NOM.png` (+ `schemas/CODE.json`, dessin source, pour ceux faits depuis Administration) dans le dépôt | script Apps Script (API GitHub) | fiche d'un jeu (via « Schéma (lien) ») |
 | **Tous les jeux** (nouveaux compris) | Google Sheet, onglet des fiches (colonnes `Titre` + `Principe`) | formulaire, « Ma séance », page Administration | site (CSV publié) |
 | Séances créées avec l'outil | Google Sheet, onglet `Séances` | script (action `seance`) | site (CSV publié) + copie dans le navigateur |
 | Retours de terrain | Google Sheet, onglet des retours | formulaire « Retour terrain » | site (CSV publié) |
@@ -119,6 +119,7 @@ Le site envoie `POST` avec `Content-Type: text/plain;charset=utf-8` (pour évite
 | `admin_liste` | `admin` = `MOT_DE_PASSE_ADMIN` | `tous` (booléen) | renvoie `colonnes` et `jeux:[{ligne,valeurs,publie}]` (en attente, ou tous) |
 | `admin_enregistrer` | `admin` | `ligne`, `titreAvant`, `valeurs`, `publier`, `retirer` | écrit les champs ; `publier` met `Publié`=`OUI`, `retirer` le vide |
 | `admin_refuser` | `admin` | `ligne`, `titreAvant` | met `Publié`=`REFUSÉ` |
+| `admin_schema` | `admin` | `ligne`, `titreAvant`, `code`, `data` (PNG base64), `source` (JSON du dessin) | écrit `schemas/CODE.png` et `schemas/CODE.json` dans le dépôt, met à jour `Schéma (lien)` (URL avec `?v=` anti-cache), renvoie `url` |
 
 `titreAvant` protège contre les modifications concurrentes : si le titre de la ligne a changé depuis le chargement, l'écriture est refusée (« rechargez la liste »).
 
@@ -215,6 +216,7 @@ SE = { id?,                                       // présent si la séance est 
 ### 6.10 Administration (`features/admin/`)
 - Page « Gérer les jeux » (`admin.js`) : le mot de passe administrateur est envoyé au script à chaque requête (champ `admin`) et gardé seulement dans `sessionStorage` (`admPw`, effacé à la fermeture de l'onglet). **La vérification est faite côté script** : sans le bon mot de passe, rien n'est lisible ni modifiable.
 - Onglets : « En attente » et « Tous les jeux » ; édition de tous les champs ; valider/publier, enregistrer, retirer, refuser. Code proposé automatiquement (prochain numéro de la famille).
+- Schéma d'un jeu : le bouton « ✏ Dessiner / modifier le schéma » (jeux dont le code n'est **pas** dans `EMBED`) ouvre l'éditeur lié au jeu (`ED.ctx`, `edOuvrirPourJeu()` dans `features/editeur/export.js`). Il recharge le dessin source `schemas/CODE.json` (ou la copie locale `edSrc_CODE` si elle date de moins de 10 min, le temps que GitHub Pages publie), puis « Enregistrer dans le jeu » envoie l'image et la source (`admin_schema`). Les 36 schémas d'origine ne sont que des images : non modifiables avec l'outil. Cliquer « Dessiner un schéma » dans le menu supprime le lien avec le jeu.
 - Page « Documentation » (`doc.js`) : affiche ce fichier. Il est public (dans le dépôt), cette page n'est pas protégée.
 
 ### 6.11 Clés `localStorage` / `sessionStorage`
@@ -230,6 +232,7 @@ SE = { id?,                                       // présent si la séance est 
 | `biblioTab` | onglet de la bibliothèque |
 | `modeJeux` | liste / vignettes |
 | `edSchema` | brouillon de l'éditeur de schémas |
+| `edSrc_CODE` | dernier dessin source enregistré pour le jeu CODE (copie locale) |
 | `sessionStorage.admPw` | mot de passe administrateur (session) |
 
 ## 7. Procédures courantes
@@ -306,6 +309,8 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-29 | 25 | Administration : dessiner / modifier le schéma d'un jeu avec l'éditeur (nouveaux jeux seulement), enregistrement direct dans le dépôt et dans la feuille |
+| 2026-10-29 | 24 | Documentation intégrée (Administration > Documentation) |
 | 2026-10-29 | 23 | Administration : édition de tous les jeux, retrait du site ; vignettes automatiques à taille corrigée ; tri par code ; documentation intégrée |
 | 2026-10-29 | 19–22 | Script unique `serveur_site.gs` (jeux, séances, schémas → GitHub, administration) ; page « Jeux en attente » ; séances : liste en lignes, suppression, modification, PDF paysage ; puces automatiques |
 | 2026-10-29 | 18 | « Ma séance » : groupes libres (2 à 4), échauffement par groupe, sous-sections par groupe |

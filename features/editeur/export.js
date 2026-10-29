@@ -95,3 +95,88 @@ function edUpload() {
     }
   );
 }
+
+/* Schéma d'un jeu, depuis Administration > Gérer les jeux (ED.ctx = { code, titre, ligne, orig }) */
+function edCtxHTML() {
+  const c = ED.ctx;
+  if (!c) return "";
+  return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu ${esc(c.code)} · ${esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. Le champ « Schéma (lien) » du jeu est rempli automatiquement.</p></div>`;
+}
+function edCtxBind() {
+  const c = ED.ctx;
+  if (!c) return;
+  $("#edCtxBack").onclick = () => go("attente");
+  $("#edCtxSave").onclick = () => {
+    const m = $("#edCtxMsg");
+    if (!ED.els.length) {
+      m.style.color = "#B2263A";
+      m.textContent = "Le dessin est vide.";
+      return;
+    }
+    m.style.color = "#26364D";
+    m.textContent = "Envoi en cours…";
+    edPngBlob(
+      blob => {
+        const fr = new FileReader();
+        fr.onload = async () => {
+          const source = JSON.stringify({ els: ED.els, opt: ED.opt });
+          try {
+            const j = await admPost("admin_schema", {
+              ligne: c.ligne,
+              titreAvant: c.orig,
+              code: c.code,
+              data: String(fr.result).split(",")[1],
+              source,
+            });
+            try {
+              localStorage.setItem("edSrc_" + c.code, JSON.stringify({ ts: Date.now(), source }));
+            } catch (e) {}
+            const g = ADM.list && ADM.list.find(x => x.ligne === c.ligne);
+            if (g) g.valeurs["Schéma (lien)"] = j.url;
+            m.style.color = "#2E7D4F";
+            m.textContent = "✓ Schéma enregistré (visible sur le site dans environ une minute).";
+          } catch (e) {
+            m.style.color = "#B2263A";
+            m.textContent = "Échec : " + e.message;
+          }
+        };
+        fr.readAsDataURL(blob);
+      },
+      () => {
+        m.textContent = "Image impossible à générer.";
+      }
+    );
+  };
+}
+/* ouvre l'éditeur sur le schéma d'un jeu : dessin source s'il existe, sinon page blanche */
+async function edOuvrirPourJeu(ctx) {
+  let src = null;
+  try {
+    const loc = JSON.parse(localStorage.getItem("edSrc_" + ctx.code) || "null");
+    const r = await fetch("schemas/" + encodeURIComponent(ctx.code) + ".json?v=" + Date.now());
+    const dist = r.ok ? JSON.parse(await r.text()) : null;
+    src = loc && (!dist || Date.now() - loc.ts < 600000) ? JSON.parse(loc.source) : dist;
+  } catch (e) {
+    try {
+      const loc = JSON.parse(localStorage.getItem("edSrc_" + ctx.code) || "null");
+      if (loc) src = JSON.parse(loc.source);
+    } catch (x) {}
+  }
+  try {
+    const cur = JSON.parse(localStorage.getItem("edSchema") || "null");
+    if (
+      cur &&
+      cur.els &&
+      cur.els.length &&
+      !(ED.ctx && ED.ctx.code === ctx.code) &&
+      !confirm("Votre brouillon actuel dans l'éditeur sera remplacé. Continuer ?")
+    )
+      return;
+    localStorage.setItem(
+      "edSchema",
+      JSON.stringify(src && src.els ? src : { els: [], opt: ED.opt })
+    );
+  } catch (e) {}
+  ED.ctx = ctx;
+  go("editeur");
+}

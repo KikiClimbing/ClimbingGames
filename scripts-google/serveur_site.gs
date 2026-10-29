@@ -38,6 +38,7 @@ function doPost(e) {
       if (action === "admin_liste") return adminListe(d.tous);
       if (action === "admin_enregistrer") return adminEnregistrer(d);
       if (action === "admin_refuser") return adminRefuser(d);
+      if (action === "admin_schema") return adminSchema(d);
       return rep({ ok: false, error: "action inconnue" });
     }
     if (d.key !== CLE_SITE)
@@ -194,16 +195,9 @@ function supprimerSeance(id) {
 }
 
 /* ---------- schémas → GitHub ---------- */
-function envoyerSchema(d) {
-  if (!GITHUB_JETON) return rep({ ok: false, error: "GITHUB_JETON absent dans le script" });
-  if (!d.data || d.data.length > 8000000)
-    return rep({ ok: false, error: "image absente ou trop lourde" });
-  const nom =
-    String(d.name || "schema.png")
-      .replace(/[^\w\- .]/g, "")
-      .replace(/\.png$/i, "")
-      .slice(0, 60) || "schema";
-  const chemin = "schemas/" + nom + ".png";
+// écrit (ou remplace) un fichier du dépôt ; contenu en base64 ; renvoie null si OK, sinon le message d'erreur
+function githubEcrire(chemin, base64, message) {
+  if (!GITHUB_JETON) return "GITHUB_JETON absent dans le script";
   const api = "https://api.github.com/repos/" + GITHUB_DEPOT + "/contents/" + chemin;
   const entetes = {
     Authorization: "Bearer " + GITHUB_JETON,
@@ -214,7 +208,7 @@ function envoyerSchema(d) {
     headers: entetes,
     muteHttpExceptions: true,
   });
-  const corps = { message: "Schéma " + nom, content: d.data, branch: GITHUB_BRANCHE };
+  const corps = { message: message, content: base64, branch: GITHUB_BRANCHE };
   if (ex.getResponseCode() === 200) corps.sha = JSON.parse(ex.getContentText()).sha;
   const r = UrlFetchApp.fetch(api, {
     method: "put",
@@ -224,9 +218,49 @@ function envoyerSchema(d) {
     muteHttpExceptions: true,
   });
   const c = r.getResponseCode();
-  if (c !== 200 && c !== 201)
-    return rep({ ok: false, error: "GitHub a refusé (" + c + ") : " + r.getContentText().slice(0, 160) });
-  return rep({ ok: true, url: URL_DU_SITE + chemin });
+  return c === 200 || c === 201 ? null : "GitHub a refusé (" + c + ") : " + r.getContentText().slice(0, 160);
+}
+function nomFichier(n, defaut) {
+  return (
+    String(n || "")
+      .replace(/\.(png|json)$/i, "")
+      .replace(/[^\w\-]/g, "")
+      .slice(0, 60) || defaut
+  );
+}
+function envoyerSchema(d) {
+  if (!d.data || d.data.length > 8000000)
+    return rep({ ok: false, error: "image absente ou trop lourde" });
+  const nom = nomFichier(d.name, "schema");
+  const err = githubEcrire("schemas/" + nom + ".png", d.data, "Schéma " + nom);
+  return err ? rep({ ok: false, error: err }) : rep({ ok: true, url: URL_DU_SITE + "schemas/" + nom + ".png" });
+}
+// Depuis la page Administration : image + dessin source (JSON) d'un jeu, puis « Schéma (lien) » mis à jour
+function adminSchema(d) {
+  const sh = feuilleJeux();
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  const col = head.indexOf("Schéma (lien)");
+  if (col < 0) return rep({ ok: false, error: "colonne « Schéma (lien) » introuvable" });
+  const l = Number(d.ligne);
+  if (!(l >= 2 && l <= sh.getLastRow())) return rep({ ok: false, error: "ligne introuvable" });
+  const titreActuel = String(sh.getRange(l, head.indexOf("Titre") + 1).getValue()).trim();
+  if (titreActuel !== String(d.titreAvant || "").trim())
+    return rep({ ok: false, error: "la feuille a changé : rechargez la liste" });
+  if (!d.data || d.data.length > 8000000)
+    return rep({ ok: false, error: "image absente ou trop lourde" });
+  const nom = nomFichier(d.code, "");
+  if (!nom) return rep({ ok: false, error: "code du jeu manquant" });
+  let err = githubEcrire("schemas/" + nom + ".png", d.data, "Schéma " + nom);
+  if (!err && d.source)
+    err = githubEcrire(
+      "schemas/" + nom + ".json",
+      Utilities.base64Encode(Utilities.newBlob(String(d.source).slice(0, 200000)).getBytes()),
+      "Source du schéma " + nom
+    );
+  if (err) return rep({ ok: false, error: err });
+  const url = URL_DU_SITE + "schemas/" + nom + ".png?v=" + Date.now();
+  sh.getRange(l, col + 1).setValue(url);
+  return rep({ ok: true, url: url });
 }
 
 function rep(o) {

@@ -20,3 +20,10 @@ registerView({
     }
   },
 });
+registerClick(e => {
+  const b = e.target.closest('[data-go="editeur"]');
+  if (b && ED.ctx) {
+    ED.ctx = null; /* ouverture depuis le menu : plus lié à un jeu */
+    if (VIEW === "editeur") render();
+  }
+});

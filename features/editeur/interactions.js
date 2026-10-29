@@ -161,6 +161,7 @@ function edInit() {
   };
   $("#edPng").onclick = () => edExport("png");
   $("#edUp").onclick = edUpload;
+  edCtxBind();
   $("#edSvg").onclick = () => edExport("svg");
   $("#edSaveJson").onclick = () => {
     const b = new Blob([JSON.stringify({ els: ED.els, opt: ED.opt })], {

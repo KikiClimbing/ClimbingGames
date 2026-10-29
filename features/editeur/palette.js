@@ -139,7 +139,7 @@ function edPaletteHTML() {
 }
 function editorHTML() {
   return `<h2 class="pt">Dessiner un schéma</h2><p class="lead">Construisez un schéma dans le style des fiches : placez les prises, les grimpeurs, les objets et les flèches, puis exportez l'image. Votre brouillon est enregistré dans ce navigateur.</p>
-<div class="edwrap"><aside class="edpal" id="edpal">${edPaletteHTML()}</aside>
+${edCtxHTML()}<div class="edwrap"><aside class="edpal" id="edpal">${edPaletteHTML()}</aside>
 <section class="edmain"><div class="edtools"><button class="chip" id="edUndo">↶ Annuler</button><button class="chip" id="edRedo">↷ Rétablir</button><button class="chip" id="edExample">Exemple</button><button class="chip" id="edClear">Tout effacer</button><span class="grow" style="flex:1"></span><button class="chip" id="edSaveJson">Enregistrer le brouillon</button><label class="chip" style="cursor:pointer">Ouvrir un brouillon<input type="file" id="edOpen" accept=".json" hidden></label><button class="btn" id="edPng" style="background:#26364D;color:#fff;border:0;border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer">Exporter en PNG</button><button class="chip" id="edSvg">SVG</button></div>
 <div class="box" style="margin:0 0 10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><b>Envoyer dans le site</b><input id="edName" placeholder="Nom du fichier (ex. D5-chrono-prises)" style="flex:1;min-width:180px;padding:7px;border:1px solid #D5DAE5;border-radius:6px;font:inherit"><button class="chip" id="edUp" style="background:#26364D;color:#fff;border-color:#26364D">Envoyer</button><div id="edUpMsg" style="flex-basis:100%;font-size:14px"></div></div>
 <div class="edcan"><svg id="edsvg" viewBox="0 0 100 36" xmlns="http://www.w3.org/2000/svg"></svg></div>
