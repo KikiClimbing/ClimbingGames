@@ -93,13 +93,14 @@ a {
   flex: none;
 }
 .propose {
-  margin: auto 4px 0;
+  margin: 12px 4px 4px;
   display: block;
   text-align: center;
   background: var(--navy);
   color: #fff;
-  border-radius: 9px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
 }

@@ -27,12 +27,6 @@ $("#burger").addEventListener("click", () => {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && MODAL) closeFiche();
 });
-if (CONFIG.GAME_ADD_URL) {
-  /* formulaire intégré au site */
-  $("#propose").href = "#/proposer";
-  $("#propose").removeAttribute("target");
-} else if (CONFIG.FORM_URL) $("#propose").href = CONFIG.FORM_URL;
-else $("#propose").style.display = "none";
 route();
 Promise.all(LOADERS.map(f => f())).then(() => {
   buildNav();
