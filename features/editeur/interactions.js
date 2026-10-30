@@ -42,7 +42,12 @@ function edInit() {
         dy = p[1] - d.p0[1];
       d.moved = true;
       const e = d.e;
-      if (isLine(e)) {
+      if (e.t === "phold") {
+        const W = edWall();
+        e.d = +Math.min(W.L, Math.max(0, (p[0] - W.gx) * W.u[0] + (p[1] - W.gy) * W.u[1])).toFixed(
+          2
+        );
+      } else if (isLine(e)) {
         e.x1 = d.o.x1 + dx;
         e.x2 = d.o.x2 + dx;
         e.y1 = d.o.y1 + dy;
@@ -68,11 +73,12 @@ function edInit() {
           let best = null,
             bd = 3.2;
           ED.els.forEach(o => {
-            if (["hold", "volume", "ring", "foot", "handp"].includes(o.t)) {
-              const dd = Math.hypot(o.x - p[0], o.y - p[1]);
+            if (["hold", "volume", "ring", "foot", "handp", "phold"].includes(o.t)) {
+              const op = edPos(o),
+                dd = Math.hypot(op[0] - p[0], op[1] - p[1]);
               if (dd < bd) {
                 bd = dd;
-                best = [o.x, o.y];
+                best = op;
               }
             }
           });
@@ -210,7 +216,8 @@ function edKey(ev) {
     m = { ArrowLeft: [-st, 0], ArrowRight: [st, 0], ArrowUp: [0, st], ArrowDown: [0, -st] }[ev.key];
   if (m) {
     ev.preventDefault();
-    if (isLine(e)) {
+    if (e.t === "phold") e.d = Math.max(0, e.d + m[1] * 4);
+    else if (isLine(e)) {
       e.x1 += m[0];
       e.x2 += m[0];
       e.y1 += m[1];

@@ -3,6 +3,14 @@ function edPanel() {
   const p = $("#edpanel");
   if (!p) return;
   const e = ED.els.find(x => x.id === ED.sel);
+  const COLH = [
+    ["amber", EAMB, "ambre"],
+    ["blue", EBLUE, "bleu"],
+    ["red", ERED, "rouge"],
+    ["green", EGREEN, "vert"],
+    ["ink", EINK, "noir"],
+    ["grey", EGREY, "gris"],
+  ];
   const sw = (list, cur, attr) =>
     list
       .map(
@@ -11,20 +19,54 @@ function edPanel() {
       )
       .join("");
   if (!e) {
-    p.innerHTML = `<h4>Réglages du schéma</h4><label class="fl"><input type="checkbox" id="oMur" ${ED.opt.mur ? "checked" : ""}> Afficher le mur</label><label class="fl"><input type="checkbox" id="oTapis" ${ED.opt.tapis ? "checked" : ""}> Afficher le tapis</label>
-   <label class="fl2">Étiquette en haut à droite<select id="oVue"><option ${ED.opt.vue === "VUE DE FACE" ? "selected" : ""}>VUE DE FACE</option><option ${ED.opt.vue === "VUE DE DESSUS" ? "selected" : ""}>VUE DE DESSUS</option><option value="" ${!ED.opt.vue ? "selected" : ""}>(aucune)</option></select></label>
+    const M = edMur(),
+      top = ED.opt.mode === "dessus",
+      pro = ED.opt.mode === "profil",
+      W = edWall();
+    const rg = (l, k, mn, mx, v) =>
+      `<label class="fl2">${l}<input type="range" min="${mn}" max="${mx}" step="1" value="${v}" data-or="${k}"></label>`;
+    p.innerHTML = `<h4>Réglages du schéma</h4>
+   <label class="fl2">Type de vue<select id="oMode"><option value="face" ${!top ? "selected" : ""}>Vue de face (mur)</option><option value="dessus" ${top ? "selected" : ""}>Vue de dessus (aire de jeu)</option><option value="profil" ${pro ? "selected" : ""}>Vue de profil (mur incliné)</option></select></label>
+   <label class="fl"><input type="checkbox" id="oMur" ${ED.opt.mur ? "checked" : ""}> ${top ? "Afficher l'aire de jeu" : "Afficher le mur"}</label>${top ? "" : `<label class="fl"><input type="checkbox" id="oTapis" ${ED.opt.tapis ? "checked" : ""}> Afficher le tapis</label>`}
+   ${
+     pro
+       ? rg("Inclinaison du mur (° vers le grimpeur)", "incl", -20, 60, ED.opt.incl ?? 15) +
+         rg("Longueur du mur", "murH", 8, 32, W.L) +
+         rg("Position horizontale du pied du mur", "murX", 5, 90, W.gx)
+       : rg(top ? "Largeur de l'aire" : "Largeur du mur", "murW", 10, 96, M.w) +
+         rg(top ? "Hauteur de l'aire" : "Hauteur du mur", "murH", 8, 32, M.h) +
+         rg("Position horizontale", "murX", 0, 90, M.x) +
+         rg("Position verticale", "murY", 0, 26, M.y)
+   }
+   <label class="fl2">Étiquette en haut à droite<select id="oVue"><option ${ED.opt.vue === "VUE DE FACE" ? "selected" : ""}>VUE DE FACE</option><option ${ED.opt.vue === "VUE DE DESSUS" ? "selected" : ""}>VUE DE DESSUS</option><option ${ED.opt.vue === "VUE DE PROFIL" ? "selected" : ""}>VUE DE PROFIL</option><option value="" ${!ED.opt.vue ? "selected" : ""}>(aucune)</option></select></label>
    <label class="fl2">Légende sous le mur<input id="oLeg" value="${esc(ED.opt.legende)}" placeholder="Ex. : toucher un maximum de prises"></label>
    <p class="hint">Cliquez sur un élément du schéma pour le modifier. Glissez pour le déplacer.</p>`;
+    p.querySelectorAll("[data-or]").forEach(i => {
+      i.onpointerdown = () => edSnap();
+      i.oninput = ev => {
+        ED.opt[i.dataset.or] = +ev.target.value;
+        edRender();
+      };
+    });
+    $("#oMode").onchange = ev => {
+      edSnap();
+      ED.opt.mode = ev.target.value;
+      ["murX", "murY", "murW", "murH"].forEach(k => delete ED.opt[k]);
+      ED.opt.vue =
+        { dessus: "VUE DE DESSUS", profil: "VUE DE PROFIL" }[ev.target.value] || "VUE DE FACE";
+      edRender(true);
+    };
     $("#oMur").onchange = ev => {
       edSnap();
       ED.opt.mur = ev.target.checked;
       edRender();
     };
-    $("#oTapis").onchange = ev => {
-      edSnap();
-      ED.opt.tapis = ev.target.checked;
-      edRender();
-    };
+    if ($("#oTapis"))
+      $("#oTapis").onchange = ev => {
+        edSnap();
+        ED.opt.tapis = ev.target.checked;
+        edRender();
+      };
     $("#oVue").onchange = ev => {
       edSnap();
       ED.opt.vue = ev.target.value;
@@ -45,6 +87,9 @@ function edPanel() {
     hoopflat: "Cerceau (face)",
     hoopfloor: "Cerceau (au sol)",
     hoopside: "Cerceau (profil)",
+    pion: "Joueur (vue de dessus)",
+    phold: "Prise de profil",
+    pclimber: "Grimpeur de profil",
     scarf: "Foulard",
     ball: "Ballon",
     die: "Dé",
@@ -87,7 +132,13 @@ function edPanel() {
       e.c,
       "c"
     )}</div><label class="fl2">Taille<input type="range" min="1.5" max="4" step="0.1" value="${e.r}" data-rg="r"></label>`;
-  if (["climber", "stand", "sit"].includes(e.t))
+  if (e.t === "phold")
+    h += `<div class="sws">${sw(
+      HOLDC.map((c, i) => [c, c, HOLDN[i]]),
+      e.c,
+      "c"
+    )}</div><label class="fl2">Taille<input type="range" min="0.8" max="2.6" step="0.05" value="${e.r}" data-rg="r"></label><label class="fl2">Position le long du mur<input type="range" min="0" max="${edWall().L}" step="0.5" value="${e.d}" data-rg="d"></label><p class="hint">Glissez la prise : elle reste collée au mur.</p>`;
+  if (["climber", "stand", "sit", "pclimber"].includes(e.t))
     h +=
       `<div class="sws">${sw(
         [
@@ -106,6 +157,14 @@ function edPanel() {
     )
   )
     h += `<label class="fl2">Taille<input type="range" min="0.5" max="2.5" step="0.05" value="${e.s}" data-rg="s"></label>`;
+  if (["hoopflat", "hoopfloor", "hoopside"].includes(e.t)) {
+    const d = HOOPD[e.t];
+    h += `<div class="sws">${sw(COLH, e.c || "amber", "c")}</div><label class="fl2">Largeur<input type="range" min="0.5" max="14" step="0.1" value="${e.w ?? d[0]}" data-rg="w"></label><label class="fl2">Hauteur<input type="range" min="0.5" max="14" step="0.1" value="${e.h ?? d[1]}" data-rg="h"></label><label class="fl2">Rotation<input type="range" min="-90" max="90" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl2">Épaisseur du trait<input type="range" min="0.2" max="1.4" step="0.05" value="${e.th || (e.t === "hoopflat" ? 0.62 : 0.56)}" data-rg="th"></label><label class="fl"><input type="checkbox" data-ck="fill" ${(e.fill ?? e.t === "hoopside") ? "checked" : ""}> Intérieur rempli</label>`;
+  }
+  if (e.t === "pion")
+    h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="2.5" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label>`;
+  if (["zone", "zonecircle"].includes(e.t))
+    h += `<label class="fl"><input type="checkbox" data-ck="solid" ${e.solid ? "checked" : ""}> Trait plein (sans pointillés)</label>`;
   if (e.t === "scarf")
     h += `<div class="sws">${sw(
       [
@@ -289,15 +348,13 @@ function edOp(op) {
     if (isLine(c)) {
       c.x1 += 2;
       c.x2 += 2;
-    } else c.x += 2;
+    } else if (c.t === "phold") c.d += 2.5;
+    else c.x += 2;
     ED.els.push(c);
     ED.sel = c.id;
-  } else if (op === "front") {
-    ED.els.splice(i, 1);
-    ED.els.push(e);
-  } else if (op === "back") {
-    ED.els.splice(i, 1);
-    ED.els.unshift(e);
+  } else if (op === "front" || op === "back") {
+    const zs = ED.els.filter(x => x !== e).map(x => (typeof x.z === "number" ? x.z : edLayer(x)));
+    if (zs.length) e.z = op === "front" ? Math.max(...zs) + 1 : Math.min(...zs) - 1;
   }
   edRender(true);
 }

@@ -21,6 +21,19 @@ const FIG = {
       [5.4, -5],
     ],
   },
+  pclimber: {
+    hip: 0,
+    tor: 4.2,
+    head: 6.1,
+    hands: [
+      [-4.5, 8],
+      [-3.5, 11.5],
+    ],
+    feet: [
+      [-3, -5.5],
+      [-1.2, -6.8],
+    ],
+  },
   stand: {
     hip: 5,
     tor: 4.2,
@@ -75,6 +88,8 @@ function figSVG(e, type) {
   const G = FIG[type];
   if (!e.hands) e.hands = JSON.parse(JSON.stringify(G.hands));
   if (!e.feet) e.feet = JSON.parse(JSON.stringify(G.feet));
+  const pf = type === "pclimber",
+    fd = Math.sign(e.hands.reduce((a, h) => a + h[0], 0)) || -1;
   const { x, y, s } = e,
     col = CN(e.c || "blue"),
     lw = 0.42 * Math.max(s, 0.75),
@@ -88,7 +103,12 @@ function figSVG(e, type) {
   let o = "";
   e.feet.forEach(([fx, fy]) => {
     const f = [x + fx * s, y + fy * s];
-    const k = ik(hip, f, 5 * s, { x: fx >= 0 ? 1 : -1, y: type === "sit" ? 1 : 0.3 });
+    const k = ik(
+      hip,
+      f,
+      5 * s,
+      pf ? { x: fd, y: 0.3 } : { x: fx >= 0 ? 1 : -1, y: type === "sit" ? 1 : 0.3 }
+    );
     o +=
       limbSVG(hip, k, col, lw) +
       limbSVG(k, f, col, lw) +
@@ -97,7 +117,7 @@ function figSVG(e, type) {
   o += limbSVG(hip, sh, col, lw * 1.35);
   e.hands.forEach(([hx, hy]) => {
     const t = [x + hx * s, y + hy * s];
-    const m = ik(sh, t, 4.4 * s, { x: hx >= 0 ? 1 : -1, y: -0.6 });
+    const m = ik(sh, t, 4.4 * s, pf ? { x: -fd * 0.5, y: -1 } : { x: hx >= 0 ? 1 : -1, y: -0.6 });
     o +=
       limbSVG(sh, m, col, lw) +
       limbSVG(m, t, col, lw) +
@@ -107,7 +127,28 @@ function figSVG(e, type) {
 }
 const climberSVG = e => figSVG(e, "climber"),
   standSVG = e => figSVG(e, "stand"),
-  sitSVG = e => figSVG(e, "sit");
+  sitSVG = e => figSVG(e, "sit"),
+  pclimberSVG = e => figSVG(e, "pclimber");
+/* Mur vu de profil : surface de (gx,gy) vers le haut, inclinée de a degrés vers le côté grimpeur */
+function edWall() {
+  const o = ED.opt,
+    a = ((o.incl ?? 15) * Math.PI) / 180;
+  return {
+    gx: o.murX ?? 30,
+    gy: o.murY ?? 4,
+    L: o.murH ?? 28,
+    a,
+    u: [Math.sin(a), Math.cos(a)],
+    n: [Math.cos(a), -Math.sin(a)],
+  };
+}
+function edPos(e) {
+  if (e.t !== "phold") return [e.x, e.y];
+  const W = edWall(),
+    d = Math.min(W.L, Math.max(0, e.d || 0)),
+    k = e.r * 0.55;
+  return [W.gx + W.u[0] * d + W.n[0] * k, W.gy + W.u[1] * d + W.n[1] * k];
+}
 function dieSVG(e) {
   const { x, y, s } = e,
     z = 6.5 * s,
@@ -173,6 +214,17 @@ function labSVG(e) {
     w = String(e.lab).length * fs * 0.54 + 1.2;
   return `<rect x="${px - w / 2}" y="${EY(py) - fs * 0.8}" width="${w}" height="${fs * 1.6}" rx=".6" fill="#fff" fill-opacity=".95"/><text x="${px}" y="${EY(py)}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="700" fill="${CN(e.c === "ink" || !e.c ? "ink" : e.c)}" font-family="Calibri,Carlito,Arial,sans-serif">${esc(e.lab)}</text>`;
 }
+const HOOPD = { hoopflat: [7, 7], hoopfloor: [6, 1.7], hoopside: [1.7, 5.5] };
+function hoopSVG(e) {
+  const d = HOOPD[e.t],
+    s = e.s || 1,
+    rx = (e.w ?? d[0]) * s,
+    ry = (e.h ?? d[1]) * s,
+    col = CN(e.c || "amber"),
+    th = e.th || (e.t === "hoopflat" ? 0.62 : 0.56),
+    fill = e.fill ?? e.t === "hoopside";
+  return `<ellipse cx="${e.x}" cy="${EY(e.y)}" rx="${rx}" ry="${ry}" fill="${fill ? "#FFF3D6" : "none"}" stroke="${col}" stroke-width="${th}"${e.rot ? ` transform="rotate(${e.rot} ${e.x} ${EY(e.y)})"` : ""}/>`;
+}
 function elSVG(e) {
   return elSVG0(e) + (isLine(e) ? labSVG(e) : "");
 }
@@ -184,16 +236,26 @@ function elSVG0(e) {
       const col = e.c === "amber" ? EAMB : EGREEN;
       return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${e.r}" fill="none" stroke="${col}" stroke-width=".38"/>`;
     }
+    case "phold": {
+      const [x, y] = edPos(e),
+        c = e.c || "#F28B82";
+      return `<ellipse cx="${x}" cy="${EY(y)}" rx="${e.r * 1.1}" ry="${e.r * 0.85}" transform="rotate(${(edWall().a * 180) / Math.PI} ${x} ${EY(y)})" fill="${c}" stroke="${darken(c)}" stroke-width=".17"/>`;
+    }
+    case "pclimber":
+      return pclimberSVG(e);
     case "climber":
     case "stand":
     case "sit":
       return climberSVG(e);
     case "hoopflat":
-      return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${7 * e.s}" fill="none" stroke="${EAMB}" stroke-width=".62"/>`;
     case "hoopfloor":
-      return `<ellipse cx="${e.x}" cy="${EY(e.y)}" rx="${6 * e.s}" ry="${1.7 * e.s}" fill="none" stroke="${EAMB}" stroke-width=".56"/>`;
     case "hoopside":
-      return `<ellipse cx="${e.x}" cy="${EY(e.y)}" rx="${1.7 * e.s}" ry="${5.5 * e.s}" fill="#FFF3D6" stroke="${EAMB}" stroke-width=".56"/>`;
+      return hoopSVG(e);
+    case "pion": {
+      const col = CN(e.c || "blue"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})"><ellipse rx="2.3" ry="1.1" cy="0" fill="${col}" stroke="${darken(col)}" stroke-width=".2"/><circle r="1.15" fill="#fff" stroke="${darken(col)}" stroke-width=".2"/></g>`;
+    }
     case "scarf": {
       const c = e.c,
         s = e.s,
@@ -246,11 +308,11 @@ function elSVG0(e) {
       const col = CN(e.c || "blue"),
         w = e.w || 20,
         h = e.h || 10;
-      return `<rect x="${e.x - w / 2}" y="${EY(e.y) - h / 2}" width="${w}" height="${h}" rx="1" fill="${col}" fill-opacity=".12" stroke="${col}" stroke-width=".3" stroke-dasharray=".9 .6"/>`;
+      return `<rect x="${e.x - w / 2}" y="${EY(e.y) - h / 2}" width="${w}" height="${h}" rx="1" fill="${col}" fill-opacity=".12" stroke="${col}" stroke-width=".3"${e.solid ? "" : ' stroke-dasharray=".9 .6"'}/>`;
     }
     case "zonecircle": {
       const col = CN(e.c || "green");
-      return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${8 * e.s}" fill="${col}" fill-opacity=".12" stroke="${col}" stroke-width=".3" stroke-dasharray=".9 .6"/>`;
+      return `<circle cx="${e.x}" cy="${EY(e.y)}" r="${8 * e.s}" fill="${col}" fill-opacity=".12" stroke="${col}" stroke-width=".3"${e.solid ? "" : ' stroke-dasharray=".9 .6"'}/>`;
     }
     case "cone": {
       const s = e.s,

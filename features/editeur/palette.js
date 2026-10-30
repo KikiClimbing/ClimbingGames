@@ -23,6 +23,9 @@ const EDP = {
   hoopflat: () => ({ t: "hoopflat", x: 50, y: 19, s: 1 }),
   hoopfloor: () => ({ t: "hoopfloor", x: 50, y: 6, s: 1 }),
   hoopside: () => ({ t: "hoopside", x: 50, y: 19, s: 1 }),
+  phold: c => ({ t: "phold", d: 6 + Math.round(Math.random() * 16), c, r: 1.3 }),
+  pclimber: c => figFix({ t: "pclimber", x: 40, y: 14, c, s: 1, hip: 0 }),
+  pion: c => ({ t: "pion", x: 50, y: 19, s: 1, c, rot: 0 }),
   scarf: c => ({ t: "scarf", x: 50, y: 19, s: 1.5, c }),
   ball: () => ({ t: "ball", x: 50, y: 19, s: 1.5 }),
   die: () => ({ t: "die", x: 50, y: 19, s: 1, n: 5 }),
@@ -63,6 +66,12 @@ function edPaletteHTML() {
         `<button class="pbtn wide" id="edSeed">Semer des prises au hasard</button>`
     ) +
     sec(
+      "VUE DE PROFIL",
+      HOLDC.map((c, i) => pb("phold", c, "Prise de profil " + HOLDN[i], dot(c))).join("") +
+        pb("pclimber", "blue", "Grimpeur de profil bleu", "🧗 profil bleu") +
+        pb("pclimber", "red", "Grimpeur de profil rouge", "🧗 profil rouge")
+    ) +
+    sec(
       "ANNEAUX",
       pb(
         "ring",
@@ -91,6 +100,8 @@ function edPaletteHTML() {
       pb("hoopflat", "", "Cerceau de face", "cerceau face") +
         pb("hoopfloor", "", "Cerceau au sol", "cerceau sol") +
         pb("hoopside", "", "Cerceau de profil", "cerceau profil") +
+        pb("pion", "blue", "Joueur vu de dessus (bleu)", "joueur dessus bleu") +
+        pb("pion", "red", "Joueur vu de dessus (rouge)", "joueur dessus rouge") +
         pb("scarf", EBLUE, "Foulard bleu", "foulard bleu") +
         pb("scarf", ERED, "Foulard rouge", "foulard rouge") +
         pb("scarf", "#F7D858", "Foulard jaune", "foulard jaune") +

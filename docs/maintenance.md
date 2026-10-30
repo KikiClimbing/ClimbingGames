@@ -215,6 +215,8 @@ SE = { id?,                                       // présent si la séance est 
 ### 6.9 Éditeur de schémas (`features/editeur/`)
 Éditeur SVG maison : `etat.js` (état, annulation), `formes.js` (dessin des pièces : prises, personnages, flèches…), `rendu.js`, `panneau.js` (propriétés), `palette.js`, `interactions.js` (souris/clavier), `export.js` (PNG/SVG, envoi). L'envoi appelle l'action `schema` ; la réponse contient l'URL à coller dans `Schéma (lien)`. Brouillon : `localStorage.edSchema`.
 
+Réglages (v30) : `ED.opt` contient `mode` (`face`/`dessus`), `murX/murY/murW/murH` (mur ou aire de jeu, lus par `edMur()` dans `rendu.js`), `tapis`, `vue`, `legende`. Chaque pièce peut avoir un niveau `z` (Devant/Derrière le modifient ; sans `z`, le niveau par défaut vient de `edLayer()`). Cerceaux (`hoopflat/hoopfloor/hoopside`, dessinés par `hoopSVG()` dans `formes.js`) : `w`, `h` (rayons), `rot`, `c`, `th`, `fill`, `s`. Pièce `pion` = joueur vu de dessus. Vue de profil (v31) : `ED.opt.mode="profil"`, `incl` (inclinaison en °), `murX/murY/murH` = pied et longueur du mur (`edWall()` dans `formes.js`) ; `phold` = prise collée au mur (position `d` le long du mur, calculée par `edPos()`), `pclimber` = grimpeur de profil (2 bras, 2 jambes, mains/pieds aimantés aux prises). Zones : `solid` = trait plein.
+
 ### 6.9 bis Proposer un jeu (`features/proposer/proposer.js`)
 Formulaire intégré au site (`#/proposer`), qui remplace le formulaire Google dès que `GAME_ADD_URL` est renseigné (le lien « + Proposer un jeu » du menu pointe alors vers lui ; sinon il utilise `FORM_URL`). Les champs sont décrits dans le tableau `PROP_CHAMPS` (mêmes noms que les colonnes de la feuille : pour ajouter un champ, ajouter une colonne et une ligne dans ce tableau). Le brouillon est gardé dans `localStorage.propDraft`. L'envoi est l'action `jeu` : la ligne arrive **non publiée**, à relire dans Administration. Schéma : « Dessiner » ouvre l'éditeur avec `ED.back = "proposer"` (le lien de l'image envoyée est mis dans le brouillon par `propSetSchema()`), « Choisir un schéma existant » liste les images non utilisées (action `schemas_liste`). Le formulaire Google (`creer_formulaire.gs`) n'est plus nécessaire mais reste fonctionnel.
 
@@ -316,6 +318,8 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-30 | 31 | Éditeur : vue de profil (mur à inclinaison réglable, prises collées au mur, grimpeurs de profil) |
+| 2026-10-30 | 30 | Éditeur : Devant/Derrière fonctionnels, mur réglable (largeur, hauteur, position), mode « vue de dessus », réglages des cerceaux (largeur, hauteur, rotation, couleur, remplissage), joueur vu de dessus, zones à trait plein |
 | 2026-10-30 | 29 | Formulaire « Proposer un jeu » intégré au site (dessin ou choix d'un schéma existant) |
 | 2026-10-30 | 28 | Administration : onglet « Schémas » (bibliothèque, schémas non associés) et sélecteur « Choisir un schéma existant » dans la fiche d'un jeu |
 | 2026-10-29 | 27 | Un seul lien « Administration » ; après connexion, onglets « Gérer les jeux » et « Documentation » |
