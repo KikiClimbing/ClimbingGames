@@ -90,6 +90,13 @@ function edPanel() {
     pion: "Joueur (vue de dessus)",
     phold: "Prise de profil",
     elastic: "Élastique",
+    banner: "Drapeau",
+    magbag: "Sac à magnésie",
+    carabiner: "Mousqueton",
+    harness: "Baudrier",
+    helmet: "Casque",
+    chalk: "Tracé à la craie",
+    score: "Panneau de score",
     rotarrow: "Flèche de rotation",
     plaque: "Plaquette",
     shoe: "Chausson",
@@ -171,6 +178,28 @@ function edPanel() {
     h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl2">Texte (numéro, lettre)<input data-lab2 maxlength="4" value="${esc(e.lab || "")}"></label>`;
   if (e.t === "shoe")
     h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl"><input type="checkbox" data-ck="flip" ${e.flip ? "checked" : ""}> Retourner (miroir)</label>`;
+  if (["banner", "magbag", "carabiner", "harness", "helmet"].includes(e.t))
+    h += `<div class="sws">${sw(
+      [...COLH, ["#F7D858", "#F7D858", "jaune"]],
+      e.c || "red",
+      "c"
+    )}</div><label class="fl2">Taille<input type="range" min="0.4" max="3" step="0.05" value="${e.s}" data-rg="s"></label>${e.t === "banner" ? "" : `<label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label>`}`;
+  if (e.t === "cone")
+    h += `<div class="sws">${sw(
+      [
+        ["#FF8A3D", "#FF8A3D", "orange"],
+        ["#4F8FE0", "#4F8FE0", "bleu"],
+        ["#F7D858", "#F7D858", "jaune"],
+        ["#4FB87A", "#4FB87A", "vert"],
+        ["#E0485A", "#E0485A", "rouge"],
+      ],
+      e.c || "#FF8A3D",
+      "c"
+    )}</div>`;
+  if (e.t === "chalk")
+    h += `<label class="fl2">Forme<select data-sel2="shape"><option value="circle" ${e.shape === "circle" ? "selected" : ""}>Cercle</option><option value="rect" ${e.shape === "rect" ? "selected" : ""}>Rectangle</option><option value="cross" ${e.shape === "cross" ? "selected" : ""}>Croix</option></select></label><div class="sws">${sw(COLH, e.c || "grey", "c")}</div><label class="fl2">Taille<input type="range" min="0.4" max="3" step="0.05" value="${e.s}" data-rg="s"></label>${e.shape === "rect" ? `<label class="fl2">Largeur<input type="range" min="4" max="40" step="1" value="${e.w || 14}" data-rg="w"></label><label class="fl2">Hauteur<input type="range" min="3" max="25" step="1" value="${e.h || 9}" data-rg="h"></label>` : ""}`;
+  if (e.t === "score")
+    h += `<label class="fl2">Titre<input data-pf="lab" value="${esc(e.lab ?? "SCORE")}" maxlength="14"></label><label class="fl2">Score bleu<input data-pf="a" value="${esc(e.a ?? "0")}" maxlength="3"></label><label class="fl2">Score rouge<input data-pf="b" value="${esc(e.b ?? "0")}" maxlength="3"></label><label class="fl2">Taille<input type="range" min="0.5" max="2.5" step="0.05" value="${e.s}" data-rg="s"></label>`;
   if (e.t === "elastic") h += `<div class="sws">${sw(COLH, e.c || "red", "c")}</div>`;
   if (e.t === "pion")
     h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="2.5" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label>`;
@@ -300,6 +329,12 @@ function edPanel() {
         edRender();
       })
   );
+  p.querySelectorAll("[data-pf]").forEach(i => {
+    i.oninput = ev => {
+      e[i.dataset.pf] = ev.target.value;
+      edRender();
+    };
+  });
   const l2 = p.querySelector("[data-lab2]");
   if (l2)
     l2.oninput = ev => {

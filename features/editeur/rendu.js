@@ -19,7 +19,7 @@ function edMur() {
 function edLayer(e) {
   const ord = ["hold", "tape", "hoopfloor", "hoopflat", "ring", "hoopside"];
   const i = ord.indexOf(e.t === "phold" ? "hold" : e.t);
-  if (["zone", "zonecircle", "mat", "bench"].includes(e.t)) return -1;
+  if (["zone", "zonecircle", "mat", "bench", "chalk"].includes(e.t)) return -1;
   return i >= 0
     ? i
     : ["arrow", "text", "line", "rope", "elastic", "rotarrow", "cross", "check", "num"].includes(

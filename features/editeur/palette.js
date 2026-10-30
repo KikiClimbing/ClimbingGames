@@ -36,6 +36,66 @@ const EDP = {
   }),
   plaque: c => ({ t: "plaque", x: 50, y: 19, s: 1, c, rot: 0, lab: "" }),
   shoe: c => ({ t: "shoe", x: 50, y: 19, s: 1, c, rot: 0, flip: false }),
+  cone: c => ({ t: "cone", x: 50, y: 5, s: 1, ...(c ? { c } : {}) }),
+  banner: c => ({ t: "banner", x: 50, y: 12, s: 1, c }),
+  magbag: c => ({ t: "magbag", x: 50, y: 19, s: 1, c, rot: 0 }),
+  carabiner: c => ({ t: "carabiner", x: 50, y: 19, s: 1, c, rot: 0 }),
+  harness: c => ({ t: "harness", x: 50, y: 19, s: 1, c, rot: 0 }),
+  helmet: c => ({ t: "helmet", x: 50, y: 19, s: 1, c, rot: 0 }),
+  chalk: a => ({ t: "chalk", x: 50, y: 19, s: 1, shape: a, c: "grey" }),
+  score: () => ({ t: "score", x: 50, y: 22, s: 1, lab: "SCORE", a: "0", b: "0" }),
+  pareur: c =>
+    figFix({
+      t: "stand",
+      x: 50,
+      y: 5,
+      c,
+      s: 1,
+      hands: [
+        [-3.4, 11.2],
+        [3.4, 11.2],
+      ],
+    }),
+  course: c =>
+    figFix({
+      t: "stand",
+      x: 50,
+      y: 5,
+      c,
+      s: 1,
+      hands: [
+        [-3.4, 6.2],
+        [3.6, 8.2],
+      ],
+      feet: [
+        [-3.2, 0.2],
+        [3.8, 1.4],
+      ],
+    }),
+  victoire: c =>
+    figFix({
+      t: "stand",
+      x: 50,
+      y: 5,
+      c,
+      s: 1,
+      hands: [
+        [-4.5, 12.5],
+        [4.5, 12.5],
+      ],
+    }),
+  montre: c =>
+    figFix({
+      t: "stand",
+      x: 50,
+      y: 5,
+      c,
+      s: 1,
+      hands: [
+        [-3, 5],
+        [8.5, 9.5],
+      ],
+    }),
   pion: c => ({ t: "pion", x: 50, y: 19, s: 1, c, rot: 0 }),
   scarf: c => ({ t: "scarf", x: 50, y: 19, s: 1.5, c }),
   ball: () => ({ t: "ball", x: 50, y: 19, s: 1.5 }),
@@ -47,7 +107,6 @@ const EDP = {
   line: (c, d) => ({ t: "line", x1: 35, y1: 19, x2: 65, y2: 19, c, dash: !!d }),
   zone: c => ({ t: "zone", x: 50, y: 19, w: 24, h: 10, c }),
   zonecircle: c => ({ t: "zonecircle", x: 50, y: 19, s: 1, c }),
-  cone: () => ({ t: "cone", x: 50, y: 5, s: 1 }),
   bench: () => ({ t: "bench", x: 50, y: 5, s: 1 }),
   mat: () => ({ t: "mat", x: 50, y: 4, s: 1 }),
   foot: c => ({ t: "foot", x: 50, y: 19, s: 1, c, rot: 0 }),
@@ -82,6 +141,39 @@ function edPaletteHTML() {
         pb("pclimber", "blue", "Grimpeur de profil bleu", "🧗 profil bleu") +
         pb("pclimber", "red", "Grimpeur de profil rouge", "🧗 profil rouge")
     ) +
+    sec(
+      "MATÉRIEL D'ESCALADE",
+      pb("magbag", "red", "Sac à magnésie", "sac à magnésie") +
+        pb("carabiner", "grey", "Mousqueton", "mousqueton") +
+        pb("harness", "blue", "Baudrier", "baudrier") +
+        pb("helmet", "green", "Casque", "casque")
+    ) +
+    sec(
+      "DRAPEAUX ET PLOTS",
+      pb("banner", "red", "Drapeau rouge", "drapeau rouge") +
+        pb("banner", "blue", "Drapeau bleu", "drapeau bleu") +
+        pb("banner", "green", "Drapeau vert", "drapeau vert") +
+        pb("banner", "#F7D858", "Drapeau jaune", "drapeau jaune") +
+        pb("cone", "#4F8FE0", "Plot bleu", "plot bleu") +
+        pb("cone", "#F7D858", "Plot jaune", "plot jaune") +
+        pb("cone", "#4FB87A", "Plot vert", "plot vert")
+    ) +
+    sec(
+      "ZONES À LA CRAIE",
+      pb("chalk", "circle", "Cercle à la craie", "cercle craie") +
+        pb("chalk", "rect", "Rectangle à la craie", "rectangle craie") +
+        pb("chalk", "cross", "Croix à la craie", "croix craie")
+    ) +
+    sec(
+      "PERSONNAGES EN SITUATION",
+      pb("pareur", "blue", "Pareur (bras levés)", "pareur bleu") +
+        pb("pareur", "red", "Pareur (bras levés)", "pareur rouge") +
+        pb("course", "blue", "Qui court", "court bleu") +
+        pb("course", "red", "Qui court", "court rouge") +
+        pb("victoire", "blue", "Bras en l'air", "victoire bleu") +
+        pb("montre", "grey", "Éducateur qui montre", "éducateur montre")
+    ) +
+    sec("SCORE", pb("score", "", "Panneau de score", "panneau de score")) +
     sec(
       "ANNEAUX",
       pb(

@@ -225,6 +225,55 @@ function hoopSVG(e) {
     fill = e.fill ?? e.t === "hoopside";
   return `<ellipse cx="${e.x}" cy="${EY(e.y)}" rx="${rx}" ry="${ry}" fill="${fill ? "#FFF3D6" : "none"}" stroke="${col}" stroke-width="${th}"${e.rot ? ` transform="rotate(${e.rot} ${e.x} ${EY(e.y)})"` : ""}/>`;
 }
+/* tracé à la craie : bruit déterministe selon l'id, pour que le dessin ne « bouge » pas */
+function chalkSVG(e) {
+  const col = CN(e.c || "grey"),
+    z = e.s || 1;
+  let seed = (e.id || 1) * 9301 + 49297;
+  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280 - 0.5) * 2;
+  const pass = k => {
+    const P = [];
+    const cx = e.x,
+      cy = EY(e.y);
+    if (e.shape === "rect") {
+      const w = (e.w || 14) * z,
+        h = (e.h || 9) * z,
+        n = 6;
+      const C = [
+        [cx - w / 2, cy - h / 2],
+        [cx + w / 2, cy - h / 2],
+        [cx + w / 2, cy + h / 2],
+        [cx - w / 2, cy + h / 2],
+      ];
+      for (let i = 0; i < 4; i++) {
+        const a = C[i],
+          b = C[(i + 1) % 4];
+        for (let j = 0; j < n; j++)
+          P.push([
+            a[0] + ((b[0] - a[0]) * j) / n + rnd() * 0.25,
+            a[1] + ((b[1] - a[1]) * j) / n + rnd() * 0.25,
+          ]);
+      }
+      return "M" + P.map(q => q.map(v => +v.toFixed(2)).join(" ")).join("L") + "Z";
+    }
+    if (e.shape === "cross") {
+      const r = 3.2 * z,
+        f = (x1, y1, x2, y2) =>
+          `M${cx + x1 + rnd() * 0.2} ${cy + y1 + rnd() * 0.2}L${cx + (x1 + x2) / 2 + rnd() * 0.3} ${cy + (y1 + y2) / 2 + rnd() * 0.3}L${cx + x2 + rnd() * 0.2} ${cy + y2 + rnd() * 0.2}`;
+      return f(-r, -r, r, r) + f(-r, r, r, -r);
+    }
+    const r = 5 * z;
+    for (let i = 0; i < 28; i++) {
+      const a = (i / 28) * Math.PI * 2,
+        rr = r * (1 + rnd() * 0.05);
+      P.push([cx + rr * Math.cos(a), cy + rr * Math.sin(a)]);
+    }
+    return "M" + P.map(q => q.map(v => +v.toFixed(2)).join(" ")).join("L") + "Z";
+  };
+  const st = (d, w, op) =>
+    `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-opacity="${op}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return st(pass(0), 0.9, 0.55) + st(pass(1), 0.35, 0.9);
+}
 function elSVG(e) {
   return elSVG0(e) + (isLine(e) ? labSVG(e) : "");
 }
@@ -359,7 +408,8 @@ function elSVG0(e) {
       const s = e.s,
         x = e.x,
         y = EY(e.y);
-      return `<rect x="${x - 1.5 * s}" y="${y - 0.4 * s}" width="${3 * s}" height=".8" fill="#E8590C"/><polygon points="${x - 1.1 * s},${y - 0.2 * s} ${x + 1.1 * s},${y - 0.2 * s} ${x},${y - 3.2 * s}" fill="#FF8A3D" stroke="#C2410C" stroke-width=".15"/><rect x="${x - 0.7 * s}" y="${y - 1.8 * s}" width="${1.4 * s}" height=".45" fill="#fff"/>`;
+      const body = e.c || "#FF8A3D";
+      return `<rect x="${x - 1.5 * s}" y="${y - 0.4 * s}" width="${3 * s}" height=".8" fill="${darken(body, 0.85)}"/><polygon points="${x - 1.1 * s},${y - 0.2 * s} ${x + 1.1 * s},${y - 0.2 * s} ${x},${y - 3.2 * s}" fill="${body}" stroke="${darken(body, 0.7)}" stroke-width=".15"/><rect x="${x - 0.7 * s}" y="${y - 1.8 * s}" width="${1.4 * s}" height=".45" fill="#fff"/>`;
     }
     case "bench": {
       const s = e.s,
@@ -433,6 +483,41 @@ function elSVG0(e) {
         x = e.x,
         y = EY(e.y);
       return `<circle cx="${x}" cy="${y}" r="${1.7 * s}" fill="${col}" stroke="#fff" stroke-width=".22"/><text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${2.1 * s}" font-weight="700" fill="#fff" font-family="Calibri,Carlito,Arial,sans-serif">${esc(String(e.n || 1))}</text>`;
+    }
+    case "banner": {
+      const col = CN(e.c || "red"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) scale(${z})"><path d="M0 0V-9" stroke="${EINK}" stroke-width=".35" stroke-linecap="round"/><path d="M.1 -9Q1.7 -9.9 3.3 -9T6.5 -9L6.5 -5.4Q4.9 -4.5 3.3 -5.4T.1 -5.4Z" fill="${col}" stroke="${darken(col)}" stroke-width=".15"/></g>`;
+    }
+    case "magbag": {
+      const col = CN(e.c || "red"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})"><path d="M-1.7 -1.6Q-2.4 1.9 0 2.1Q2.4 1.9 1.7 -1.6Z" fill="${col}" stroke="${darken(col)}" stroke-width=".2"/><path d="M-2 -2.5L2 -2.5L1.7 -1.5L-1.7 -1.5Z" fill="#fff" stroke="${darken(col)}" stroke-width=".2"/><path d="M-1 -2.5Q0 -3.8 1 -2.5" stroke="${darken(col)}" stroke-width=".2" fill="none"/></g>`;
+    }
+    case "carabiner": {
+      const col = CN(e.c || "grey"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})"><rect x="-1.4" y="-2.3" width="2.8" height="4.6" rx="1.4" fill="none" stroke="${col}" stroke-width=".55"/><path d="M1.4 -.6L1.4 .6" stroke="#fff" stroke-width=".7"/><path d="M1.4 -.6L1.4 .6" stroke="${darken(col)}" stroke-width=".18"/></g>`;
+    }
+    case "harness": {
+      const col = CN(e.c || "blue"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})" fill="none" stroke="${col}" stroke-width=".5"><rect x="-3" y="-2.6" width="6" height="1.1" rx=".5" fill="${col}" fill-opacity=".25"/><ellipse cx="-1.5" cy=".9" rx="1.2" ry="2"/><ellipse cx="1.5" cy=".9" rx="1.2" ry="2"/><circle cx="0" cy="-2" r=".5" fill="${EINK}" stroke="none"/></g>`;
+    }
+    case "helmet": {
+      const col = CN(e.c || "green"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})"><path d="M-2.6 1.2Q-2.6 -2.8 0 -2.8Q2.6 -2.8 2.6 1.2Z" fill="${col}" stroke="${darken(col)}" stroke-width=".2"/><path d="M-3 1.2L3 1.2" stroke="${darken(col)}" stroke-width=".4" stroke-linecap="round"/><path d="M-1 -1.9L-.6 -.2M0 -2L0 -.2M1 -1.9L.6 -.2" stroke="#fff" stroke-width=".35" stroke-linecap="round"/></g>`;
+    }
+    case "chalk":
+      return chalkSVG(e);
+    case "score": {
+      const z = e.s || 1,
+        w = 16 * z,
+        h = 9 * z;
+      const t = (x, y, str, fs, col = "#fff") =>
+        `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="${fs}" font-weight="700" fill="${col}" font-family="Calibri,Carlito,Arial,sans-serif">${esc(str)}</text>`;
+      return `<g transform="translate(${e.x} ${EY(e.y)})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${0.8 * z}" fill="#26364D" stroke="#14202F" stroke-width=".25"/>${t(0, -h / 2 + 1.6 * z, e.lab ?? "SCORE", 1.5 * z, "#C9D3E3")}<rect x="${-w / 2 + 0.8 * z}" y="${-h / 2 + 3.2 * z}" width="${w / 2 - 1.2 * z}" height="${h - 4 * z}" rx="${0.5 * z}" fill="${EBLUE}"/><rect x="${0.4 * z}" y="${-h / 2 + 3.2 * z}" width="${w / 2 - 1.2 * z}" height="${h - 4 * z}" rx="${0.5 * z}" fill="${ERED}"/>${t(-w / 4, 0.9 * z + 1.1 * z, e.a ?? "0", 3.6 * z)}${t(w / 4, 0.9 * z + 1.1 * z, e.b ?? "0", 3.6 * z)}</g>`;
     }
     case "flag": {
       const col = CN(e.c || "red"),
