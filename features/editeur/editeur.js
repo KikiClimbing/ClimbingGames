@@ -22,8 +22,9 @@ registerView({
 });
 registerClick(e => {
   const b = e.target.closest('[data-go="editeur"]');
-  if (b && ED.ctx) {
-    ED.ctx = null; /* ouverture depuis le menu : plus lié à un jeu */
+  if (b && (ED.ctx || ED.back)) {
+    ED.ctx = null;
+    ED.back = null; /* ouverture depuis le menu : plus lié à un jeu */
     if (VIEW === "editeur") render();
   }
 });

@@ -39,6 +39,7 @@ function doPost(e) {
       if (action === "admin_enregistrer") return adminEnregistrer(d);
       if (action === "admin_refuser") return adminRefuser(d);
       if (action === "admin_schema") return adminSchema(d);
+      if (action === "admin_schemas") return adminSchemasListe();
       return rep({ ok: false, error: "action inconnue" });
     }
     if (d.key !== CLE_SITE)
@@ -49,6 +50,7 @@ function doPost(e) {
     if (action === "seance") return enregistrerSeance(d.seance || {});
     if (action === "seance_suppr") return supprimerSeance(d.id);
     if (action === "schema") return envoyerSchema(d);
+    if (action === "schemas_liste") return adminSchemasListe();
     return ajouterJeu(d.jeu || {});
   } catch (err) {
     return rep({ ok: false, error: String(err) });
@@ -232,8 +234,35 @@ function envoyerSchema(d) {
   if (!d.data || d.data.length > 8000000)
     return rep({ ok: false, error: "image absente ou trop lourde" });
   const nom = nomFichier(d.name, "schema");
-  const err = githubEcrire("schemas/" + nom + ".png", d.data, "Schéma " + nom);
+  let err = githubEcrire("schemas/" + nom + ".png", d.data, "Schéma " + nom);
+  if (!err && d.source)
+    err = githubEcrire(
+      "schemas/" + nom + ".json",
+      Utilities.base64Encode(Utilities.newBlob(String(d.source).slice(0, 200000)).getBytes()),
+      "Source du schéma " + nom
+    );
   return err ? rep({ ok: false, error: err }) : rep({ ok: true, url: URL_DU_SITE + "schemas/" + nom + ".png" });
+}
+// Liste des images du dossier schemas/ du dépôt (pour la bibliothèque de schémas)
+function adminSchemasListe() {
+  if (!GITHUB_JETON) return rep({ ok: false, error: "GITHUB_JETON absent dans le script" });
+  const r = UrlFetchApp.fetch(
+    "https://api.github.com/repos/" + GITHUB_DEPOT + "/contents/schemas?ref=" + GITHUB_BRANCHE,
+    {
+      headers: {
+        Authorization: "Bearer " + GITHUB_JETON,
+        Accept: "application/vnd.github+json",
+        "User-Agent": "site-jeux-escalade",
+      },
+      muteHttpExceptions: true,
+    }
+  );
+  if (r.getResponseCode() !== 200)
+    return rep({ ok: false, error: "GitHub a répondu " + r.getResponseCode() });
+  const fichiers = JSON.parse(r.getContentText())
+    .filter(f => f.type === "file" && /\.(png|webp|jpe?g|svg)$/i.test(f.name))
+    .map(f => ({ nom: f.name, url: URL_DU_SITE + "schemas/" + f.name }));
+  return rep({ ok: true, schemas: fichiers });
 }
 // Depuis la page Administration : image + dessin source (JSON) d'un jeu, puis « Schéma (lien) » mis à jour
 function adminSchema(d) {

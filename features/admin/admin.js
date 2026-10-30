@@ -1,5 +1,8 @@
 /* Administration : relire, corriger, valider ou refuser les jeux proposés (protégé par mot de passe) */
 const ADM = {
+  schemas: null,
+  pick: null,
+  sf: "libres",
   tab: "jeux",
   pw: "",
   list: null,
@@ -73,6 +76,66 @@ async function admCharger() {
   ADM.busy = false;
   render();
 }
+/* ---------- bibliothèque de schémas (dossier schemas/ du dépôt) ---------- */
+const admBase = u =>
+  String(u || "")
+    .split("?")[0]
+    .split("/")
+    .pop()
+    .toLowerCase();
+/* nom de fichier → codes des jeux qui l'utilisent */
+function admUtilises() {
+  const m = new Map();
+  const add = (u, qui) => {
+    const b = admBase(u);
+    if (b) m.set(b, (m.get(b) || []).concat(qui));
+  };
+  DATA.forEach(g => {
+    if (isEmb(g)) add(g.Code + ".webp", g.Code);
+    add(g["Schéma (lien)"] || g["Schéma"], g.Code || g.Titre);
+  });
+  (ADM.list || []).forEach(g => add(g.valeurs["Schéma (lien)"], g.valeurs.Code || g.valeurs.Titre));
+  return m;
+}
+async function admChargerSchemas() {
+  try {
+    ADM.schemas = (await admPost("admin_schemas")).schemas;
+  } catch (e) {
+    ADM.schemas = [];
+    ADM.msg = "Schémas : " + e.message;
+  }
+  render();
+}
+function admSchemasTries() {
+  const u = admUtilises();
+  return (ADM.schemas || [])
+    .map(s => ({ ...s, qui: [...new Set(u.get(s.nom.toLowerCase()) || [])] }))
+    .sort((a, b) => (a.qui.length > 0) - (b.qui.length > 0) || a.nom.localeCompare(b.nom));
+}
+function schemasHTML() {
+  if (!ADM.schemas) {
+    admChargerSchemas();
+    return `<div class="box">Chargement des schémas…</div>`;
+  }
+  const tous = admSchemasTries(),
+    libres = tous.filter(s => !s.qui.length);
+  const L = ADM.sf === "libres" ? libres : tous;
+  const carte = s =>
+    `<div class="box" style="margin:0;padding:8px"><img loading="lazy" src="${esc(s.url)}" alt="" style="width:100%;aspect-ratio:3/1.1;object-fit:contain;background:#fff;border:1px solid #E3E8F2;border-radius:6px"><div style="font-size:13px;font-weight:700;margin-top:6px;word-break:break-all">${esc(s.nom)}</div><div style="font-size:12px;color:${s.qui.length ? "#2E7D4F" : "#B2543A"}">${s.qui.length ? "● utilisé : " + esc(s.qui.join(", ")) : "● non associé à un jeu"}</div></div>`;
+  return `<div class="tools"><div class="seg"><button data-adm="sf" data-m="libres" class="${ADM.sf === "libres" ? "on" : ""}">Non associés (${libres.length})</button><button data-adm="sf" data-m="tous" class="${ADM.sf === "tous" ? "on" : ""}">Tous (${tous.length})</button></div><a class="chip" data-adm="schreload" style="cursor:pointer">↻ Actualiser</a></div>
+  <p style="color:#6B7280;font-size:14px">Les schémas envoyés depuis « Dessiner un schéma » arrivent ici. Pour en associer un à un jeu : onglet « Gérer les jeux », ouvrez le jeu puis « Choisir un schéma existant ». « Utilisé » compare avec les jeux publiés et les jeux chargés dans l'onglet « Gérer les jeux ».</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${L.map(carte).join("") || '<div class="empty">Aucun schéma.</div>'}</div>`;
+}
+/* sélecteur de schéma dans la fiche d'un jeu */
+function schemaPicker(g) {
+  if (ADM.pick !== g.ligne) return "";
+  if (!ADM.schemas) {
+    admChargerSchemas();
+    return `<div class="box">Chargement des schémas…</div>`;
+  }
+  const L = admSchemasTries();
+  return `<div class="box" style="background:#F7F9FD"><b>Choisir un schéma</b> <span style="color:#6B7280;font-size:13px">(les non associés d'abord)</span> <a class="chip" data-adm="pickoff" style="cursor:pointer;float:right">Fermer</a><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px;max-height:340px;overflow:auto">${L.map(s => `<a data-adm="pickset" data-l="${g.ligne}" data-u="${esc(s.url)}" style="cursor:pointer;display:block;border:1px solid ${s.qui.length ? "#E3E8F2" : "#EE9F83"};border-radius:8px;padding:5px;background:#fff"><img loading="lazy" src="${esc(s.url)}" alt="" style="width:100%;aspect-ratio:3/1.4;object-fit:contain"><div style="font-size:11px;word-break:break-all">${esc(s.nom)}</div><div style="font-size:11px;color:${s.qui.length ? "#6B7280" : "#B2543A"}">${s.qui.length ? "utilisé : " + esc(s.qui.join(", ")) : "non associé"}</div></a>`).join("")}</div></div>`;
+}
 /* aperçu du schéma du jeu pour valider en connaissance de cause */
 function schemaApercu(v) {
   const src = isEmb(v)
@@ -120,11 +183,12 @@ function admView() {
         )
         .join("");
       return `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(v.Code ? v.Code + " · " : "")}${esc(v.Titre)}${g.publie ? ' <span style="color:#2E7D4F;font-size:12px">● publié</span>' : ' <span style="color:#B2543A;font-size:12px">● en attente</span>'}</b><span style="color:#6B7280;font-size:13px">${esc(v.Famille || "")} · ${esc(v.Auteur || "")} · ${esc(v.Horodateur || "")}</span><a class="chip" data-adm="open" data-l="${g.ligne}" style="cursor:pointer">${ouvert ? "Fermer" : "Relire / modifier"}</a></div>
-      ${ouvert ? `${schemaApercu(v)}<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}${v.Code && !isEmb(v) ? `<a class="btn" data-adm="schema" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner / modifier le schéma</a>` : ""}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
+      ${ouvert ? `${schemaApercu(v)}${schemaPicker(g)}<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}${isEmb(v) ? "" : `<a class="btn" data-adm="pick" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>`}${v.Code && !isEmb(v) ? `<a class="btn" data-adm="schema" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner / modifier le schéma</a>` : ""}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
     })
     .join("");
-  const onglets = `<div class="tools"><div class="seg"><button data-adm="tab" data-t="jeux" class="${ADM.tab === "doc" ? "" : "on"}">Gérer les jeux</button><button data-adm="tab" data-t="doc" class="${ADM.tab === "doc" ? "on" : ""}">Documentation</button></div><span class="grow" style="flex:1"></span><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>`;
+  const onglets = `<div class="tools"><div class="seg"><button data-adm="tab" data-t="jeux" class="${ADM.tab === "jeux" ? "on" : ""}">Gérer les jeux</button><button data-adm="tab" data-t="schemas" class="${ADM.tab === "schemas" ? "on" : ""}">Schémas</button><button data-adm="tab" data-t="doc" class="${ADM.tab === "doc" ? "on" : ""}">Documentation</button></div><span class="grow" style="flex:1"></span><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>`;
   if (ADM.tab === "doc") return head + onglets + docHTML();
+  if (ADM.tab === "schemas") return head + onglets + msg + schemasHTML();
   return (
     head +
     onglets +
@@ -186,6 +250,23 @@ registerClick(e => {
     render();
   } else if (a === "schema" && g) {
     edOuvrirPourJeu({ code: g.valeurs.Code, titre: g.valeurs.Titre, ligne: g.ligne, orig: g.orig });
+  } else if (a === "sf") {
+    ADM.sf = b.dataset.m;
+    render();
+  } else if (a === "schreload") {
+    ADM.schemas = null;
+    render();
+  } else if (a === "pick") {
+    ADM.pick = l;
+    render();
+  } else if (a === "pickoff") {
+    ADM.pick = null;
+    render();
+  } else if (a === "pickset" && g) {
+    g.valeurs["Schéma (lien)"] = b.dataset.u;
+    ADM.pick = null;
+    toast("Schéma choisi : pensez à « Enregistrer » le jeu.");
+    render();
   } else if (a === "tab") {
     ADM.tab = b.dataset.t;
     render();

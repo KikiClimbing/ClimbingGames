@@ -119,6 +119,8 @@ Le site envoie `POST` avec `Content-Type: text/plain;charset=utf-8` (pour évite
 | `admin_liste` | `admin` = `MOT_DE_PASSE_ADMIN` | `tous` (booléen) | renvoie `colonnes` et `jeux:[{ligne,valeurs,publie}]` (en attente, ou tous) |
 | `admin_enregistrer` | `admin` | `ligne`, `titreAvant`, `valeurs`, `publier`, `retirer` | écrit les champs ; `publier` met `Publié`=`OUI`, `retirer` le vide |
 | `admin_refuser` | `admin` | `ligne`, `titreAvant` | met `Publié`=`REFUSÉ` |
+| `schemas_liste` | `key` | — | même résultat que `admin_schemas`, pour le sélecteur du formulaire « Proposer un jeu » (sans mot de passe administrateur) |
+| `admin_schemas` | `admin` | — | liste les images du dossier `schemas/` du dépôt (API GitHub) : `schemas:[{nom,url}]` |
 | `admin_schema` | `admin` | `ligne`, `titreAvant`, `code`, `data` (PNG base64), `source` (JSON du dessin) | écrit `schemas/CODE.png` et `schemas/CODE.json` dans le dépôt, met à jour `Schéma (lien)` (URL avec `?v=` anti-cache), renvoie `url` |
 
 `titreAvant` protège contre les modifications concurrentes : si le titre de la ligne a changé depuis le chargement, l'écriture est refusée (« rechargez la liste »).
@@ -213,10 +215,14 @@ SE = { id?,                                       // présent si la séance est 
 ### 6.9 Éditeur de schémas (`features/editeur/`)
 Éditeur SVG maison : `etat.js` (état, annulation), `formes.js` (dessin des pièces : prises, personnages, flèches…), `rendu.js`, `panneau.js` (propriétés), `palette.js`, `interactions.js` (souris/clavier), `export.js` (PNG/SVG, envoi). L'envoi appelle l'action `schema` ; la réponse contient l'URL à coller dans `Schéma (lien)`. Brouillon : `localStorage.edSchema`.
 
+### 6.9 bis Proposer un jeu (`features/proposer/proposer.js`)
+Formulaire intégré au site (`#/proposer`), qui remplace le formulaire Google dès que `GAME_ADD_URL` est renseigné (le lien « + Proposer un jeu » du menu pointe alors vers lui ; sinon il utilise `FORM_URL`). Les champs sont décrits dans le tableau `PROP_CHAMPS` (mêmes noms que les colonnes de la feuille : pour ajouter un champ, ajouter une colonne et une ligne dans ce tableau). Le brouillon est gardé dans `localStorage.propDraft`. L'envoi est l'action `jeu` : la ligne arrive **non publiée**, à relire dans Administration. Schéma : « Dessiner » ouvre l'éditeur avec `ED.back = "proposer"` (le lien de l'image envoyée est mis dans le brouillon par `propSetSchema()`), « Choisir un schéma existant » liste les images non utilisées (action `schemas_liste`). Le formulaire Google (`creer_formulaire.gs`) n'est plus nécessaire mais reste fonctionnel.
+
 ### 6.10 Administration (`features/admin/`)
-- Page « Administration » (`admin.js`), un seul lien dans le menu ; après saisie du mot de passe, deux onglets : « Gérer les jeux » et « Documentation ». Gestion des jeux : : le mot de passe administrateur est envoyé au script à chaque requête (champ `admin`) et gardé seulement dans `sessionStorage` (`admPw`, effacé à la fermeture de l'onglet). **La vérification est faite côté script** : sans le bon mot de passe, rien n'est lisible ni modifiable.
+- Page « Administration » (`admin.js`), un seul lien dans le menu ; après saisie du mot de passe, trois onglets : « Gérer les jeux », « Schémas » et « Documentation ». Gestion des jeux : : le mot de passe administrateur est envoyé au script à chaque requête (champ `admin`) et gardé seulement dans `sessionStorage` (`admPw`, effacé à la fermeture de l'onglet). **La vérification est faite côté script** : sans le bon mot de passe, rien n'est lisible ni modifiable.
 - Onglets : « En attente » et « Tous les jeux » ; édition de tous les champs ; valider/publier, enregistrer, retirer, refuser. Code proposé automatiquement (prochain numéro de la famille).
 - Schéma d'un jeu : le bouton « ✏ Dessiner / modifier le schéma » (jeux dont le code n'est **pas** dans `EMBED`) ouvre l'éditeur lié au jeu (`ED.ctx`, `edOuvrirPourJeu()` dans `features/editeur/export.js`). Il recharge le dessin source `schemas/CODE.json` (ou la copie locale `edSrc_CODE` si elle date de moins de 10 min, le temps que GitHub Pages publie), puis « Enregistrer dans le jeu » envoie l'image et la source (`admin_schema`). Les 36 schémas d'origine ne sont que des images : non modifiables avec l'outil. Cliquer « Dessiner un schéma » dans le menu supprime le lien avec le jeu.
+- Onglet « Schémas » : bibliothèque des images de `schemas/` (action `admin_schemas`), avec la mention « utilisé : CODE » ou « non associé à un jeu » (comparaison avec les jeux publiés, les jeux chargés dans l'onglet des jeux et les 36 schémas d'origine). Dans la fiche d'un jeu, « 🖼 Choisir un schéma existant » ouvre un sélecteur (non associés en premier) qui remplit « Schéma (lien) » ; il faut ensuite « Enregistrer ». Un schéma envoyé depuis « Dessiner un schéma » est stocké avec son dessin source (`NOM.json`).
 - Onglet « Documentation » (`doc.js`, `docHTML()`) : affiche ce fichier, uniquement après connexion. **Attention** : la restriction ne concerne que l'interface ; le fichier `docs/maintenance.md` reste lisible par quiconque ouvre le dépôt public ou connaît son adresse. Il ne doit donc contenir aucun secret (mots de passe, jeton). Pour le rendre vraiment privé, il faudrait le sortir du dépôt public.
 
 ### 6.11 Clés `localStorage` / `sessionStorage`
@@ -232,6 +238,7 @@ SE = { id?,                                       // présent si la séance est 
 | `biblioTab` | onglet de la bibliothèque |
 | `modeJeux` | liste / vignettes |
 | `edSchema` | brouillon de l'éditeur de schémas |
+| `propDraft` | brouillon du formulaire « Proposer un jeu » |
 | `edSrc_CODE` | dernier dessin source enregistré pour le jeu CODE (copie locale) |
 | `sessionStorage.admPw` | mot de passe administrateur (session) |
 
@@ -309,6 +316,8 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-30 | 29 | Formulaire « Proposer un jeu » intégré au site (dessin ou choix d'un schéma existant) |
+| 2026-10-30 | 28 | Administration : onglet « Schémas » (bibliothèque, schémas non associés) et sélecteur « Choisir un schéma existant » dans la fiche d'un jeu |
 | 2026-10-29 | 27 | Un seul lien « Administration » ; après connexion, onglets « Gérer les jeux » et « Documentation » |
 | 2026-10-29 | 26 | Administration : aperçu du schéma du jeu dans la fiche à valider |
 | 2026-10-29 | 25 | Administration : dessiner / modifier le schéma d'un jeu avec l'éditeur (nouveaux jeux seulement), enregistrement direct dans le dépôt et dans la feuille |

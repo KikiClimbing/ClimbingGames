@@ -61,6 +61,7 @@ function edUpload() {
             action: "schema",
             name: name + ".png",
             data,
+            source: JSON.stringify({ els: ED.els, opt: ED.opt }),
             key: CONFIG.SCHEMA_UPLOAD_URL
               ? CONFIG.SCHEMA_UPLOAD_KEY || ""
               : CONFIG.GAME_ADD_KEY || "",
@@ -69,7 +70,8 @@ function edUpload() {
           .then(r => r.json())
           .then(j => {
             if (!j.ok) throw new Error(j.error || "refusé");
-            msg.innerHTML = `✓ Envoyé (visible sur le site dans environ une minute). Lien à coller dans « Schéma (lien) » : <input readonly id="edLink" value="${esc(j.url)}" style="width:100%;margin-top:6px;padding:6px;border:1px solid #D5DAE5;border-radius:6px"> <button class="chip" id="edCopyLk" style="margin-top:6px">Copier le lien</button>`;
+            if (ED.back === "proposer") propSetSchema(j.url);
+            msg.innerHTML = `✓ Envoyé${ED.back === "proposer" ? " et ajouté à votre proposition" : ""} (visible sur le site dans environ une minute). Lien à coller dans « Schéma (lien) » : <input readonly id="edLink" value="${esc(j.url)}" style="width:100%;margin-top:6px;padding:6px;border:1px solid #D5DAE5;border-radius:6px"> <button class="chip" id="edCopyLk" style="margin-top:6px">Copier le lien</button>`;
             $("#edCopyLk").onclick = () => {
               const i = $("#edLink");
               i.select();
@@ -99,11 +101,24 @@ function edUpload() {
 /* Schéma d'un jeu, depuis Administration > Gérer les jeux (ED.ctx = { code, titre, ligne, orig }) */
 function edCtxHTML() {
   const c = ED.ctx;
+  if (!c && ED.back === "proposer")
+    return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu que vous proposez</b><div class="tools" style="margin-top:8px"><button class="chip" id="edBackForm" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">← Retour au formulaire</button></div><p class="hint" style="margin:6px 0 0">Dessinez, donnez un nom au fichier puis cliquez sur « Envoyer » : le lien sera ajouté automatiquement à votre proposition.</p></div>`;
   if (!c) return "";
   return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu ${esc(c.code)} · ${esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. Le champ « Schéma (lien) » du jeu est rempli automatiquement.</p></div>`;
 }
 function edCtxBind() {
   const c = ED.ctx;
+  if (!c && ED.back === "proposer") {
+    $("#edBackForm").onclick = () => go("proposer");
+    if (!$("#edName").value) {
+      const t = (PROP.v.Titre || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      $("#edName").value = t
+        .replace(/[^\w]+/g, "-")
+        .replace(/^-|-$/g, "")
+        .slice(0, 40);
+    }
+    return;
+  }
   if (!c) return;
   $("#edCtxBack").onclick = () => go("admin");
   $("#edCtxSave").onclick = () => {
