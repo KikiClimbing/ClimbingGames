@@ -99,8 +99,8 @@ function edUpload() {
 }
 
 /* nom automatique : lettre de la catégorie + numéro suivant, en évitant les fichiers déjà présents */
-async function edNomAuto(fam) {
-  const nm = $("#edName");
+async function edNomAuto(fam, nm) {
+  nm = nm || $("#edName");
   if (!fam) return;
   let pris = [];
   try {
@@ -120,7 +120,7 @@ function edCtxHTML() {
   if (!c && ED.back === "proposer")
     return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu que vous proposez</b><div class="tools" style="margin-top:8px"><button class="chip" id="edBackForm" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">← Retour au formulaire</button></div><p class="hint" style="margin:6px 0 0">Dessinez, donnez un nom au fichier puis cliquez sur « Envoyer » : le lien sera ajouté automatiquement à votre proposition.</p></div>`;
   if (!c) return "";
-  return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? "" : "du jeu "}${esc(c.code)}${c.titre ? " · " + esc(c.titre) : ""}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement."}</p></div>`;
+  return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? esc(c.nom) : "du jeu " + esc(c.code) + " · " + esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><label style="display:flex;gap:6px;align-items:center;font-size:14px">Nom du fichier<input id="edCtxName" value="${esc(c.nom || "")}" placeholder="ex. D12" style="padding:6px;border:1px solid #D5DAE5;border-radius:6px;width:160px"></label><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé (changez le nom pour en créer un nouveau)." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement. Un schéma peut servir à plusieurs jeux : gardez le nom pour modifier le fichier existant, changez-le pour en créer un nouveau."}</p></div>`;
 }
 function edCtxBind() {
   const c = ED.ctx;
@@ -147,11 +147,18 @@ function edCtxBind() {
   }
   if (!c) return;
   $("#edCtxBack").onclick = () => go("admin");
+  if (!$("#edCtxName").value) edNomAuto(c.fam, $("#edCtxName"));
   $("#edCtxSave").onclick = () => {
     const m = $("#edCtxMsg");
     if (!ED.els.length) {
       m.style.color = "#B2263A";
       m.textContent = "Le dessin est vide.";
+      return;
+    }
+    const nom = ($("#edCtxName").value || "").replace(/\.(png|json)$/i, "").replace(/[^\w-]/g, "");
+    if (!nom) {
+      m.style.color = "#B2263A";
+      m.textContent = "Donnez un nom au fichier.";
       return;
     }
     m.style.color = "#26364D";
@@ -165,13 +172,13 @@ function edCtxBind() {
             const j = await admPost(c.fichier ? "admin_schema_fichier" : "admin_schema", {
               ligne: c.ligne,
               titreAvant: c.orig,
-              code: c.code,
+              code: nom,
               data: String(fr.result).split(",")[1],
               source,
             });
             if (c.fichier) ADM.schemas = null;
             try {
-              localStorage.setItem("edSrc_" + c.code, JSON.stringify({ ts: Date.now(), source }));
+              localStorage.setItem("edSrc_" + nom, JSON.stringify({ ts: Date.now(), source }));
             } catch (e) {}
             const g = ADM.list && ADM.list.find(x => x.ligne === c.ligne);
             if (g) g.valeurs["Schéma (lien)"] = j.url;
@@ -193,14 +200,15 @@ function edCtxBind() {
 /* ouvre l'éditeur sur le schéma d'un jeu : dessin source s'il existe, sinon page blanche */
 async function edOuvrirPourJeu(ctx) {
   let src = null;
+  const cle = ctx.nom || ctx.code;
   try {
-    const loc = JSON.parse(localStorage.getItem("edSrc_" + ctx.code) || "null");
-    const r = await fetch("schemas/" + encodeURIComponent(ctx.code) + ".json?v=" + Date.now());
+    const loc = JSON.parse(localStorage.getItem("edSrc_" + cle) || "null");
+    const r = await fetch("schemas/" + encodeURIComponent(cle) + ".json?v=" + Date.now());
     const dist = r.ok ? JSON.parse(await r.text()) : null;
     src = loc && (!dist || Date.now() - loc.ts < 600000) ? JSON.parse(loc.source) : dist;
   } catch (e) {
     try {
-      const loc = JSON.parse(localStorage.getItem("edSrc_" + ctx.code) || "null");
+      const loc = JSON.parse(localStorage.getItem("edSrc_" + cle) || "null");
       if (loc) src = JSON.parse(loc.source);
     } catch (x) {}
   }
@@ -210,7 +218,7 @@ async function edOuvrirPourJeu(ctx) {
       cur &&
       cur.els &&
       cur.els.length &&
-      !(ED.ctx && ED.ctx.code === ctx.code) &&
+      !(ED.ctx && ED.ctx.code === ctx.code && ED.ctx.nom === ctx.nom) &&
       !confirm("Votre brouillon actuel dans l'éditeur sera remplacé. Continuer ?")
     )
       return;

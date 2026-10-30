@@ -89,6 +89,10 @@ function edPanel() {
     hoopside: "Cerceau (profil)",
     pion: "Joueur (vue de dessus)",
     phold: "Prise de profil",
+    elastic: "Élastique",
+    rotarrow: "Flèche de rotation",
+    plaque: "Plaquette",
+    shoe: "Chausson",
     pclimber: "Grimpeur de profil",
     scarf: "Foulard",
     ball: "Ballon",
@@ -161,6 +165,13 @@ function edPanel() {
     const d = HOOPD[e.t];
     h += `<div class="sws">${sw(COLH, e.c || "amber", "c")}</div><label class="fl2">Largeur<input type="range" min="0.5" max="14" step="0.1" value="${e.w ?? d[0]}" data-rg="w"></label><label class="fl2">Hauteur<input type="range" min="0.5" max="14" step="0.1" value="${e.h ?? d[1]}" data-rg="h"></label><label class="fl2">Rotation<input type="range" min="-90" max="90" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl2">Épaisseur du trait<input type="range" min="0.2" max="1.4" step="0.05" value="${e.th || (e.t === "hoopflat" ? 0.62 : 0.56)}" data-rg="th"></label><label class="fl"><input type="checkbox" data-ck="fill" ${(e.fill ?? e.t === "hoopside") ? "checked" : ""}> Intérieur rempli</label>`;
   }
+  if (e.t === "rotarrow")
+    h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.4" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl"><input type="checkbox" data-ck="cw" ${e.cw !== false ? "checked" : ""}> Sens horaire ↻</label><label class="fl"><input type="checkbox" data-ck="solid" ${e.solid ? "checked" : ""}> Trait plein</label>`;
+  if (e.t === "plaque")
+    h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl2">Texte (numéro, lettre)<input data-lab2 maxlength="4" value="${esc(e.lab || "")}"></label>`;
+  if (e.t === "shoe")
+    h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl"><input type="checkbox" data-ck="flip" ${e.flip ? "checked" : ""}> Retourner (miroir)</label>`;
+  if (e.t === "elastic") h += `<div class="sws">${sw(COLH, e.c || "red", "c")}</div>`;
   if (e.t === "pion")
     h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="2.5" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label>`;
   if (["zone", "zonecircle"].includes(e.t))
@@ -248,7 +259,7 @@ function edPanel() {
     h += `<label class="fl2">Numéro<input type="number" min="0" max="99" value="${e.n || 1}" data-num></label>`;
   if (isLine(e))
     h += `<label class="fl2">Étiquette sur la ligne<input data-lab value="${esc(e.lab || "")}" placeholder="Ex. : 30 s, aller, retour"></label>`;
-  if (["rope", "line"].includes(e.t))
+  if (["rope", "line", "elastic"].includes(e.t))
     h += `<label class="fl"><input type="checkbox" data-ck="dash" ${e.dash ? "checked" : ""}> Pointillés</label><label class="fl2">Courbure<input type="range" min="-0.6" max="0.6" step="0.05" value="${e.bend || 0}" data-rg="bend"></label><p class="hint">Glissez les deux points pour régler les extrémités.</p>`;
   h += `<div class="rowb"><button class="chip" data-op="dup">Dupliquer</button><button class="chip" data-op="front">Devant</button><button class="chip" data-op="back">Derrière</button><button class="chip" data-op="del" style="color:#B2263A">Supprimer</button></div>`;
   p.innerHTML = h;
@@ -289,6 +300,12 @@ function edPanel() {
         edRender();
       })
   );
+  const l2 = p.querySelector("[data-lab2]");
+  if (l2)
+    l2.oninput = ev => {
+      e.lab = ev.target.value;
+      edRender();
+    };
   const lb = p.querySelector("[data-lab]");
   if (lb)
     lb.oninput = ev => {

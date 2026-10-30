@@ -242,8 +242,7 @@ registerView({
           if (i.dataset.af === "Famille") {
             const avant = g.valeurs.Code;
             admFamChange(g.valeurs, g.publie);
-            if (g.valeurs.Code !== avant)
-              toast("Code : " + g.valeurs.Code + " (le schéma sera renommé à l'enregistrement).");
+            if (g.valeurs.Code !== avant) toast("Code du jeu : " + g.valeurs.Code);
             render();
           }
         }
@@ -293,10 +292,24 @@ registerClick(e => {
     } catch (x) {}
     render();
   } else if (a === "schema" && g) {
-    edOuvrirPourJeu({ code: g.valeurs.Code, titre: g.valeurs.Titre, ligne: g.ligne, orig: g.orig });
+    const lien = String(g.valeurs["Schéma (lien)"] || "");
+    edOuvrirPourJeu({
+      code: g.valeurs.Code,
+      nom: /\/schemas\//.test(lien)
+        ? lien
+            .split("?")[0]
+            .split("/")
+            .pop()
+            .replace(/\.\w+$/, "")
+        : "",
+      fam: g.valeurs.Famille,
+      titre: g.valeurs.Titre,
+      ligne: g.ligne,
+      orig: g.orig,
+    });
   } else if (a === "schedit") {
     const base = b.dataset.n.replace(/\.\w+$/, "");
-    edOuvrirPourJeu({ code: base, titre: "", fichier: true });
+    edOuvrirPourJeu({ code: base, nom: base, titre: "", fichier: true });
   } else if (a === "sf") {
     ADM.sf = b.dataset.m;
     render();
@@ -344,7 +357,6 @@ registerClick(e => {
         : admPost("admin_enregistrer", {
             ligne: l,
             titreAvant: orig,
-            codeAvant: g.codeAvant,
             valeurs: g.valeurs,
             publier: a === "pub",
             retirer: a === "unpub",

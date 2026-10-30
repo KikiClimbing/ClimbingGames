@@ -25,6 +25,17 @@ const EDP = {
   hoopside: () => ({ t: "hoopside", x: 50, y: 19, s: 1 }),
   phold: c => ({ t: "phold", d: 6 + Math.round(Math.random() * 16), c, r: 1.3 }),
   pclimber: c => figFix({ t: "pclimber", x: 40, y: 14, c, s: 1, hip: 0 }),
+  elastic: c => ({ t: "elastic", x1: 30, y1: 12, x2: 70, y2: 12, c, bend: 0.08 }),
+  rotarrow: a => ({
+    t: "rotarrow",
+    x: 50,
+    y: 19,
+    s: 1,
+    c: a.split("|")[0],
+    cw: a.split("|")[1] !== "ccw",
+  }),
+  plaque: c => ({ t: "plaque", x: 50, y: 19, s: 1, c, rot: 0, lab: "" }),
+  shoe: c => ({ t: "shoe", x: 50, y: 19, s: 1, c, rot: 0, flip: false }),
   pion: c => ({ t: "pion", x: 50, y: 19, s: 1, c, rot: 0 }),
   scarf: c => ({ t: "scarf", x: 50, y: 19, s: 1.5, c }),
   ball: () => ({ t: "ball", x: 50, y: 19, s: 1.5 }),
@@ -97,11 +108,15 @@ function edPaletteHTML() {
     ) +
     sec(
       "OBJETS",
-      pb("hoopflat", "", "Cerceau de face", "cerceau face") +
-        pb("hoopfloor", "", "Cerceau au sol", "cerceau sol") +
-        pb("hoopside", "", "Cerceau de profil", "cerceau profil") +
+      pb("hoopflat", "", "Cerceau vertical (de face)", "cerceau vertical") +
+        pb("hoopfloor", "", "Cerceau horizontal (à plat au sol)", "cerceau horizontal") +
+        pb("hoopside", "", "Cerceau vertical (de profil)", "cerceau profil") +
         pb("pion", "blue", "Joueur vu de dessus (bleu)", "joueur dessus bleu") +
         pb("pion", "red", "Joueur vu de dessus (rouge)", "joueur dessus rouge") +
+        pb("plaque", "blue", "Plaquette bleue", "plaquette bleue") +
+        pb("plaque", "red", "Plaquette rouge", "plaquette rouge") +
+        pb("plaque", "amber", "Plaquette ambre", "plaquette ambre") +
+        pb("shoe", "blue", "Chausson d'escalade", "chausson") +
         pb("scarf", EBLUE, "Foulard bleu", "foulard bleu") +
         pb("scarf", ERED, "Foulard rouge", "foulard rouge") +
         pb("scarf", "#F7D858", "Foulard jaune", "foulard jaune") +
@@ -123,6 +138,9 @@ function edPaletteHTML() {
       pb("rope", "amber", "Corde ambre", "corde") +
         pb("rope", "blue", "Corde bleue", "corde bleue") +
         pb("rope", "red", "Corde rouge", "corde rouge") +
+        pb("elastic", "red", "Élastique rouge", "élastique rouge") +
+        pb("elastic", "blue", "Élastique bleu", "élastique bleu") +
+        pb("elastic", "amber", "Élastique ambre", "élastique ambre") +
         pb("line", "ink:0", "Ligne (départ, limite)", "ligne") +
         pb("line", "ink:1", "Ligne pointillée", "ligne pointillée")
     ) +
@@ -144,6 +162,8 @@ function edPaletteHTML() {
         pb("arrow", "blue:1", "Flèche bleue pointillée", "→ bleue") +
         pb("arrow", "red:1", "Flèche rouge pointillée", "→ rouge") +
         pb("arrow", "green:1", "Flèche verte pointillée", "→ verte") +
+        pb("rotarrow", "blue|cw", "Flèche de rotation (sens horaire)", "↻ rotation") +
+        pb("rotarrow", "blue|ccw", "Flèche de rotation (sens anti-horaire)", "↺ rotation") +
         pb("text", "", "Zone de texte", "Texte")
     )
   );

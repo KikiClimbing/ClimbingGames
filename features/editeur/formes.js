@@ -288,6 +288,47 @@ function elSVG0(e) {
         )
         .join("");
 
+    case "elastic": {
+      const col = CN(e.c || "red");
+      const [x1, y1, x2, y2] = [e.x1, EY(e.y1), e.x2, EY(e.y2)];
+      const dx = x2 - x1,
+        dy = y2 - y1,
+        cx = (x1 + x2) / 2 - dy * (e.bend || 0),
+        cy = (y1 + y2) / 2 + dx * (e.bend || 0);
+      const d = `M${x1} ${y1}Q${cx} ${cy} ${x2} ${y2}`;
+      return `<path d="${d}" stroke="transparent" stroke-width="3" fill="none"/><path d="${d}" stroke="${col}" stroke-width=".5" fill="none" ${e.dash ? 'stroke-dasharray=".9 .6"' : ""} stroke-linecap="round"/><circle cx="${x1}" cy="${y1}" r=".85" fill="#fff" stroke="${col}" stroke-width=".35"/><circle cx="${x2}" cy="${y2}" r=".85" fill="#fff" stroke="${col}" stroke-width=".35"/>`;
+    }
+    case "rotarrow": {
+      const col = CN(e.c || "blue"),
+        r = 6 * (e.s || 1),
+        cx = e.x,
+        cy = EY(e.y),
+        cw = e.cw !== false,
+        a0 = (-60 * Math.PI) / 180,
+        sw = ((cw ? 270 : -270) * Math.PI) / 180,
+        a1 = a0 + sw,
+        P = a => [cx + r * Math.cos(a), cy + r * Math.sin(a)],
+        [sx, sy] = P(a0),
+        [ex, ey] = P(a1),
+        t = cw ? [-Math.sin(a1), Math.cos(a1)] : [Math.sin(a1), -Math.cos(a1)],
+        n = [Math.cos(a1), Math.sin(a1)];
+      const tip = [ex + t[0] * 1.8, ey + t[1] * 1.8],
+        b1 = [ex + n[0] * 1, ey + n[1] * 1],
+        b2 = [ex - n[0] * 1, ey - n[1] * 1];
+      return `<path d="M${sx} ${sy}A${r} ${r} 0 1 ${cw ? 1 : 0} ${ex} ${ey}" stroke="${col}" stroke-width=".5" fill="none" stroke-linecap="round" stroke-dasharray="${e.solid ? "" : "1.1 .7"}"/><polygon points="${tip} ${b1} ${b2}" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="${r + 1.2}" fill="transparent"/>`;
+    }
+    case "plaque": {
+      const col = CN(e.c || "blue"),
+        z = e.s || 1,
+        w = 3.6 * z,
+        h = 2.6 * z;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx=".5" fill="${col}" fill-opacity=".9" stroke="${darken(col)}" stroke-width=".2"/>${e.lab ? `<text y=".05" text-anchor="middle" dominant-baseline="central" font-size="${1.5 * z}" font-weight="700" fill="#fff" font-family="Calibri,Carlito,Arial,sans-serif">${esc(e.lab)}</text>` : ""}</g>`;
+    }
+    case "shoe": {
+      const col = CN(e.c || "blue"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${e.flip ? -z : z} ${z})"><path d="M-3.2 1.2 L2.8 1.2 Q4 1.2 3.9 .2 L3.3 -.8 Q2 -1.7 .6 -1.9 L-.8 -2.8 Q-2.6 -3 -3.2 -1.8 Z" fill="${col}" stroke="${darken(col)}" stroke-width=".2" stroke-linejoin="round"/><path d="M-3.2 1.2 L2.8 1.2" stroke="#334155" stroke-width=".55" stroke-linecap="round"/><path d="M-1.9 -1.5 L-.2 -1.3 M-2.2 -.5 L-.5 -.3" stroke="#fff" stroke-width=".18" stroke-linecap="round"/></g>`;
+    }
     case "rope": {
       const col = CN(e.c || "amber");
       const [x1, y1, x2, y2] = [e.x1, EY(e.y1), e.x2, EY(e.y2)];

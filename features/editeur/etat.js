@@ -42,7 +42,7 @@ const CN = n =>
   })[n] ||
   n ||
   EINK;
-const isLine = e => ["arrow", "rope", "line"].includes(e.t);
+const isLine = e => ["arrow", "rope", "line", "elastic"].includes(e.t);
 const EY = y => +(36 - y).toFixed(3);
 function edLoad() {
   try {

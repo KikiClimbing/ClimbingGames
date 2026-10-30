@@ -22,7 +22,9 @@ function edLayer(e) {
   if (["zone", "zonecircle", "mat", "bench"].includes(e.t)) return -1;
   return i >= 0
     ? i
-    : ["arrow", "text", "line", "rope", "cross", "check", "num"].includes(e.t)
+    : ["arrow", "text", "line", "rope", "elastic", "rotarrow", "cross", "check", "num"].includes(
+          e.t
+        )
       ? 20
       : 10;
 }

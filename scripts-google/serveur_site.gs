@@ -131,27 +131,12 @@ function adminEnregistrer(d) {
   if (titreActuel !== String(d.titreAvant || "").trim())
     return rep({ ok: false, error: "la feuille a changé : rechargez la liste" });
   const v = d.valeurs || {};
-  // le schéma est nommé d'après le code du jeu : si le code change, le fichier suit
-  let nouveauLien = null;
-  const colLien = head.indexOf("Schéma (lien)");
-  const avant = String(d.codeAvant || "").trim(),
-    apres = String(v.Code || "").trim();
-  if (avant && apres && avant !== apres && colLien >= 0) {
-    const lien = String(sh.getRange(l, colLien + 1).getValue());
-    const base = lien.split("?")[0].split("/").pop().replace(/\.\w+$/, "");
-    if (/\/schemas\//.test(lien) && base === avant) {
-      const e = githubRenommer(avant, nomFichier(apres, apres));
-      if (e) return rep({ ok: false, error: "renommage du schéma impossible : " + e });
-      nouveauLien = URL_DU_SITE + "schemas/" + nomFichier(apres, apres) + ".png?v=" + Date.now();
-    }
-  }
   head.forEach((h, k) => {
     if (h === "Horodateur" || h === "Publié" || v[h] === undefined) return;
     let x = String(v[h]).slice(0, 5000);
     if (AVEC_PUCES.indexOf(h) >= 0) x = puces(x);
     sh.getRange(l, k + 1).setValue(x);
   });
-  if (nouveauLien) sh.getRange(l, colLien + 1).setValue(nouveauLien);
   if (d.publier) sh.getRange(l, head.indexOf("Publié") + 1).setValue("OUI");
   if (d.retirer) sh.getRange(l, head.indexOf("Publié") + 1).setValue("");
   return rep({ ok: true });
@@ -327,57 +312,6 @@ function adminSchemaFichier(d) {
       "Source du schéma " + nom
     );
   return err ? rep({ ok: false, error: err }) : rep({ ok: true, url: URL_DU_SITE + "schemas/" + nom + ".png?v=" + Date.now() });
-}
-// Renomme schemas/ANCIEN.(png|json) en schemas/NOUVEAU.(png|json). Renvoie un message d'erreur ou null.
-function githubEntetes() {
-  return {
-    Authorization: "Bearer " + GITHUB_JETON,
-    Accept: "application/vnd.github+json",
-    "User-Agent": "site-jeux-escalade",
-  };
-}
-function githubSha(chemin) {
-  const r = UrlFetchApp.fetch(
-    "https://api.github.com/repos/" + GITHUB_DEPOT + "/contents/" + chemin + "?ref=" + GITHUB_BRANCHE,
-    { headers: githubEntetes(), muteHttpExceptions: true }
-  );
-  return r.getResponseCode() === 200 ? JSON.parse(r.getContentText()).sha : null;
-}
-function githubRenommer(ancien, nouveau) {
-  if (!GITHUB_JETON) return "GITHUB_JETON absent dans le script";
-  if (githubSha("schemas/" + nouveau + ".png"))
-    return "le fichier schemas/" + nouveau + ".png existe déjà";
-  const exts = ["png", "json"];
-  for (let i = 0; i < exts.length; i++) {
-    const de = "schemas/" + ancien + "." + exts[i],
-      vers = "schemas/" + nouveau + "." + exts[i];
-    const sha = githubSha(de);
-    if (!sha) {
-      if (exts[i] === "png") return "schéma " + de + " introuvable";
-      continue;
-    }
-    const h = githubEntetes();
-    h.Accept = "application/vnd.github.raw";
-    const raw = UrlFetchApp.fetch(
-      "https://api.github.com/repos/" + GITHUB_DEPOT + "/contents/" + de + "?ref=" + GITHUB_BRANCHE,
-      { headers: h, muteHttpExceptions: true }
-    );
-    if (raw.getResponseCode() !== 200) return "lecture de " + de + " impossible";
-    let err = githubEcrire(vers, Utilities.base64Encode(raw.getContent()), "Renommage " + ancien + " → " + nouveau);
-    if (err) return err;
-    const del = UrlFetchApp.fetch(
-      "https://api.github.com/repos/" + GITHUB_DEPOT + "/contents/" + de,
-      {
-        method: "delete",
-        headers: githubEntetes(),
-        contentType: "application/json",
-        payload: JSON.stringify({ message: "Renommage " + ancien + " → " + nouveau, sha: sha, branch: GITHUB_BRANCHE }),
-        muteHttpExceptions: true,
-      }
-    );
-    if (del.getResponseCode() !== 200) return "suppression de " + de + " refusée (" + del.getResponseCode() + ")";
-  }
-  return null;
 }
 function rep(o) {
   return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(
