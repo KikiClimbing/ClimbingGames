@@ -30,8 +30,12 @@ function biblioView() {
     "Bibliothèque de séances",
     "Les séances créées avec l'outil, et le dossier Google Drive où déposer vos documents (PDF, Word…)."
   );
-  const tabs = `<div class="tools"><div class="seg"><button data-bt="outil" class="${tab === "outil" ? "on" : ""}">Séances créées avec l'outil</button><button data-bt="drive" class="${tab === "drive" ? "on" : ""}">Dossier Google Drive</button></div></div>`;
-  return head + tabs + (tab === "outil" ? seancesListeHTML() : driveHTML());
+  const tabs = `<div class="tools"><div class="seg"><button data-bt="outil" class="${tab === "outil" ? "on" : ""}">Séances créées avec l'outil</button><button data-bt="cycles" class="${tab === "cycles" ? "on" : ""}">Cycles de formation</button><button data-bt="drive" class="${tab === "drive" ? "on" : ""}">Dossier Google Drive</button></div></div>`;
+  return (
+    head +
+    tabs +
+    (tab === "outil" ? seancesListeHTML() : tab === "cycles" ? cyListeHTML() : driveHTML())
+  );
 }
 registerNav({
   sec: "MES SÉANCES",

@@ -47,7 +47,7 @@ const sbMemo = (cle, liste) => {
   } catch (e) {}
 };
 /* toutes les séances connues : celles de la feuille + celles enregistrées depuis ce navigateur (la plus récente gagne) */
-function sbAll() {
+function sbTous() {
   const m = new Map();
   const garde = r => {
     const o = m.get(r.id);
@@ -71,6 +71,8 @@ function sbAll() {
     .filter(r => !del.has(r.id))
     .sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
 }
+/* les séances seulement : les cycles de formation (identifiant « cy… ») sont dans « Mon cycle » */
+const sbAll = () => sbTous().filter(r => !String(r.id).startsWith("cy"));
 function sbParse(rec) {
   try {
     const d = JSON.parse(rec.data);
