@@ -320,6 +320,7 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-30 | 33 | Administration : le champ Code est en lecture seule (automatique). Jeu en attente : suit la famille ; jeu publié : figé. Pour corriger un code à la main : modifier la feuille Google directement |
 | 2026-10-30 | 32 | Codes automatiques par famille (lettre + numéro suivant), le code et le nom du schéma suivent un changement de famille (renommage dans le dépôt à l'enregistrement) ; catégorie + nom automatique dans l'éditeur ; Administration > Schémas : bouton « Modifier » (dessin source) ; **script Apps Script à redéployer** (actions `admin_schema_fichier`, renommage GitHub) |
 | 2026-10-30 | 31 | Éditeur : vue de profil (mur à inclinaison réglable, prises collées au mur, grimpeurs de profil) |
 | 2026-10-30 | 30 | Éditeur : Devant/Derrière fonctionnels, mur réglable (largeur, hauteur, position), mode « vue de dessus », réglages des cerceaux (largeur, hauteur, rotation, couleur, remplissage), joueur vu de dessus, zones à trait plein |

@@ -82,8 +82,8 @@ function admCodeDuJeu(v) {
   return admCodeSuggere(v.Famille);
 }
 /* changement de famille : le code (donc le nom du schéma) suit la nouvelle famille */
-function admFamChange(v) {
-  if (isEmb(v)) return;
+function admFamChange(v, publie) {
+  if (isEmb(v) || publie) return;
   const pre = admPrefixe(v.Famille);
   if (!new RegExp("^" + pre + "\\d+$").test(v.Code || "")) v.Code = admCodeSuggere(v.Famille);
 }
@@ -208,11 +208,13 @@ function admView() {
       const champs = ADM.cols
         .filter(c => !ADM_MASQUES.includes(c))
         .map(c =>
-          c === "Famille" && !isEmb(v)
-            ? `<label class="sml">Famille<select data-af="Famille" data-l="${g.ligne}">${[...new Set([...Object.keys(FAMS), v.Famille].filter(Boolean))].map(f => `<option ${f === v.Famille ? "selected" : ""}>${esc(f)}</option>`).join("")}</select></label>`
-            : ADM_LONGS.includes(c)
-              ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="${c === "Principe" ? 5 : 3}" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
-              : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
+          c === "Code"
+            ? `<label class="sml">Code (automatique)<input data-af="Code" data-l="${g.ligne}" value="${esc(v.Code)}" readonly style="background:#F1F3F8;color:#6B7280;cursor:not-allowed" title="Le code est attribué automatiquement selon la famille ; il ne se modifie pas à la main."></label>`
+            : c === "Famille" && !isEmb(v)
+              ? `<label class="sml">Famille<select data-af="Famille" data-l="${g.ligne}">${[...new Set([...Object.keys(FAMS), v.Famille].filter(Boolean))].map(f => `<option ${f === v.Famille ? "selected" : ""}>${esc(f)}</option>`).join("")}</select></label>`
+              : ADM_LONGS.includes(c)
+                ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="${c === "Principe" ? 5 : 3}" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
+                : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
         )
         .join("");
       return `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(v.Code ? v.Code + " · " : "")}${esc(v.Titre)}${g.publie ? ' <span style="color:#2E7D4F;font-size:12px">● publié</span>' : ' <span style="color:#B2543A;font-size:12px">● en attente</span>'}</b><span style="color:#6B7280;font-size:13px">${esc(v.Famille || "")} · ${esc(v.Auteur || "")} · ${esc(v.Horodateur || "")}</span><a class="chip" data-adm="open" data-l="${g.ligne}" style="cursor:pointer">${ouvert ? "Fermer" : "Relire / modifier"}</a></div>
@@ -239,7 +241,7 @@ registerView({
           g.valeurs[i.dataset.af] = i.value;
           if (i.dataset.af === "Famille") {
             const avant = g.valeurs.Code;
-            admFamChange(g.valeurs);
+            admFamChange(g.valeurs, g.publie);
             if (g.valeurs.Code !== avant)
               toast("Code : " + g.valeurs.Code + " (le schéma sera renommé à l'enregistrement).");
             render();
