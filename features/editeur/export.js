@@ -98,24 +98,50 @@ function edUpload() {
   );
 }
 
+/* nom automatique : lettre de la catégorie + numéro suivant, en évitant les fichiers déjà présents */
+async function edNomAuto(fam) {
+  const nm = $("#edName");
+  if (!fam) return;
+  let pris = [];
+  try {
+    const r = await fetch(CONFIG.GAME_ADD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "schemas_liste", key: CONFIG.GAME_ADD_KEY || "" }),
+    });
+    const j = await r.json();
+    if (j.ok) pris = j.schemas.map(s => s.nom.replace(/\.\w+$/, ""));
+  } catch (e) {}
+  nm.value = admCodeSuggere(fam, pris);
+}
 /* Schéma d'un jeu, depuis Administration > Gérer les jeux (ED.ctx = { code, titre, ligne, orig }) */
 function edCtxHTML() {
   const c = ED.ctx;
   if (!c && ED.back === "proposer")
     return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu que vous proposez</b><div class="tools" style="margin-top:8px"><button class="chip" id="edBackForm" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">← Retour au formulaire</button></div><p class="hint" style="margin:6px 0 0">Dessinez, donnez un nom au fichier puis cliquez sur « Envoyer » : le lien sera ajouté automatiquement à votre proposition.</p></div>`;
   if (!c) return "";
-  return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu ${esc(c.code)} · ${esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. Le champ « Schéma (lien) » du jeu est rempli automatiquement.</p></div>`;
+  return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? "" : "du jeu "}${esc(c.code)}${c.titre ? " · " + esc(c.titre) : ""}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement."}</p></div>`;
 }
 function edCtxBind() {
   const c = ED.ctx;
+  const fm = $("#edFam");
+  if (fm) {
+    fm.style.display = c ? "none" : "";
+    $("#edName").style.display = c ? "none" : "";
+    if (!c) {
+      fm.innerHTML =
+        `<option value="">Catégorie…</option>` +
+        Object.keys(FAMS)
+          .map(f => `<option>${esc(f)}</option>`)
+          .join("");
+      fm.onchange = () => edNomAuto(fm.value);
+    }
+  }
   if (!c && ED.back === "proposer") {
     $("#edBackForm").onclick = () => go("proposer");
-    if (!$("#edName").value) {
-      const t = (PROP.v.Titre || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      $("#edName").value = t
-        .replace(/[^\w]+/g, "-")
-        .replace(/^-|-$/g, "")
-        .slice(0, 40);
+    if (fm && PROP.v.Famille && !$("#edName").value) {
+      fm.value = PROP.v.Famille;
+      edNomAuto(PROP.v.Famille);
     }
     return;
   }
@@ -136,13 +162,14 @@ function edCtxBind() {
         fr.onload = async () => {
           const source = JSON.stringify({ els: ED.els, opt: ED.opt });
           try {
-            const j = await admPost("admin_schema", {
+            const j = await admPost(c.fichier ? "admin_schema_fichier" : "admin_schema", {
               ligne: c.ligne,
               titreAvant: c.orig,
               code: c.code,
               data: String(fr.result).split(",")[1],
               source,
             });
+            if (c.fichier) ADM.schemas = null;
             try {
               localStorage.setItem("edSrc_" + c.code, JSON.stringify({ ts: Date.now(), source }));
             } catch (e) {}

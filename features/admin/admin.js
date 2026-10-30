@@ -37,24 +37,55 @@ async function admPost(action, extra) {
   return j;
 }
 /* code proposé : lettre(s) de la famille + numéro suivant (ex. E12) */
-function admCodeSuggere(fam) {
+function admPrefixe(fam) {
   const m = {};
-  let max = 0;
   DATA.filter(g => g.Famille === fam).forEach(g => {
-    const x = String(g.Code || "").match(/^([A-Za-z]+)(\d+)$/);
-    if (x) {
-      m[x[1]] = (m[x[1]] || 0) + 1;
-      max = Math.max(max, +x[2]);
-    }
+    const x = String(g.Code || "").match(/^([A-Za-z]+)\d+$/);
+    if (x) m[x[1]] = (m[x[1]] || 0) + 1;
   });
-  const pre = Object.keys(m).sort((a, b) => m[b] - m[a])[0] || (fam || "X").charAt(0).toUpperCase();
-  const pris = new Set(DATA.map(g => g.Code));
-  let n = DATA.filter(g => String(g.Code || "").startsWith(pre)).reduce(
-    (a, g) => Math.max(a, +String(g.Code).slice(pre.length) || 0),
-    0
+  return Object.keys(m).sort((a, b) => m[b] - m[a])[0] || (fam || "X").charAt(0).toUpperCase();
+}
+/* `extra` : autres noms déjà pris (ex. fichiers du dossier schemas/) */
+function admCodeSuggere(fam, extra) {
+  const pre = admPrefixe(fam).toLowerCase();
+  const pris = new Set(
+    [
+      ...DATA.map(g => g.Code),
+      ...(ADM.list || []).map(g => g.valeurs.Code),
+      ...(ADM.schemas || []).map(s => s.nom.replace(/\.\w+$/, "")),
+      ...(extra || []),
+    ]
+      .filter(Boolean)
+      .map(x => String(x).toLowerCase())
   );
+  let n = 0;
+  pris.forEach(c => {
+    const k = c.startsWith(pre) ? c.slice(pre.length) : "";
+    if (/^\d+$/.test(k)) n = Math.max(n, +k);
+  });
   while (pris.has(pre + ++n));
-  return pre + n;
+  return admPrefixe(fam) + n;
+}
+/* code d'un jeu sans code : on reprend le nom de son schéma s'il suit déjà la règle (ex. E13.png) */
+function admCodeDuJeu(v) {
+  const b = String(v["Schéma (lien)"] || "")
+    .split("?")[0]
+    .split("/")
+    .pop()
+    .replace(/\.\w+$/, "");
+  const pre = admPrefixe(v.Famille);
+  const autres = [
+    ...DATA.map(g => g.Code),
+    ...(ADM.list || []).filter(g => g.valeurs !== v).map(g => g.valeurs.Code),
+  ].map(x => String(x || "").toLowerCase());
+  if (new RegExp("^" + pre + "\\d+$", "i").test(b) && !autres.includes(b.toLowerCase())) return b;
+  return admCodeSuggere(v.Famille);
+}
+/* changement de famille : le code (donc le nom du schéma) suit la nouvelle famille */
+function admFamChange(v) {
+  if (isEmb(v)) return;
+  const pre = admPrefixe(v.Famille);
+  if (!new RegExp("^" + pre + "\\d+$").test(v.Code || "")) v.Code = admCodeSuggere(v.Famille);
 }
 async function admCharger() {
   ADM.busy = true;
@@ -62,7 +93,7 @@ async function admCharger() {
   render();
   try {
     const j = await admPost("admin_liste", { tous: ADM.tous });
-    ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre }));
+    ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre, codeAvant: g.valeurs.Code || "" }));
     ADM.cols = j.colonnes;
     ADM.msg = "";
     try {
@@ -121,7 +152,7 @@ function schemasHTML() {
     libres = tous.filter(s => !s.qui.length);
   const L = ADM.sf === "libres" ? libres : tous;
   const carte = s =>
-    `<div class="box" style="margin:0;padding:8px"><img loading="lazy" src="${esc(s.url)}" alt="" style="width:100%;aspect-ratio:3/1.1;object-fit:contain;background:#fff;border:1px solid #E3E8F2;border-radius:6px"><div style="font-size:13px;font-weight:700;margin-top:6px;word-break:break-all">${esc(s.nom)}</div><div style="font-size:12px;color:${s.qui.length ? "#2E7D4F" : "#B2543A"}">${s.qui.length ? "● utilisé : " + esc(s.qui.join(", ")) : "● non associé à un jeu"}</div></div>`;
+    `<div class="box" style="margin:0;padding:8px"><img loading="lazy" src="${esc(s.url)}" alt="" style="width:100%;aspect-ratio:3/1.1;object-fit:contain;background:#fff;border:1px solid #E3E8F2;border-radius:6px"><div style="font-size:13px;font-weight:700;margin-top:6px;word-break:break-all">${esc(s.nom)}</div><div style="font-size:12px;color:${s.qui.length ? "#2E7D4F" : "#B2543A"}">${s.qui.length ? "● utilisé : " + esc(s.qui.join(", ")) : "● non associé à un jeu"}</div>${s.source ? `<a class="chip" data-adm="schedit" data-n="${esc(s.nom)}" style="cursor:pointer;margin-top:6px;display:inline-block">✏ Modifier</a>` : `<div style="font-size:11px;color:#6B7280;margin-top:4px">pas de dessin source</div>`}</div>`;
   return `<div class="tools"><div class="seg"><button data-adm="sf" data-m="libres" class="${ADM.sf === "libres" ? "on" : ""}">Non associés (${libres.length})</button><button data-adm="sf" data-m="tous" class="${ADM.sf === "tous" ? "on" : ""}">Tous (${tous.length})</button></div><a class="chip" data-adm="schreload" style="cursor:pointer">↻ Actualiser</a></div>
   <p style="color:#6B7280;font-size:14px">Les schémas envoyés depuis « Dessiner un schéma » arrivent ici. Pour en associer un à un jeu : onglet « Gérer les jeux », ouvrez le jeu puis « Choisir un schéma existant ». « Utilisé » compare avec les jeux publiés et les jeux chargés dans l'onglet « Gérer les jeux ».</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${L.map(carte).join("") || '<div class="empty">Aucun schéma.</div>'}</div>`;
@@ -173,13 +204,15 @@ function admView() {
     .map(g => {
       const v = g.valeurs,
         ouvert = ADM.open.has(g.ligne);
-      if (!v.Code && ouvert) v.Code = admCodeSuggere(v.Famille);
+      if (!v.Code && ouvert) v.Code = admCodeDuJeu(v);
       const champs = ADM.cols
         .filter(c => !ADM_MASQUES.includes(c))
         .map(c =>
-          ADM_LONGS.includes(c)
-            ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="${c === "Principe" ? 5 : 3}" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
-            : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
+          c === "Famille" && !isEmb(v)
+            ? `<label class="sml">Famille<select data-af="Famille" data-l="${g.ligne}">${[...new Set([...Object.keys(FAMS), v.Famille].filter(Boolean))].map(f => `<option ${f === v.Famille ? "selected" : ""}>${esc(f)}</option>`).join("")}</select></label>`
+            : ADM_LONGS.includes(c)
+              ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="${c === "Principe" ? 5 : 3}" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
+              : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
         )
         .join("");
       return `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(v.Code ? v.Code + " · " : "")}${esc(v.Titre)}${g.publie ? ' <span style="color:#2E7D4F;font-size:12px">● publié</span>' : ' <span style="color:#B2543A;font-size:12px">● en attente</span>'}</b><span style="color:#6B7280;font-size:13px">${esc(v.Famille || "")} · ${esc(v.Auteur || "")} · ${esc(v.Horodateur || "")}</span><a class="chip" data-adm="open" data-l="${g.ligne}" style="cursor:pointer">${ouvert ? "Fermer" : "Relire / modifier"}</a></div>
@@ -202,7 +235,16 @@ registerView({
     document.querySelectorAll("[data-af]").forEach(i =>
       i.addEventListener("input", () => {
         const g = ADM.list.find(x => x.ligne === +i.dataset.l);
-        if (g) g.valeurs[i.dataset.af] = i.value;
+        if (g) {
+          g.valeurs[i.dataset.af] = i.value;
+          if (i.dataset.af === "Famille") {
+            const avant = g.valeurs.Code;
+            admFamChange(g.valeurs);
+            if (g.valeurs.Code !== avant)
+              toast("Code : " + g.valeurs.Code + " (le schéma sera renommé à l'enregistrement).");
+            render();
+          }
+        }
       })
     );
     const aq = $("#admq");
@@ -250,6 +292,9 @@ registerClick(e => {
     render();
   } else if (a === "schema" && g) {
     edOuvrirPourJeu({ code: g.valeurs.Code, titre: g.valeurs.Titre, ligne: g.ligne, orig: g.orig });
+  } else if (a === "schedit") {
+    const base = b.dataset.n.replace(/\.\w+$/, "");
+    edOuvrirPourJeu({ code: base, titre: "", fichier: true });
   } else if (a === "sf") {
     ADM.sf = b.dataset.m;
     render();
@@ -297,6 +342,7 @@ registerClick(e => {
         : admPost("admin_enregistrer", {
             ligne: l,
             titreAvant: orig,
+            codeAvant: g.codeAvant,
             valeurs: g.valeurs,
             publier: a === "pub",
             retirer: a === "unpub",
