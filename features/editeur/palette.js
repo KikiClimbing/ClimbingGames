@@ -1,4 +1,39 @@
 /* Éditeur de schémas — palette de pièces et page */
+const POSES = {
+  normal: { l: "Bras le long du corps" },
+  pareur: {
+    l: "Pareur (bras levés)",
+    h: [
+      [-3.4, 11.2],
+      [3.4, 11.2],
+    ],
+  },
+  victoire: {
+    l: "Bras en l'air",
+    h: [
+      [-4.5, 12.5],
+      [4.5, 12.5],
+    ],
+  },
+  course: {
+    l: "Qui court",
+    h: [
+      [-3.4, 6.2],
+      [3.6, 8.2],
+    ],
+    f: [
+      [-3.2, 0.2],
+      [3.8, 1.4],
+    ],
+  },
+  montre: {
+    l: "Qui montre du doigt",
+    h: [
+      [-3, 5],
+      [8.5, 9.5],
+    ],
+  },
+};
 const EDP = {
   hold: c => ({ t: "hold", x: 50, y: 19, c, r: 1.35 }),
   ring: c => ({ t: "ring", x: 50, y: 19, c, r: 2.6 }),
@@ -44,58 +79,7 @@ const EDP = {
   helmet: c => ({ t: "helmet", x: 50, y: 19, s: 1, c, rot: 0 }),
   chalk: a => ({ t: "chalk", x: 50, y: 19, s: 1, shape: a, c: "grey" }),
   score: () => ({ t: "score", x: 50, y: 22, s: 1, lab: "SCORE", a: "0", b: "0" }),
-  pareur: c =>
-    figFix({
-      t: "stand",
-      x: 50,
-      y: 5,
-      c,
-      s: 1,
-      hands: [
-        [-3.4, 11.2],
-        [3.4, 11.2],
-      ],
-    }),
-  course: c =>
-    figFix({
-      t: "stand",
-      x: 50,
-      y: 5,
-      c,
-      s: 1,
-      hands: [
-        [-3.4, 6.2],
-        [3.6, 8.2],
-      ],
-      feet: [
-        [-3.2, 0.2],
-        [3.8, 1.4],
-      ],
-    }),
-  victoire: c =>
-    figFix({
-      t: "stand",
-      x: 50,
-      y: 5,
-      c,
-      s: 1,
-      hands: [
-        [-4.5, 12.5],
-        [4.5, 12.5],
-      ],
-    }),
-  montre: c =>
-    figFix({
-      t: "stand",
-      x: 50,
-      y: 5,
-      c,
-      s: 1,
-      hands: [
-        [-3, 5],
-        [8.5, 9.5],
-      ],
-    }),
+  spit: c => ({ t: "spit", x: 50, y: 19, s: 1, c, rot: 0 }),
   pion: c => ({ t: "pion", x: 50, y: 19, s: 1, c, rot: 0 }),
   scarf: c => ({ t: "scarf", x: 50, y: 19, s: 1.5, c }),
   ball: () => ({ t: "ball", x: 50, y: 19, s: 1.5 }),
@@ -132,115 +116,64 @@ function edPaletteHTML() {
   return (
     sec(
       "PRISES",
-      HOLDC.map((c, i) => pb("hold", c, "Prise " + HOLDN[i], dot(c))).join("") +
+      pb("hold", HOLDC[0], "Prise (couleur et taille à droite)", dot(HOLDC[0]) + " prise") +
+        pb(
+          "ring",
+          "green",
+          "Anneau",
+          `<span class="ringi" style="border-color:${EGREEN}"></span> anneau`
+        ) +
         `<button class="pbtn wide" id="edSeed">Semer des prises au hasard</button>`
     ) +
     sec(
-      "VUE DE PROFIL",
-      HOLDC.map((c, i) => pb("phold", c, "Prise de profil " + HOLDN[i], dot(c))).join("") +
-        pb("pclimber", "blue", "Grimpeur de profil bleu", "🧗 profil bleu") +
-        pb("pclimber", "red", "Grimpeur de profil rouge", "🧗 profil rouge")
-    ) +
-    sec(
-      "MATÉRIEL D'ESCALADE",
-      pb("magbag", "red", "Sac à magnésie", "sac à magnésie") +
-        pb("carabiner", "grey", "Mousqueton", "mousqueton") +
-        pb("harness", "blue", "Baudrier", "baudrier") +
-        pb("helmet", "green", "Casque", "casque")
-    ) +
-    sec(
-      "DRAPEAUX ET PLOTS",
-      pb("banner", "red", "Drapeau rouge", "drapeau rouge") +
-        pb("banner", "blue", "Drapeau bleu", "drapeau bleu") +
-        pb("banner", "green", "Drapeau vert", "drapeau vert") +
-        pb("banner", "#F7D858", "Drapeau jaune", "drapeau jaune") +
-        pb("cone", "#4F8FE0", "Plot bleu", "plot bleu") +
-        pb("cone", "#F7D858", "Plot jaune", "plot jaune") +
-        pb("cone", "#4FB87A", "Plot vert", "plot vert")
-    ) +
-    sec(
-      "ZONES À LA CRAIE",
-      pb("chalk", "circle", "Cercle à la craie", "cercle craie") +
-        pb("chalk", "rect", "Rectangle à la craie", "rectangle craie") +
-        pb("chalk", "cross", "Croix à la craie", "croix craie")
-    ) +
-    sec(
-      "PERSONNAGES EN SITUATION",
-      pb("pareur", "blue", "Pareur (bras levés)", "pareur bleu") +
-        pb("pareur", "red", "Pareur (bras levés)", "pareur rouge") +
-        pb("course", "blue", "Qui court", "court bleu") +
-        pb("course", "red", "Qui court", "court rouge") +
-        pb("victoire", "blue", "Bras en l'air", "victoire bleu") +
-        pb("montre", "grey", "Éducateur qui montre", "éducateur montre")
-    ) +
-    sec("SCORE", pb("score", "", "Panneau de score", "panneau de score")) +
-    sec(
-      "ANNEAUX",
-      pb(
-        "ring",
-        "green",
-        "Prise cible",
-        `<span class="ringi" style="border-color:${EGREEN}"></span> cible`
-      ) +
-        pb(
-          "ring",
-          "amber",
-          "Prise imposée",
-          `<span class="ringi" style="border-color:${EAMB}"></span> imposée`
-        )
-    ) +
-    sec(
       "PERSONNAGES",
-      pb("climber", "blue", "Grimpeur bleu", "🧗 bleu") +
-        pb("climber", "red", "Grimpeur rouge", "🧗 rouge") +
-        pb("stand", "blue", "Debout bleu", "🧍 bleu") +
-        pb("stand", "red", "Debout rouge", "🧍 rouge") +
-        pb("sit", "blue", "Assis bleu", "assis bleu") +
-        pb("sit", "red", "Assis rouge", "assis rouge")
+      pb("climber", "blue", "Grimpeur de face", "🧗 face") +
+        pb("pclimber", "blue", "Grimpeur de profil", "🧗 profil") +
+        pb("stand", "blue", "Personnage debout (pose réglable à droite)", "🧍 debout") +
+        pb("sit", "blue", "Personnage assis", "assis") +
+        pb("pion", "blue", "Joueur vu de dessus", "joueur dessus")
     ) +
     sec(
       "OBJETS",
       pb("hoopflat", "", "Cerceau vertical (de face)", "cerceau vertical") +
         pb("hoopfloor", "", "Cerceau horizontal (à plat au sol)", "cerceau horizontal") +
         pb("hoopside", "", "Cerceau vertical (de profil)", "cerceau profil") +
-        pb("pion", "blue", "Joueur vu de dessus (bleu)", "joueur dessus bleu") +
-        pb("pion", "red", "Joueur vu de dessus (rouge)", "joueur dessus rouge") +
-        pb("plaque", "blue", "Plaquette bleue", "plaquette bleue") +
-        pb("plaque", "red", "Plaquette rouge", "plaquette rouge") +
-        pb("plaque", "amber", "Plaquette ambre", "plaquette ambre") +
-        pb("shoe", "blue", "Chausson d'escalade", "chausson") +
-        pb("scarf", EBLUE, "Foulard bleu", "foulard bleu") +
-        pb("scarf", ERED, "Foulard rouge", "foulard rouge") +
-        pb("scarf", "#F7D858", "Foulard jaune", "foulard jaune") +
+        pb("scarf", EBLUE, "Foulard", "foulard") +
         pb("ball", "", "Ballon", "ballon") +
         pb("die", "", "Dé", "dé") +
         pb("watch", "", "Chronomètre", "chrono") +
-        pb("quickdraw", "", "Dégaine", "dégaine") +
         pb("tape", "", "Scotch", "scotch") +
         pb("cone", "", "Plot", "plot") +
+        pb("banner", "red", "Drapeau", "drapeau") +
+        pb("flag", "red", "Fanion", "fanion") +
         pb("bench", "", "Banc", "banc") +
         pb("mat", "", "Tapis", "tapis") +
         pb("card", "", "Carte", "carte") +
         pb("target", "", "Cible", "cible") +
-        pb("flag", "red", "Fanion", "fanion") +
-        pb("volume", "#A894E6", "Volume", "volume")
+        pb("volume", "#A894E6", "Volume", "volume") +
+        pb("score", "", "Panneau de score", "score")
+    ) +
+    sec(
+      "MATÉRIEL D'ESCALADE",
+      pb("spit", "grey", "Spit (point d'ancrage)", "spit") +
+        pb("quickdraw", "", "Dégaine", "dégaine") +
+        pb("carabiner", "grey", "Mousqueton", "mousqueton") +
+        pb("harness", "blue", "Baudrier", "baudrier") +
+        pb("helmet", "green", "Casque", "casque") +
+        pb("magbag", "red", "Sac à magnésie", "magnésie") +
+        pb("shoe", "blue", "Chausson d'escalade", "chausson")
     ) +
     sec(
       "CORDES ET LIGNES",
-      pb("rope", "amber", "Corde ambre", "corde") +
-        pb("rope", "blue", "Corde bleue", "corde bleue") +
-        pb("rope", "red", "Corde rouge", "corde rouge") +
-        pb("elastic", "red", "Élastique rouge", "élastique rouge") +
-        pb("elastic", "blue", "Élastique bleu", "élastique bleu") +
-        pb("elastic", "amber", "Élastique ambre", "élastique ambre") +
-        pb("line", "ink:0", "Ligne (départ, limite)", "ligne") +
-        pb("line", "ink:1", "Ligne pointillée", "ligne pointillée")
+      pb("rope", "amber", "Corde", "corde") +
+        pb("elastic", "red", "Élastique", "élastique") +
+        pb("line", "ink:0", "Ligne (pointillés à droite)", "ligne")
     ) +
     sec(
       "ZONES ET REPÈRES",
       pb("zone", "blue", "Zone rectangulaire", "zone") +
-        pb("zone", "red", "Zone rouge", "zone rouge") +
         pb("zonecircle", "green", "Zone ronde", "zone ronde") +
+        pb("chalk", "circle", "Tracé à la craie (forme à droite)", "craie") +
         pb("foot", "blue", "Empreinte de pied", "👣 pied") +
         pb("handp", "blue", "Empreinte de main", "✋ main") +
         pb("num", "blue", "Numéro", "n°") +
@@ -250,12 +183,8 @@ function edPaletteHTML() {
     ) +
     sec(
       "FLÈCHES ET TEXTE",
-      pb("arrow", "ink:0", "Flèche pleine", "→ pleine") +
-        pb("arrow", "blue:1", "Flèche bleue pointillée", "→ bleue") +
-        pb("arrow", "red:1", "Flèche rouge pointillée", "→ rouge") +
-        pb("arrow", "green:1", "Flèche verte pointillée", "→ verte") +
-        pb("rotarrow", "blue|cw", "Flèche de rotation (sens horaire)", "↻ rotation") +
-        pb("rotarrow", "blue|ccw", "Flèche de rotation (sens anti-horaire)", "↺ rotation") +
+      pb("arrow", "ink:0", "Flèche (couleur et pointillés à droite)", "→ flèche") +
+        pb("rotarrow", "blue|cw", "Flèche de rotation (sens à droite)", "↻ rotation") +
         pb("text", "", "Zone de texte", "Texte")
     )
   );

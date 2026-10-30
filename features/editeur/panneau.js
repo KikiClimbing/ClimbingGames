@@ -91,6 +91,7 @@ function edPanel() {
     phold: "Prise de profil",
     elastic: "Élastique",
     banner: "Drapeau",
+    spit: "Spit",
     magbag: "Sac à magnésie",
     carabiner: "Mousqueton",
     harness: "Baudrier",
@@ -178,12 +179,19 @@ function edPanel() {
     h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl2">Texte (numéro, lettre)<input data-lab2 maxlength="4" value="${esc(e.lab || "")}"></label>`;
   if (e.t === "shoe")
     h += `<div class="sws">${sw(COLH, e.c || "blue", "c")}</div><label class="fl2">Taille<input type="range" min="0.5" max="3" step="0.05" value="${e.s}" data-rg="s"></label><label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label><label class="fl"><input type="checkbox" data-ck="flip" ${e.flip ? "checked" : ""}> Retourner (miroir)</label>`;
-  if (["banner", "magbag", "carabiner", "harness", "helmet"].includes(e.t))
+  if (["banner", "magbag", "carabiner", "harness", "helmet", "spit"].includes(e.t))
     h += `<div class="sws">${sw(
       [...COLH, ["#F7D858", "#F7D858", "jaune"]],
       e.c || "red",
       "c"
     )}</div><label class="fl2">Taille<input type="range" min="0.4" max="3" step="0.05" value="${e.s}" data-rg="s"></label>${e.t === "banner" ? "" : `<label class="fl2">Rotation<input type="range" min="-180" max="180" step="5" value="${e.rot || 0}" data-rg="rot"></label>`}`;
+  if (e.t === "stand")
+    h += `<label class="fl2">Pose<select data-pose>${Object.entries(POSES)
+      .map(
+        ([k, v]) =>
+          `<option value="${k}" ${(e.pose || "normal") === k ? "selected" : ""}>${v.l}</option>`
+      )
+      .join("")}</select></label>`;
   if (e.t === "cone")
     h += `<div class="sws">${sw(
       [
@@ -335,6 +343,17 @@ function edPanel() {
       edRender();
     };
   });
+  const ps = p.querySelector("[data-pose]");
+  if (ps)
+    ps.onchange = ev => {
+      edSnap();
+      const k = ev.target.value,
+        d = FIG.stand;
+      e.pose = k;
+      e.hands = JSON.parse(JSON.stringify(POSES[k].h || d.hands));
+      e.feet = JSON.parse(JSON.stringify(POSES[k].f || d.feet));
+      edRender(true);
+    };
   const l2 = p.querySelector("[data-lab2]");
   if (l2)
     l2.oninput = ev => {

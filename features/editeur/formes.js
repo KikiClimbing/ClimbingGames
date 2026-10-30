@@ -509,6 +509,11 @@ function elSVG0(e) {
         z = e.s || 1;
       return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})"><path d="M-2.6 1.2Q-2.6 -2.8 0 -2.8Q2.6 -2.8 2.6 1.2Z" fill="${col}" stroke="${darken(col)}" stroke-width=".2"/><path d="M-3 1.2L3 1.2" stroke="${darken(col)}" stroke-width=".4" stroke-linecap="round"/><path d="M-1 -1.9L-.6 -.2M0 -2L0 -.2M1 -1.9L.6 -.2" stroke="#fff" stroke-width=".35" stroke-linecap="round"/></g>`;
     }
+    case "spit": {
+      const col = CN(e.c || "grey"),
+        z = e.s || 1;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${z})"><rect x="-1.9" y="-1.1" width="3.8" height="2.2" rx="1.1" fill="${col}" fill-opacity=".35" stroke="${darken(col, 0.6)}" stroke-width=".25"/><circle cx="-.7" cy="0" r=".55" fill="#fff" stroke="${darken(col, 0.6)}" stroke-width=".2"/><circle cx=".95" cy="0" r=".28" fill="${darken(col, 0.6)}"/></g>`;
+    }
     case "chalk":
       return chalkSVG(e);
     case "score": {
