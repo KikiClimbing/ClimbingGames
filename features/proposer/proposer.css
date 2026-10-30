@@ -1,0 +1,45 @@
+/* Formulaire « Proposer un jeu » : mêmes couleurs que la fiche d'un jeu (couleurs de la famille choisie) */
+.pgrp {
+  background: var(--l);
+  border-left: 6px solid var(--a);
+  border-radius: 8px;
+  padding: 12px 16px 14px;
+  margin-bottom: 14px;
+}
+.pgrp h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: var(--d);
+}
+.pgrp .sml input,
+.pgrp .sml select,
+.pgrp .sml textarea {
+  background: #fff;
+}
+.pvar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.pvar > div {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-top: 4px solid var(--a);
+  background: #fff;
+}
+.pvar .pdif {
+  background: var(--m);
+  border-color: var(--d);
+}
+.pvar h4 {
+  margin: 0 0 6px;
+  color: var(--d);
+  letter-spacing: 1px;
+  font-size: 13px;
+}
+@media (max-width: 700px) {
+  .pvar {
+    grid-template-columns: 1fr;
+  }
+}

@@ -114,6 +114,23 @@ function propView() {
       return `<label class="sml" style="grid-column:1/-1">${lab}<textarea rows="${f.rows || 3}" data-pf="${esc(f.k)}">${esc(val)}</textarea></label>`;
     return `<label class="sml">${lab}<input data-pf="${esc(f.k)}" value="${esc(val)}"></label>`;
   };
+  const F = FAMS[v.Famille] || FAMS[Object.keys(FAMS)[0]];
+  const theme = `--l:${F.l};--m:${F.m};--d:${F.d};--a:${F.a}`;
+  const GROUPES = [
+    ["L'ESSENTIEL", ["Titre", "Famille", "Résumé", "Principe"]],
+    [
+      "ORGANISATION",
+      ["Participants", "Matériel", "Espace", "Durée", "Effectif court", "Intensité"],
+    ],
+    ["OBJECTIFS", ["Objectif", "Objectifs (tags)", "Format anniversaire"]],
+  ];
+  const par = k => PROP_CHAMPS.find(f => f.k === k);
+  const groupe = ([t, ks]) =>
+    `<div class="pgrp" style="${theme}"><h3>${t}</h3><div class="smg">${ks.map(k => champ(par(k))).join("")}</div></div>`;
+  const ta = k =>
+    `<textarea rows="4" data-pf="${k}" style="width:100%;padding:8px;border:1px solid #d5dae5;border-radius:6px;font:inherit;background:#fff">${esc(v[k] || "")}</textarea>`;
+  const variantes = `<div class="pgrp" style="${theme}"><h3>VARIANTES</h3><div class="pvar"><div class="pfac"><h4>− PLUS FACILE <span style="color:#B2263A">*</span></h4>${ta("Plus facile")}</div><div class="pdif"><h4>+ PLUS DIFFICILE <span style="color:#B2263A">*</span></h4>${ta("Plus difficile")}</div></div><p style="margin:6px 0 0;color:#6B7280;font-size:13px">2 à 3 idées par colonne, une par ligne : la puce « • » est ajoutée toute seule.</p></div>`;
+  const fin = `<div class="pgrp" style="${theme}"><h3>CONSEIL ET COMPLÉMENTS</h3><div class="smg">${["Conseil", "Voir aussi", "Compléments", "Auteur"].map(k => champ(par(k))).join("")}</div></div>`;
   const lien = v["Schéma (lien)"] || "";
   const prev = lien
     ? `<img src="${esc(driveImg(lien))}" alt="Schéma" style="display:block;max-width:100%;max-height:260px;margin-top:8px;border:1px solid #D5DAE5;border-radius:8px;background:#fff" onerror="this.remove()">`
@@ -126,7 +143,7 @@ function propView() {
   const msg = PROP.msg ? `<p style="font-weight:700;color:#B2263A">${esc(PROP.msg)}</p>` : "";
   return (
     head +
-    `<div class="box"><div class="smg">${PROP_CHAMPS.map(champ).join("")}
+    `<div class="box">${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${fin}<div class="pgrp" style="${theme}"><h3>SCHÉMA</h3>
     <div class="sml" style="grid-column:1/-1">Schéma <span style="font-weight:400;color:#6B7280"> — facultatif : dessinez-le, ou choisissez-en un déjà envoyé</span>
       <div class="tools" style="margin:6px 0"><a class="btn" data-pr="draw" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner un schéma</a><a class="btn" data-pr="pick" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>${lien ? `<a class="chip" data-pr="nolink" style="cursor:pointer">Retirer</a>` : ""}</div>
       <input data-pf="Schéma (lien)" value="${esc(lien)}" placeholder="ou collez ici le lien d'une image">${prev}</div></div>${choix}
@@ -174,7 +191,7 @@ registerView({
         PROP.v[i.dataset.pf] = i.value;
         propSave();
       });
-      if (i.dataset.pf === "Schéma (lien)") i.addEventListener("change", render);
+      if (["Schéma (lien)", "Famille"].includes(i.dataset.pf)) i.addEventListener("change", render);
     });
     document.querySelectorAll("[data-pt]").forEach(i =>
       i.addEventListener("change", () => {

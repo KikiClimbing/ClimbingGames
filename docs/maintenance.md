@@ -322,6 +322,7 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-30 | 38 | Formulaire « Proposer un jeu » en sections colorées (couleurs de la famille choisie, comme la fiche d'un jeu ; variantes facile/difficile en deux colonnes) : `features/proposer/proposer.css` |
 | 2026-10-30 | 37 | Bouton « Proposer un jeu » déplacé avant la section PARCOURIR du menu (généré par `proposeHTML()` dans `core/nav.js`), plus petit |
 | 2026-10-30 | 36 | Éditeur : palette allégée (un bouton par objet, couleur et variantes dans le panneau de droite), poses du personnage debout réglables, spit d'escalade à la place des plaquettes |
 | 2026-10-30 | 35 | Éditeur : matériel d'escalade, drapeaux et plots colorés, tracés à la craie, personnages en situation, panneau de score |
