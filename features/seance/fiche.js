@@ -95,6 +95,7 @@ const nomsGroupes = (M, idx) => {
 /* étiquettes de durée pour les groupes de idx : [{t:"15'",c:couleur}] */
 const tgs = (M, d, idx) => idx.map(i => ({ t: (+d[i] || 0) + "'", c: M.G[i].c }));
 function sheetHTML() {
+  if (typeof isCreps === "function" && isCreps()) return crepsHTML();
   const M = seModel(),
     S = SMETA;
   const ph = t => `<i style="color:#8A93A3">${t}</i>`;

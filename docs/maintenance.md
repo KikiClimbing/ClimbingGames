@@ -147,6 +147,9 @@ css/                  base.css, responsive.css (mobile + impression)
 scripts-google/       scripts Apps Script (copies de référence)
 ```
 
+#### Modèle de fiche CREPS (v50)
+`features/seance/creps.js` ajoute une 2ᵉ présentation de la même séance (mêmes données `SE` / `SMETA`). `sheetHTML()` (fiche.js) et `buildSeanceDoc()` (export-word.js) y renvoient quand `SMETA.modele === "creps"`. Champs propres au modèle : `cp_obj`, `cp_but`, `cp_cons`, `cp_comp`, `cp_orga` (dans chaque exercice, et dans `SE.ech` pour l'échauffement) ; s'ils sont vides, on reprend la fiche du jeu (objectif, résumé, principe, matériel, variantes). Les critères de réussite et les variantes viennent de « Corps de séance ». La page de schémas reprend le schéma de chaque jeu de la bibliothèque ; dans le fichier Word, ce sont des cases vides à remplir (les images ne sont pas intégrées). Les colonnes sont décrites dans `CREPS_COLS`.
+
 ### 6.3 Le registre (`core/registry.js`)
 Chaque fonctionnalité se déclare elle-même :
 
@@ -333,6 +336,7 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-10-31 | 47 | Schéma d'architecture refait en image (`docs/architecture.svg`, affichée par la documentation du site) ; le filtre « Format anniversaire » s'appelle « Sans expérience » (constante `LBL_SANS_EXP` dans `core/games.js` ; la colonne du Sheet garde son nom) |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 49 | « Séances et cycles » : tableaux colorés (`.sbl.colo` dans `seances.css`, couleur de thème par `sbCouleur`, pastilles `sbPastille`) |
+| 2026-10-31 | 50 | « Créer une séance » : 2ᵉ modèle de fiche « CREPS » (`features/seance/creps.js`) choisi par `SMETA.modele` (`std` par défaut ou `creps`) : tableau à 8 colonnes (situation, objectif, but, consignes, critères, comportements attendus, variantes, organisation) + page de schémas ; champs `cp_*` dans les exercices et l'échauffement ; aperçu, impression/PDF et Word ; la fiche habituelle est inchangée |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |

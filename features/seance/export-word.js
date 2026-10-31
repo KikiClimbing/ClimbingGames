@@ -11,6 +11,7 @@ function loadDocx() {
   });
 }
 function buildSeanceDoc(logo) {
+  if (typeof isCreps === "function" && isCreps()) return buildCrepsDoc(logo);
   const D = window.docx;
   const {
     Document,
