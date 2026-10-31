@@ -16,11 +16,13 @@ window.SITE_CONFIG = {
   // Lien du dossier Drive partagé (bibliothèque de séances)
   LIBRARY_URL: "https://drive.google.com/drive/folders/1o2a7sFKQOjJM0rBjcsw-zf8PsFbUFqVV",
   // adresse CSV publiée de l'onglet « Séances » (lecture des séances enregistrées)
-  SEANCES_CSV_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec", 
+  //SEANCES_CSV_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec", 
   // Ajout automatique d'un jeu libre à la bibliothèque (script ajouter_jeu.gs) : adresse de l'application web et mot de passe
   GAME_ADD_URL: "https://script.google.com/macros/s/AKfycbxm_soCoRI5FjiHX9_zdyeh4RlhdQD7WBqeB0xNro61_iPlVzZJlKFbLz0Pi3YaPvxv/exec",
   GAME_ADD_KEY: "kiki0673",
   // Envoi des schémas dans le Drive : adresse de l'application web (script recevoir_schemas.gs) et mot de passe choisi
   SCHEMA_UPLOAD_URL: "",
-  SCHEMA_UPLOAD_KEY: ""
+  SCHEMA_UPLOAD_KEY: "",
+
+  GOOGLE_CLIENT_ID:"240015891111-acvaune06ng9daheeiv3tovdm9jhi3fo.apps.googleusercontent.com"
 };
