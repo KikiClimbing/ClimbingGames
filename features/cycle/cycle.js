@@ -219,9 +219,9 @@ function cyListeHTML() {
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     ({ rec }) =>
-      `<tr class="r" data-go="cy/${esc(rec.id)}">${cel(rec.titre).replace("<td", '<td style="font-weight:700"')}${cel(rec.theme)}${cel(rec.dates)}${cel((+rec.nb || 0) + " séance" + (+rec.nb > 1 ? "s" : ""))}${compteOn() ? cel(compteMien(rec) ? "Moi" : rec.ownerNom || rec.owner) : ""}<td style="text-align:right">${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+      `<tr class="r" data-go="cy/${esc(rec.id)}">${celTitre(rec.titre, rec.theme)}${celChip(rec.theme)}${cel(rec.dates)}${celChip((+rec.nb || 0) + " séance" + (+rec.nb > 1 ? "s" : ""))}${compteOn() ? celPar(compteMien(rec), rec.ownerNom || rec.owner) : ""}<td style="text-align:right">${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
-  return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
+  return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
 }
 async function cySupprimer(id) {
   const x = cyAll().find(c => c.rec.id === id);

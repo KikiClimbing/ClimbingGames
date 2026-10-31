@@ -219,14 +219,37 @@ function seancesListeHTML() {
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     r =>
-      `<tr class="r" data-go="sb/${esc(r.id)}">${cel(r.titre).replace("<td", '<td style="font-weight:700"')}${cel(r.educ)}${cel(r.dates)}${cel(r.theme)}${cel(r.obj)}${compteOn() ? cel(r.mien ? "Moi" : r.par) : ""}<td style="text-align:right">${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme)}${cel(r.educ)}${cel(r.dates)}${celChip(r.theme)}${cel(r.obj)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right">${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px"></div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "";
+/* tableaux colorés : une couleur par thème, pastilles « thème » et « par » */
+const SB_COULEURS = [
+  ["#2B5A9E", "#E1EBF8"],
+  ["#C2571A", "#FBE9DC"],
+  ["#2E7D4F", "#E0F1E7"],
+  ["#7A4FA3", "#EEE5F6"],
+  ["#1F8A8A", "#DDF1F1"],
+  ["#B03A7A", "#F8E2EE"],
+  ["#9A7400", "#F8EFCF"],
+  ["#B2263A", "#FBE3E7"],
+];
+function sbCouleur(t) {
+  let h = 0;
+  for (const c of norm(t || "")) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return SB_COULEURS[h % SB_COULEURS.length];
+}
+const sbPastille = (t, c = sbCouleur(t)) =>
+  `<span class="tchip" style="color:${c[0]};background:${c[1]}">${esc(t)}</span>`;
+const celChip = t => `<td title="${esc(t)}">${t ? sbPastille(t) : ""}</td>`;
+const celTitre = (titre, theme) =>
+  `<td title="${esc(titre)}" style="font-weight:700;border-left:6px solid ${theme ? sbCouleur(theme)[0] : "#C9D1DE"}">${esc(titre)}</td>`;
+const celPar = (mien, par) =>
+  `<td>${mien ? sbPastille("Moi", ["#2E7D4F", "#E0F1E7"]) : par ? sbPastille(par, ["#2B5A9E", "#E1EBF8"]) : ""}</td>`;
 async function sbSupprimer(id) {
   const r = sbAll().find(x => x.id === id);
   const d = r && sbParse(r);

@@ -64,3 +64,42 @@
 .sbl .chip {
   padding: 4px 9px;
 }
+/* tableaux « Séances et cycles » colorés */
+.sbl.colo {
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  background: transparent;
+}
+.sbl.colo th {
+  color: #fff;
+  padding: 9px 10px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  background: #26364d;
+}
+.sbl.colo th:nth-child(1) { background: #2b5a9e; border-radius: 8px 0 0 8px; }
+.sbl.colo th:nth-child(2) { background: #c2571a; }
+.sbl.colo th:nth-child(3) { background: #2e7d4f; }
+.sbl.colo th:nth-child(4) { background: #7a4fa3; }
+.sbl.colo th:nth-child(5) { background: #1f8a8a; }
+.sbl.colo th:nth-child(6) { background: #b03a7a; }
+.sbl.colo th:last-child { background: #26364d; border-radius: 0 8px 8px 0; }
+.sbl.colo td {
+  background: #fff;
+  padding: 9px 10px;
+}
+.sbl.colo tr:nth-child(even) td { background: #f4f8fc; }
+.sbl.colo tr.r:hover td { background: #e8f1fb; }
+.sbl.colo td:first-child { border-radius: 8px 0 0 8px; }
+.sbl.colo td:last-child { border-radius: 0 8px 8px 0; }
+.tchip {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
