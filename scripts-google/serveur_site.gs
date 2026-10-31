@@ -60,6 +60,7 @@ function doPost(e) {
       if (action === "seance") return enregistrerSeance(d.seance || {}, u);
       if (action === "seance_suppr") return supprimerSeance(d.id, u);
       if (action === "seance_partage") return partagerSeance(d.id, d.partage, u);
+      if (action === "seance_lire") return lireSeance(d.id, u);
       if (action === "equipes_liste") return listeEquipes(u);
       if (action === "equipe_enregistrer") return enregistrerEquipe(d.equipe || {}, u);
       if (action === "equipe_suppr") return supprimerEquipe(d.id, u);
@@ -236,7 +237,7 @@ function connexionGoogle(d) {
 }
 
 /* ---------- séances et cycles ---------- */
-const COLONNES_SEANCES = ["id", "Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Données", "Publié", "Propriétaire", "Nom", "Partage"];
+const COLONNES_SEANCES = ["id", "Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Données", "Publié", "Propriétaire", "Nom", "Partage", "Objectif"];
 function feuilleSeances() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName("Séances");
@@ -273,32 +274,111 @@ function listePartage(txt) {
     .split(/[,;\s]+/)
     .filter(Boolean);
 }
-// séances visibles par l'utilisateur : les siennes, celles partagées avec lui ; l'administrateur voit tout
-function listeSeances(u) {
-  const mesEq = equipesLues()
+// Cache de courte durée : la version change à chaque écriture (séance, partage, équipe)
+function invalider() {
+  CacheService.getScriptCache().put("vseances", String(Date.now()), 21600);
+}
+function lectureColonne(sh, head, nom, n) {
+  const c = head.indexOf(nom);
+  return c < 0 ? [] : sh.getRange(2, c + 1, n - 1, 1).getValues().map(r => r[0]);
+}
+function mesEquipesIds(u) {
+  return equipesLues()
     .filter(q => q.owner === u.email || q.membres.indexOf(u.email) >= 0)
     .map(q => "team:" + q.id);
+}
+function peutLire(u, proprio, partage, mesEq) {
+  const part = listePartage(partage);
+  return u.admin || proprio === u.email || part.indexOf(u.email) >= 0 || part.some(t => mesEq.indexOf(t) >= 0);
+}
+// Liste LÉGÈRE des séances visibles (sans le contenu « Données », chargé à la demande par seance_lire).
+// On ne lit d'abord que les colonnes id / propriétaire / partage, puis les colonnes courtes.
+function listeSeances(u) {
+  const cache = CacheService.getScriptCache();
+  const cle = "ls:" + (cache.get("vseances") || "0") + ":" + u.email + (u.admin ? ":a" : "");
+  const c = cache.get(cle);
+  if (c) return ContentService.createTextOutput(c).setMimeType(ContentService.MimeType.JSON);
   const sh = feuilleSeances();
   const head = enteteSeances(sh);
   const n = sh.getLastRow();
   const out = [];
   if (n > 1) {
-    const vals = sh.getRange(2, 1, n - 1, head.length).getValues();
-    const ip = head.indexOf("Propriétaire"),
-      is = head.indexOf("Partage");
-    vals.forEach(r => {
-      if (!r[0]) return;
-      const proprio = proprietaireDe(r[ip]);
-      const part = listePartage(r[is]);
-      if (u.admin || proprio === u.email || part.indexOf(u.email) >= 0 || part.some(t => mesEq.indexOf(t) >= 0)) {
-        const o = {};
-        head.forEach((h, k) => (o[h] = h === "Horodateur" && r[k] instanceof Date ? r[k].toISOString() : String(r[k])));
-        o["Propriétaire"] = proprio;
-        out.push(o);
-      }
+    const mesEq = mesEquipesIds(u);
+    const ids = lectureColonne(sh, head, "id", n),
+      prop = lectureColonne(sh, head, "Propriétaire", n),
+      part = lectureColonne(sh, head, "Partage", n);
+    const vis = [];
+    ids.forEach((id, i) => {
+      if (id && peutLire(u, proprietaireDe(prop[i]), part[i], mesEq)) vis.push(i);
     });
+    if (vis.length) {
+      const champs = ["Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Nom", "Objectif"];
+      const col = {};
+      champs.forEach(h => (col[h] = lectureColonne(sh, head, h, n)));
+      vis.forEach(i => {
+        const o = { id: String(ids[i]), "Propriétaire": proprietaireDe(prop[i]), Partage: String(part[i] || "") };
+        champs.forEach(h => {
+          const v = col[h][i];
+          o[h] = v instanceof Date ? v.toISOString() : v === undefined || v === null ? "" : String(v);
+        });
+        out.push(o);
+      });
+    }
   }
-  return rep({ ok: true, seances: out });
+  const json = JSON.stringify({ ok: true, seances: out });
+  if (json.length < 90000) cache.put(cle, json, 60);
+  return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
+}
+// Contenu complet d'une séance (si l'utilisateur a le droit de la lire)
+function lireSeance(id, u) {
+  const sh = feuilleSeances();
+  const l = ligneSeance(sh, id);
+  if (!l) return rep({ ok: false, error: "séance introuvable" });
+  const head = enteteSeances(sh);
+  const r = sh.getRange(l, 1, 1, head.length).getValues()[0];
+  if (!peutLire(u, proprietaireDe(r[head.indexOf("Propriétaire")]), r[head.indexOf("Partage")], mesEquipesIds(u)))
+    return rep({ ok: false, error: "accès refusé" });
+  return rep({ ok: true, data: restaurerLogo(String(r[head.indexOf("Données")] || "")) });
+}
+/* Les logos sont stockés une seule fois (onglet « Logos ») : la séance ne garde qu'une référence */
+function feuilleLogos() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Logos");
+  if (!sh) {
+    sh = ss.insertSheet("Logos");
+    sh.appendRow(["hash", "data"]);
+  }
+  return sh;
+}
+function extraireLogo(txt) {
+  try {
+    const o = JSON.parse(txt);
+    if (o && o.meta && typeof o.meta.logo === "string" && o.meta.logo.indexOf("data:") === 0 && o.meta.logo.length < 49000) {
+      const h = b64u(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, o.meta.logo)).slice(0, 22);
+      const sh = feuilleLogos();
+      const n = sh.getLastRow();
+      const hs = n > 1 ? sh.getRange(2, 1, n - 1, 1).getValues().map(r => String(r[0])) : [];
+      if (hs.indexOf(h) < 0) sh.appendRow([h, o.meta.logo]);
+      o.meta.logo = "ref:" + h;
+      return JSON.stringify(o);
+    }
+  } catch (e) {}
+  return txt;
+}
+function restaurerLogo(txt) {
+  const m = /"logo":"ref:([\w-]+)"/.exec(txt);
+  if (!m) return txt;
+  try {
+    const sh = feuilleLogos();
+    const n = sh.getLastRow();
+    const hs = n > 1 ? sh.getRange(2, 1, n - 1, 2).getValues() : [];
+    const t = hs.find(r => String(r[0]) === m[1]);
+    const o = JSON.parse(txt);
+    o.meta.logo = t ? String(t[1]) : "";
+    return JSON.stringify(o);
+  } catch (e) {
+    return txt;
+  }
 }
 function enregistrerSeance(s, u) {
   if (!s.id || !s.data) return rep({ ok: false, error: "séance incomplète" });
@@ -316,7 +396,8 @@ function enregistrerSeance(s, u) {
     "Éducateurs": String(s.educ || "").slice(0, 300),
     Dates: String(s.dates || "").slice(0, 300),
     Exercices: s.nb || "",
-    "Données": String(s.data).slice(0, 49000),
+    "Données": extraireLogo(String(s.data)).slice(0, 49000),
+    Objectif: String(s.objectif || "").slice(0, 500),
     "Publié": "OUI",
   };
   if (u && !l) {
@@ -329,6 +410,7 @@ function enregistrerSeance(s, u) {
       if (val[h] !== undefined) sh.getRange(l, k + 1).setValue(val[h]);
     });
   } else sh.appendRow(head.map(h => (val[h] !== undefined ? val[h] : "")));
+  invalider();
   return rep({ ok: true });
 }
 function supprimerSeance(id, u) {
@@ -339,6 +421,7 @@ function supprimerSeance(id, u) {
   if (u && !u.admin && proprietaireDe(sh.getRange(l, ip + 1).getValue()) !== u.email)
     return rep({ ok: false, error: "seul le propriétaire peut supprimer" });
   sh.deleteRow(l);
+  invalider();
   return rep({ ok: true });
 }
 // partage : liste d'adresses Google (par personne). Réservé au propriétaire et à l'administrateur.
@@ -362,6 +445,7 @@ function partagerSeance(id, liste, u) {
     }
   });
   sh.getRange(l, head.indexOf("Partage") + 1).setValue(ok.join(", "));
+  invalider();
   return rep({ ok: true, partage: ok });
 }
 
@@ -430,6 +514,7 @@ function enregistrerEquipe(q, u) {
     id = "e" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
     sh.appendRow([id, nom, u.email, u.nom, membres.join(", "), new Date().toISOString()]);
   }
+  invalider();
   return rep({ ok: true, id: id });
 }
 function supprimerEquipe(id, u) {
@@ -439,6 +524,7 @@ function supprimerEquipe(id, u) {
   if (!u.admin && String(sh.getRange(l, 3).getValue()).toLowerCase() !== u.email)
     return rep({ ok: false, error: "seul le responsable peut supprimer l'équipe" });
   sh.deleteRow(l);
+  invalider();
   return rep({ ok: true });
 }
 function quitterEquipe(id, u) {
@@ -447,6 +533,7 @@ function quitterEquipe(id, u) {
   if (!l) return rep({ ok: true });
   const reste = listePartage(sh.getRange(l, 5).getValue()).filter(m => m !== u.email);
   sh.getRange(l, 5).setValue(reste.join(", "));
+  invalider();
   return rep({ ok: true });
 }
 

@@ -104,18 +104,14 @@ function cyBtn(a, t, bg, col = "#fff", extra = "") {
 function cyPicker() {
   const q = norm(CYQ);
   const dans = new Set(CY.lignes.map(l => l.sid));
-  const L = sbAll().filter(r => {
-    const d = sbParse(r),
-      m = (d && d.meta) || {};
-    return !q || norm([m.titre || r.titre, m.theme, m.dates, m.objectif].join(" ")).includes(q);
-  });
+  const L = sbAll().filter(
+    r => !q || norm([r.titre, r.theme, r.dates, r.objectif].join(" ")).includes(q)
+  );
   return `<div class="box" style="background:#F7F9FD"><b>Séances de la bibliothèque</b> <a class="chip" data-cya="pickoff" style="cursor:pointer;float:right">Fermer</a>
   <input class="search" id="cyq" type="search" placeholder="Rechercher une séance…" value="${esc(CYQ)}" style="max-width:360px;display:block;margin:8px 0">
   <div style="max-height:280px;overflow:auto">${
     L.map(r => {
-      const d = sbParse(r),
-        m = (d && d.meta) || {};
-      return `<div style="display:flex;gap:10px;align-items:center;padding:6px 4px;border-top:1px solid #E3E8F2"><div style="flex:1"><b>${esc(m.titre || r.titre || "Séance")}</b><div style="font-size:13px;color:#6B7280">${esc([m.dates, m.theme].filter(Boolean).join(" · "))}</div></div>${dans.has(r.id) ? '<span style="color:#2E7D4F;font-size:13px">✓ déjà dans le cycle</span>' : `<a class="chip" data-cya="pick" data-id="${esc(r.id)}" style="cursor:pointer">+ Ajouter</a>`}</div>`;
+      return `<div style="display:flex;gap:10px;align-items:center;padding:6px 4px;border-top:1px solid #E3E8F2"><div style="flex:1"><b>${esc(r.titre || "Séance")}</b><div style="font-size:13px;color:#6B7280">${esc([r.dates, r.theme].filter(Boolean).join(" · "))}</div></div>${dans.has(r.id) ? '<span style="color:#2E7D4F;font-size:13px">✓ déjà dans le cycle</span>' : `<a class="chip" data-cya="pick" data-id="${esc(r.id)}" style="cursor:pointer">+ Ajouter</a>`}</div>`;
     }).join("") ||
     '<div style="color:#6B7280">Aucune séance enregistrée. Créez-en dans « Ma séance » puis « Enregistrer dans la bibliothèque ».</div>'
   }</div></div>`;
@@ -174,9 +170,11 @@ async function cyEnregistrer() {
     educ: CY.educ,
     dates: CY.periode,
     nb: CY.lignes.length,
+    objectif: CY.objectif || "",
     ts: new Date().toISOString(),
     data,
   };
+  delete SB_DATA[rec.id];
   cySave();
   sbMemo(
     LS_DEL,
@@ -204,28 +202,29 @@ async function cyEnregistrer() {
 function cyAll() {
   return sbTous()
     .filter(r => String(r.id).startsWith("cy"))
-    .map(r => {
-      try {
-        return { rec: r, cy: JSON.parse(r.data).cycle };
-      } catch (e) {
-        return null;
-      }
-    })
-    .filter(x => x && x.cy);
+    .map(r => ({ rec: r }));
+}
+/* contenu complet d'un cycle (absent tant qu'il n'a pas été chargé) */
+function cyData(rec) {
+  try {
+    return JSON.parse(rec.data).cycle || null;
+  } catch (e) {
+    return null;
+  }
 }
 function cyListeHTML() {
   if (compteOn() && !AUTH.user) return compteInvite("pour voir et enregistrer vos cycles");
   const L = cyAll();
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
-    ({ rec, cy }) =>
-      `<tr class="r" data-go="cy/${esc(rec.id)}">${cel(cy.titre).replace("<td", '<td style="font-weight:700"')}${cel(cy.groupe)}${cel(cy.periode)}${cel(cy.lignes.length + " séance" + (cy.lignes.length > 1 ? "s" : ""))}${compteOn() ? cel(compteMien(rec) ? "Moi" : rec.ownerNom || rec.owner) : ""}<td style="text-align:right">${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+    ({ rec }) =>
+      `<tr class="r" data-go="cy/${esc(rec.id)}">${cel(rec.titre).replace("<td", '<td style="font-weight:700"')}${cel(rec.theme)}${cel(rec.dates)}${cel((+rec.nb || 0) + " séance" + (+rec.nb > 1 ? "s" : ""))}${compteOn() ? cel(compteMien(rec) ? "Moi" : rec.ownerNom || rec.owner) : ""}<td style="text-align:right">${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
   return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
 }
 async function cySupprimer(id) {
   const x = cyAll().find(c => c.rec.id === id);
-  if (!confirm("Supprimer définitivement le cycle « " + ((x && x.cy.titre) || "") + " » ?"))
+  if (!confirm("Supprimer définitivement le cycle « " + ((x && x.rec.titre) || "") + " » ?"))
     return false;
   sbMemo(LS_DEL, [...sbSupprimees(), id]);
   sbMemo(
@@ -470,11 +469,22 @@ registerView({
     const id = decodeURIComponent(v.slice(3));
     const x = cyAll().find(c => c.rec.id === id);
     const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer" data-bt="cycles">← Bibliothèque</a></div>`;
-    if (!x) {
+    if (x && !x.rec.data && !SB_ECHEC[id]) {
+      sbCharger(id)
+        .then(() => VIEW.startsWith("cy/") && render())
+        .catch(() => {
+          SB_ECHEC[id] = 1;
+          VIEW.startsWith("cy/") && render();
+        });
+      return back + `<div class="box">Chargement du cycle…</div>`;
+    }
+    const cy = x && cyData(x.rec);
+    if (!cy) {
       CYVU = null;
       return back + `<div class="box">Ce cycle est introuvable ou illisible.</div>`;
     }
-    CYVU = { id, cy: x.cy };
+    x.cy = cy;
+    CYVU = { id, cy };
     const mien = compteMien(x.rec);
     return `${back}<div class="tools noprint">${cyBtn("vprint", "Imprimer / PDF", "#26364D")}${cyBtn("vword", "Télécharger en Word", "#2B5A9E")}${cyBtn("vedit", mien ? "✎ Modifier ce cycle" : "Utiliser comme modèle (copie)", "#2E7D4F")}${mien ? cyBtn("vdel", "🗑 Supprimer", "#fff", "#B2263A", "border:1px solid #E8B4BC;") : ""}<span id="cyMsg" style="font-weight:700;color:#2E7D4F"></span></div>${partageBloc(x.rec)}${cycleSheetHTML(x.cy)}`;
   },
@@ -524,10 +534,14 @@ registerClick(e => {
     CYPICK = false;
     render();
   } else if (a === "pick") {
-    const r = sbAll().find(x => x.id === b.dataset.id);
-    if (r) CY.lignes.push(cyLigneDe(r));
-    cySave();
-    render();
+    sbCharger(b.dataset.id)
+      .then(() => {
+        const r = sbAll().find(x => x.id === b.dataset.id);
+        if (r) CY.lignes.push(cyLigneDe(r));
+        cySave();
+        render();
+      })
+      .catch(err => toast("Séance illisible : " + err.message));
   } else if (a === "blank") {
     CY.lignes.push({
       id: CYUID++,
@@ -551,13 +565,19 @@ registerClick(e => {
     cySave();
     render();
   } else if (a === "sync" && i >= 0) {
-    const r = sbAll().find(x => x.id === CY.lignes[i].sid);
-    if (r) {
-      const n = cyLigneDe(r);
-      CY.lignes[i] = { ...n, id: CY.lignes[i].id, notes: CY.lignes[i].notes };
-      cySave();
-      render();
-    } else toast("Séance introuvable dans la bibliothèque.");
+    const sid = CY.lignes[i].sid,
+      lid = CY.lignes[i].id;
+    sbCharger(sid)
+      .then(() => {
+        const r = sbAll().find(x => x.id === sid);
+        const j = CY.lignes.findIndex(l => l.id === lid);
+        if (r && j >= 0) {
+          CY.lignes[j] = { ...cyLigneDe(r), id: lid, notes: CY.lignes[j].notes };
+          cySave();
+          render();
+        }
+      })
+      .catch(() => toast("Séance introuvable dans la bibliothèque."));
   }
   return true;
 });

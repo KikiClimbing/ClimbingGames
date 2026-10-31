@@ -26,7 +26,7 @@ async function loadSeances() {
     SEANCES = [];
     if (!AUTH.session) return;
     try {
-      SEANCES = (await comptePost("seances_liste")).seances.filter(x => x.id && x["Données"]);
+      SEANCES = (await comptePost("seances_liste")).seances.filter(x => x.id);
     } catch (e) {
       SEANCES = [];
     }
@@ -74,7 +74,8 @@ function sbTous() {
       dates: x["Dates"],
       nb: x["Exercices"],
       ts: x["Horodateur"],
-      data: x["Données"],
+      data: x["Données"] || SB_DATA[x.id] || "",
+      objectif: x["Objectif"] || "",
       owner: x["Propriétaire"] || "",
       ownerNom: x["Nom"] || "",
       partage: x["Partage"] || "",
@@ -96,6 +97,26 @@ function sbTous() {
 }
 /* les séances seulement : les cycles de formation (identifiant « cy… ») sont dans « Mon cycle » */
 const sbAll = () => sbTous().filter(r => !String(r.id).startsWith("cy"));
+/* contenu complet des séances reçues « à la demande » (la liste du serveur est légère) */
+const SB_DATA = {},
+  SB_EN_COURS = {};
+function sbCharger(id) {
+  const r = sbTous().find(x => x.id === id);
+  if (r && r.data) return Promise.resolve(r.data);
+  if (!compteOn()) return Promise.reject(new Error("introuvable"));
+  if (!SB_EN_COURS[id])
+    SB_EN_COURS[id] = comptePost("seance_lire", { id })
+      .then(j => {
+        SB_DATA[id] = j.data;
+        delete SB_EN_COURS[id];
+        return j.data;
+      })
+      .catch(e => {
+        delete SB_EN_COURS[id];
+        throw e;
+      });
+  return SB_EN_COURS[id];
+}
 function sbParse(rec) {
   try {
     const d = JSON.parse(rec.data);
@@ -124,6 +145,7 @@ async function enregistrerSeance() {
   const rec = {
     id: SE.id,
     titre: SMETA.titre || "Séance sans titre",
+    objectif: SMETA.objectif || "",
     theme: SMETA.theme || "",
     educ: SMETA.educ || "",
     dates: SMETA.dates || "",
@@ -132,6 +154,7 @@ async function enregistrerSeance() {
     data,
   };
   seSave();
+  delete SB_DATA[rec.id];
   sbMemo(
     LS_DEL,
     sbSupprimees().filter(x => x !== rec.id)
@@ -187,7 +210,7 @@ function seancesListeHTML() {
         educ: m.educ || r.educ || "",
         dates: m.dates || r.dates || "",
         theme: m.theme || r.theme || "",
-        obj: m.objectif || "",
+        obj: m.objectif || r.objectif || "",
         mien: compteMien(r),
         par: compteMien(r) ? "" : r.ownerNom || r.owner,
       };
@@ -232,10 +255,20 @@ async function sbSupprimer(id) {
 /* ---------- une séance ---------- */
 let SBCUR = null,
   SBID = "";
+const SB_ECHEC = {};
 function seanceFicheView(id) {
   const rec = sbAll().find(r => r.id === id);
   const d = rec && sbParse(rec);
   const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer">← Bibliothèque de séances</a></div>`;
+  if (rec && !rec.data && !SB_ECHEC[id]) {
+    sbCharger(id)
+      .then(() => VIEW.startsWith("sb/") && render())
+      .catch(() => {
+        SB_ECHEC[id] = 1;
+        VIEW.startsWith("sb/") && render();
+      });
+    return back + `<div class="box">Chargement de la séance…</div>`;
+  }
   if (!d) {
     SBCUR = null;
     return back + `<div class="box">Cette séance est introuvable ou illisible.</div>`;
