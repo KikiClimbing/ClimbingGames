@@ -3,11 +3,11 @@ seLoad();
 registerNav({
   sec: "MES SÉANCES",
   secOrder: 30,
-  order: 3,
+  order: 1,
   html: () =>
     navBtn(
       "seance",
-      `Ma séance<span class="n" id="selcount">${selCount() || ""}</span>`,
+      `Créer une séance<span class="n" id="selcount">${selCount() || ""}</span>`,
       '<span class="ic">☰</span>'
     ),
 });

@@ -91,7 +91,7 @@ Fichier à la racine, **le vôtre** : il n'est jamais écrasé par une mise à j
 | `RETOURS_CSV_URL` | CSV publié de l'onglet des retours |
 | `FORM_URL` | lien du formulaire « Proposer un jeu » |
 | `RETOUR_FORM_URL` | lien du formulaire « Retour terrain » |
-| `TEMPLATE_SEANCE_URL`, `TEMPLATE_CYCLE_URL` | modèles Google Docs (page « Séances & cycles ») |
+| `TEMPLATE_SEANCE_URL`, `TEMPLATE_CYCLE_URL` | modèles Google Docs (onglet « Drive et modèles » de « Séances et cycles ») |
 | `LIBRARY_URL` | dossier Drive de la bibliothèque (onglet « Dossier Google Drive ») |
 | `GAME_ADD_URL` | adresse `/exec` de l'application web Apps Script (**une seule pour tout**) |
 | `GOOGLE_CLIENT_ID` | identifiant client OAuth Google (pas un secret). Vide = pas de comptes (ancien fonctionnement) |
@@ -154,7 +154,7 @@ config.js             vos adresses (jamais écrasé)
 docs/maintenance.md   ce document
 core/                 moteur : defaults, state, utils, games, registry, nav, router, render, sheet, main
 features/             un dossier par fonctionnalité
-  home/ jeux/ retours/ guides/ biblio/ mes-seances/ seance/ editeur/ admin/
+  home/ jeux/ retours/ guides/ biblio/ seance/ editeur/ admin/
 data/                 jeux.js (EMBED), annexes.js (AX)
 cartes/ schemas/      images
 css/                  base.css, responsive.css (mobile + impression)
@@ -340,6 +340,7 @@ Fonctionnement : `features/compte/compte.js` (bouton Google, session dans `local
 |---|---|---|
 | 2026-10-31 | 42 | Équipes : page « Mes équipes » (créer, membres, quitter, supprimer) et partage d'une séance ou d'un cycle avec une équipe ; onglet `Équipes` créé automatiquement ; **script Apps Script à redéployer** |
 | 2026-10-31 | 43 | Passage à l'échelle : liste de séances légère et mise en cache, contenu chargé à la demande (`seance_lire`), logos stockés une fois (onglet `Logos`), colonne `Objectif` ; **script Apps Script à redéployer** |
+| 2026-10-31 | 44 | Menu : « Créer une séance », « Dessiner un schéma », « Créer un cycle », « Séances et cycles » (ancienne page « Séances & cycles » supprimée, ses modèles Google Docs sont dans l'onglet « Drive et modèles ») ; clic sur une séance d'un cycle enregistré = fenêtre (`popOuvrir` dans `seances.js`, impression/Word/ouvrir) ; bulles d'aide « ? » (`aide()` dans `core/nav.js`, 3ᵉ paramètre de `gsec`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
 | 2026-10-30 | 39 | « Mon cycle » : outil de création du cycle de formation (séances de la bibliothèque, enregistrement partagé, impression/PDF, Word) ; onglet « Cycles de formation » dans la bibliothèque |

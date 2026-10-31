@@ -26,7 +26,6 @@ features/             UNE FONCTIONNALITÉ = UN DOSSIER
   retours/              retours de terrain
   guides/               guides (sécurité, matériel, glossaire…)
   biblio/               bibliothèque de séances (dossier Drive)
-  mes-seances/          page « Séances & cycles »
   seance/               « Ma séance » : modele.js (données et calculs), fiche.js (aperçu),
                         formulaire.js (saisie), actions.js (boutons), export-word.js
   editeur/              éditeur de schémas : etat, formes (dessin des pièces), rendu, panneau,

@@ -107,7 +107,8 @@ async function compteBoutonGoogle() {
 function compteView() {
   const head = gsec(
     "Mon compte",
-    "Le compte sert à enregistrer vos séances et vos cycles et à les partager. Les jeux restent accessibles à tous."
+    "Le compte sert à enregistrer vos séances et vos cycles et à les partager. Les jeux restent accessibles à tous.",
+    "Connectez-vous avec votre compte Google : aucun mot de passe à créer. Vos séances sont privées tant que vous ne les partagez pas."
   );
   if (!compteOn())
     return head + `<div class="box">Les comptes ne sont pas activés sur ce site.</div>`;
@@ -169,7 +170,8 @@ const equipeNom = id => (EQUIPES.find(q => q.id === id) || {}).nom || "équipe";
 function equipesView() {
   const head = gsec(
     "Mes équipes",
-    "Une équipe est un groupe de personnes (adresses Google). Partager une séance avec l'équipe la rend lisible par tous ses membres."
+    "Une équipe est un groupe de personnes (adresses Google). Partager une séance avec l'équipe la rend lisible par tous ses membres.",
+    "<b>Comment faire ?</b><br>Créez une équipe, ajoutez les adresses Google de ses membres (une par ligne). Ensuite, dans une séance ou un cycle, choisissez « Partager » puis cette équipe."
   );
   if (!AUTH.user) return head + compteInvite("pour gérer vos équipes");
   const mes = EQUIPES.filter(q => q.owner === AUTH.user.email);

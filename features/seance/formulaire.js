@@ -6,7 +6,7 @@ function seanceView() {
     S = SMETA,
     two = M.two;
   const gl = i => esc(M.G[i].nom);
-  const head = `<h2 class="pt">Ma séance</h2><p class="lead">Construisez votre séance comme dans votre modèle : accueil, échauffement, puis un corps de séance découpé en autant de sous-sections que vous voulez, pour tous les groupes ou seulement certains (deux groupes par défaut, quatre au maximum). Les exercices viennent de la bibliothèque de jeux ou s'écrivent librement. Tout est enregistré dans ce navigateur ; exportez en Word, en PDF ou en texte.</p>`;
+  const head = `<h2 class="pt">Créer une séance ${aide("<b>Comment faire ?</b><br>1. Remplissez les informations générales (titre, date, thème…).<br>2. Ajoutez des exercices : un jeu du site (bouton « Ajouter à ma séance » sur sa fiche) ou un exercice libre.<br>3. Enregistrez dans la bibliothèque, ou exportez en Word, PDF ou texte.<br>Votre brouillon reste dans ce navigateur.")}</h2><p class="lead">Construisez votre séance comme dans votre modèle : accueil, échauffement, puis un corps de séance découpé en autant de sous-sections que vous voulez, pour tous les groupes ou seulement certains (deux groupes par défaut, quatre au maximum). Les exercices viennent de la bibliothèque de jeux ou s'écrivent librement. Tout est enregistré dans ce navigateur ; exportez en Word, en PDF ou en texte.</p>`;
   const inp = (k, l, p, span) =>
     `<label class="sml" style="${span ? "grid-column:1/-1" : ""}">${l}<input data-sm="${k}" value="${esc(S[k])}" placeholder="${esc(p)}"></label>`;
   const colf = (cls, c) => `border-left:4px solid ${c};padding-left:8px`;

@@ -10,6 +10,18 @@ function proposeHTML() {
     return `<a class="propose" id="propose" href="${esc(CONFIG.FORM_URL)}" target="_blank" rel="noopener">+ Proposer un jeu</a>`;
   return "";
 }
+/* petite bulle d'aide « ? » : texte au survol, au focus ou au clic (écrans tactiles) */
+function aide(txt) {
+  return `<span class="aide" tabindex="0" role="button" aria-label="Aide">?<span class="tip">${txt}</span></span>`;
+}
+registerClick(e => {
+  const a = e.target.closest(".aide");
+  document.querySelectorAll(".aide.open").forEach(x => x !== a && x.classList.remove("open"));
+  if (a) {
+    a.classList.toggle("open");
+    return true;
+  }
+});
 function buildNav() {
   const items = NAVITEMS.slice().sort(
     (a, b) => a.secOrder - b.secOrder || (a.order || 0) - (b.order || 0)

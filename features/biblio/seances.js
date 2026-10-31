@@ -95,7 +95,7 @@ function sbTous() {
     .filter(r => !del.has(r.id))
     .sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
 }
-/* les séances seulement : les cycles de formation (identifiant « cy… ») sont dans « Mon cycle » */
+/* les séances seulement : les cycles de formation (identifiant « cy… ») sont dans « Créer un cycle » */
 const sbAll = () => sbTous().filter(r => !String(r.id).startsWith("cy"));
 /* contenu complet des séances reçues « à la demande » (la liste du serveur est légère) */
 const SB_DATA = {},
@@ -223,7 +223,7 @@ function seancesListeHTML() {
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px"></div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Ma séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "";
@@ -259,7 +259,7 @@ const SB_ECHEC = {};
 function seanceFicheView(id) {
   const rec = sbAll().find(r => r.id === id);
   const d = rec && sbParse(rec);
-  const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer">← Bibliothèque de séances</a></div>`;
+  const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer">← Séances et cycles</a></div>`;
   if (rec && !rec.data && !SB_ECHEC[id]) {
     sbCharger(id)
       .then(() => VIEW.startsWith("sb/") && render())
@@ -300,11 +300,71 @@ registerClick(e => {
   } else if (k === "copy" || k === "edit") {
     const txt =
       k === "edit"
-        ? "Ouvrir cette séance dans « Ma séance » pour la modifier ? Le contenu actuel de « Ma séance » sera remplacé. Enregistrez ensuite pour mettre à jour la séance de la bibliothèque."
-        : "Remplacer le contenu de « Ma séance » par une copie de cette séance ?";
+        ? "Ouvrir cette séance dans « Créer une séance » pour la modifier ? Le contenu actuel de « Créer une séance » sera remplacé. Enregistrez ensuite pour mettre à jour la séance de la bibliothèque."
+        : "Remplacer le contenu de « Créer une séance » par une copie de cette séance ?";
     if (!confirm(txt)) return true;
     sbAdopter(SBCUR, k === "edit" ? SBID : "");
     go("seance");
   }
   return true;
 });
+
+/* ---------- séance ouverte en fenêtre (depuis un cycle) ---------- */
+let POPID = "";
+function popFermer() {
+  const p = $("#pop");
+  if (p) p.remove();
+  document.body.classList.remove("pp");
+  POPID = "";
+}
+async function popOuvrir(id) {
+  popFermer();
+  POPID = id;
+  const p = document.createElement("div");
+  p.id = "pop";
+  p.innerHTML = `<div class="popbox"><div class="poptools noprint"><b id="popt" style="flex:1">Séance</b><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span><a class="chip" data-pop="print">Imprimer / PDF</a><a class="chip" data-pop="word">Word</a><a class="chip" data-pop="open">Ouvrir la page</a><a class="chip" data-pop="close">✕ Fermer</a></div><div id="popbody"><div class="box">Chargement de la séance…</div></div></div>`;
+  document.body.appendChild(p);
+  document.body.classList.add("pp");
+  try {
+    await sbCharger(id);
+    if (POPID !== id) return;
+    const rec = sbTous().find(r => r.id === id),
+      d = rec && sbParse(rec);
+    if (!d) throw new Error("illisible");
+    SBCUR = d;
+    SBID = id;
+    $("#popt").textContent = d.meta.titre || rec.titre || "Séance";
+    $("#popbody").innerHTML = withSeance(d.meta, d.se, () => sheetHTML()).replace(
+      'id="sheet"',
+      'id="popsheet"'
+    );
+  } catch (e) {
+    if (POPID === id)
+      $("#popbody").innerHTML =
+        `<div class="box">Cette séance n'est pas accessible (supprimée, ou non partagée avec vous).</div>`;
+  }
+}
+registerClick(e => {
+  const o = e.target.closest("[data-sbpop]");
+  if (o) {
+    popOuvrir(o.dataset.sbpop);
+    return true;
+  }
+  if (e.target.id === "pop") {
+    popFermer();
+    return true;
+  }
+  const b = e.target.closest("[data-pop]");
+  if (!b) return;
+  const k = b.dataset.pop;
+  if (k === "close") popFermer();
+  else if (k === "print") window.print();
+  else if (k === "word" && SBCUR) seanceWord(SBCUR);
+  else if (k === "open") {
+    const id = POPID;
+    popFermer();
+    go("sb/" + id);
+  }
+  return true;
+});
+document.addEventListener("keydown", e => e.key === "Escape" && POPID && popFermer());

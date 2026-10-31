@@ -8,8 +8,8 @@ const GUIDES = [
   ["equipes", "Former les équipes", "⚑"],
   ["gloss", "Glossaire", "Aa"],
 ];
-function gsec(t, lead) {
-  return `<h2 class="pt">${t}</h2><p class="lead">${lead || ""}</p>`;
+function gsec(t, lead, aideTxt) {
+  return `<h2 class="pt">${t}${aideTxt ? " " + aide(aideTxt) : ""}</h2><p class="lead">${lead || ""}</p>`;
 }
 const MATREG = {
   "Sifflet ou signal d'arrêt": /sifflet/,

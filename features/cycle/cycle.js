@@ -89,7 +89,7 @@ function cycleSheetHTML(cy) {
   const rows = cy.lignes
     .map(
       (l, i) =>
-        `<tr style="background:${i % 2 ? "#F4F7FB" : "#fff"}"><td style="padding:6px 8px;font-weight:700;text-align:center;color:${C2}">${i + 1}</td><td style="padding:6px 8px;font-weight:700">${v(l.titre, "—")}</td><td style="padding:6px 8px">${esc(l.dates)}</td><td style="padding:6px 8px">${esc(l.theme)}</td><td style="padding:6px 8px;white-space:pre-wrap">${esc(l.objectif)}</td><td style="padding:6px 8px">${jeux(l.jeux)}</td><td style="padding:6px 8px;white-space:pre-wrap">${esc(l.notes)}</td></tr>`
+        `<tr style="background:${i % 2 ? "#F4F7FB" : "#fff"}"><td style="padding:6px 8px;font-weight:700;text-align:center;color:${C2}">${i + 1}</td><td style="padding:6px 8px;font-weight:700">${l.sid ? `<a data-sbpop="${esc(l.sid)}" title="Ouvrir cette séance" style="cursor:pointer;color:inherit;border-bottom:1px dotted ${C2}">${v(l.titre, "—")}</a>` : v(l.titre, "—")}</td><td style="padding:6px 8px">${esc(l.dates)}</td><td style="padding:6px 8px">${esc(l.theme)}</td><td style="padding:6px 8px;white-space:pre-wrap">${esc(l.objectif)}</td><td style="padding:6px 8px">${jeux(l.jeux)}</td><td style="padding:6px 8px;white-space:pre-wrap">${esc(l.notes)}</td></tr>`
     )
     .join("");
   return `<div id="sheet" style="background:#fff;font-size:12.5px;line-height:1.4;color:#2B2F36">
@@ -113,13 +113,14 @@ function cyPicker() {
     L.map(r => {
       return `<div style="display:flex;gap:10px;align-items:center;padding:6px 4px;border-top:1px solid #E3E8F2"><div style="flex:1"><b>${esc(r.titre || "Séance")}</b><div style="font-size:13px;color:#6B7280">${esc([r.dates, r.theme].filter(Boolean).join(" · "))}</div></div>${dans.has(r.id) ? '<span style="color:#2E7D4F;font-size:13px">✓ déjà dans le cycle</span>' : `<a class="chip" data-cya="pick" data-id="${esc(r.id)}" style="cursor:pointer">+ Ajouter</a>`}</div>`;
     }).join("") ||
-    '<div style="color:#6B7280">Aucune séance enregistrée. Créez-en dans « Ma séance » puis « Enregistrer dans la bibliothèque ».</div>'
+    '<div style="color:#6B7280">Aucune séance enregistrée. Créez-en dans « Créer une séance » puis « Enregistrer dans la bibliothèque ».</div>'
   }</div></div>`;
 }
 function cycleView() {
   const head = gsec(
-    "Mon cycle de formation",
-    "Planifiez un cycle : ajoutez les séances de la bibliothèque, complétez le tableau, enregistrez et exportez."
+    "Créer un cycle de formation",
+    "Planifiez un cycle : ajoutez les séances de la bibliothèque, complétez le tableau, enregistrez et exportez.",
+    "<b>Comment faire ?</b><br>1. Renseignez le titre, le public, la période.<br>2. Ajoutez des séances déjà enregistrées (bouton « Ajouter »), puis complétez les remarques.<br>3. Enregistrez le cycle, ou exportez en Word / PDF.<br>Dans un cycle enregistré, cliquez sur le nom d'une séance pour l'ouvrir."
   );
   const inp = (k, lab, ph = "") =>
     `<label class="sml">${lab}<input data-cy="${k}" value="${esc(CY[k])}" placeholder="${esc(ph)}"></label>`;
@@ -422,11 +423,11 @@ async function cycleWord(cy, msg) {
 registerNav({
   sec: "MES SÉANCES",
   secOrder: 30,
-  order: 3.5,
+  order: 3,
   html: () =>
     navBtn(
       "cycle",
-      `Mon cycle<span class="n">${CY.lignes.length || ""}</span>`,
+      `Créer un cycle<span class="n">${CY.lignes.length || ""}</span>`,
       '<span class="ic">⟳</span>'
     ),
 });
@@ -506,7 +507,7 @@ registerClick(e => {
   else if (a === "vedit") {
     if (
       !confirm(
-        "Ouvrir ce cycle dans « Mon cycle » ? Le contenu actuel de « Mon cycle » sera remplacé."
+        "Ouvrir ce cycle dans « Créer un cycle » ? Le contenu actuel de « Créer un cycle » sera remplacé."
       )
     )
       return true;
