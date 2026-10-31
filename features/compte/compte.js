@@ -10,6 +10,24 @@ try {
     AUTH.user = s.user;
   }
 } catch (e) {}
+/* « voir comme » (administrateur) : on prend l'identité d'un autre utilisateur, en lecture seule */
+AUTH.reel = null;
+try {
+  const c = sessionStorage.getItem("compteComme");
+  if (c && AUTH.user && AUTH.user.admin) {
+    AUTH.reel = AUTH.user;
+    AUTH.user = { email: c, nom: c, admin: false, comme: true };
+  }
+} catch (e) {}
+const compteAdmin = () => !!(AUTH.reel || AUTH.user || {}).admin;
+function compteVoirComme(email) {
+  try {
+    if (email) sessionStorage.setItem("compteComme", String(email).trim().toLowerCase());
+    else sessionStorage.removeItem("compteComme");
+  } catch (e) {}
+  location.hash = "#/biblio";
+  location.reload();
+}
 /* suffixe des clés du navigateur : une personne ne voit pas les copies locales d'une autre */
 const compteSuffixe = () => (compteOn() && AUTH.user ? ":" + AUTH.user.email : "");
 /* séance ou cycle à moi ? (sans comptes : toujours) */
@@ -27,7 +45,12 @@ async function comptePost(action, extra) {
   const r = await fetch(CONFIG.GAME_ADD_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ action, session: AUTH.session, ...extra }),
+    body: JSON.stringify({
+      action,
+      session: AUTH.session,
+      ...(AUTH.reel ? { comme: AUTH.user.email } : {}),
+      ...extra,
+    }),
   });
   const j = await r.json();
   if (!j.ok) {
@@ -154,6 +177,19 @@ registerClick(e => {
   return true;
 });
 
+/* phrase à ajouter au message de confirmation quand des invitations ont été envoyées */
+function compteInfoMails(m) {
+  if (!m || !m.envoyes) return "";
+  return (
+    " " +
+    m.envoyes +
+    " invitation" +
+    (m.envoyes > 1 ? "s" : "") +
+    " envoyée" +
+    (m.envoyes > 1 ? "s" : "") +
+    " par e-mail."
+  );
+}
 /* ---------- équipes ---------- */
 let EQUIPES = [];
 async function loadEquipes() {
@@ -230,7 +266,7 @@ registerClick(e => {
       .value.split(/[\s,;]+/)
       .filter(Boolean);
     comptePost("equipe_enregistrer", { equipe: { id, nom, membres } })
-      .then(() => rafraichir("✓ Équipe enregistrée."))
+      .then(j => rafraichir("✓ Équipe enregistrée." + compteInfoMails(j.emails)))
       .catch(echec);
   } else if (a === "del") {
     if (
@@ -300,5 +336,11 @@ registerClick(e => {
         m.textContent = "Échec : " + err.message;
       });
   }
+  return true;
+});
+registerClick(e => {
+  const b = e.target.closest("[data-comme]");
+  if (!b) return;
+  compteVoirComme(b.dataset.comme === "quitter" ? "" : b.dataset.comme);
   return true;
 });

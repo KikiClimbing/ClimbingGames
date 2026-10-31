@@ -30,7 +30,11 @@ async function admPost(action, extra) {
   const r = await fetch(CONFIG.GAME_ADD_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({ action, admin: ADM.pw, ...extra }),
+    body: JSON.stringify({
+      action,
+      ...(compteOn() ? { session: AUTH.session } : { admin: ADM.pw }),
+      ...extra,
+    }),
   });
   const j = await r.json();
   if (!j.ok) throw new Error(j.error || "refusé");
@@ -192,7 +196,27 @@ function admView() {
       head +
       `<div class="box">Renseignez <b>GAME_ADD_URL</b> dans config.js pour activer cette page.</div>`
     );
-  if (!ADM.pw || !ADM.list)
+  if (compteOn()) {
+    /* avec les comptes Google : l'administrateur est reconnu par son adresse, pas de mot de passe */
+    if (!AUTH.user) return head + compteInvite("pour accéder à l'administration");
+    if (AUTH.reel)
+      return (
+        head +
+        `<div class="box">Quittez le mode « voir comme » (bandeau jaune) pour utiliser l'administration.</div>`
+      );
+    if (!AUTH.user.admin)
+      return head + `<div class="box">Ce compte n'est pas administrateur du site.</div>`;
+    if (!ADM.list) {
+      if (!ADM.busy && !ADM.auto) {
+        ADM.auto = true;
+        setTimeout(admCharger, 0);
+      }
+      return (
+        head +
+        `<div class="box">${esc(ADM.msg || "Chargement…")}</div>${ADM.msg && !ADM.busy ? `<a class="btn" data-adm="reload" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Réessayer</a>` : ""}`
+      );
+    }
+  } else if (!ADM.pw || !ADM.list)
     return (
       head +
       `<div class="box" style="max-width:420px"><label class="sml">Mot de passe administrateur<input type="password" id="admPw" autocomplete="current-password"></label><div style="margin-top:10px"><a class="btn" data-adm="login" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Se connecter</a></div>${msg}</div>`
@@ -226,7 +250,8 @@ function admView() {
       ${ouvert ? `${v["Remplace le jeu"] ? remplaceBandeau(v["Remplace le jeu"]) : ""}${schemaApercu(v)}${schemaPicker(g)}<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}${isEmb(v) ? "" : `<a class="btn" data-adm="pick" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>`}${v.Code && !isEmb(v) ? `<a class="btn" data-adm="schema" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner / modifier le schéma</a>` : ""}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
     })
     .join("");
-  const onglets = `<div class="tools"><div class="seg"><button data-adm="tab" data-t="jeux" class="${ADM.tab === "jeux" ? "on" : ""}">Gérer les jeux</button><button data-adm="tab" data-t="schemas" class="${ADM.tab === "schemas" ? "on" : ""}">Schémas</button><button data-adm="tab" data-t="doc" class="${ADM.tab === "doc" ? "on" : ""}">Documentation</button></div><span class="grow" style="flex:1"></span><a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a></div>`;
+  const onglets = `<div class="tools"><div class="seg"><button data-adm="tab" data-t="jeux" class="${ADM.tab === "jeux" ? "on" : ""}">Gérer les jeux</button><button data-adm="tab" data-t="schemas" class="${ADM.tab === "schemas" ? "on" : ""}">Schémas</button><button data-adm="tab" data-t="doc" class="${ADM.tab === "doc" ? "on" : ""}">Documentation</button></div>${admOngletsComptes()}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="chip" data-adm="logout" style="cursor:pointer">Se déconnecter</a>`}</div>`;
+  if (ADM_TABS_COMPTES.includes(ADM.tab)) return head + onglets + admComptesHTML();
   if (ADM.tab === "doc") return head + onglets + docHTML();
   if (ADM.tab === "schemas") return head + onglets + msg + schemasHTML();
   return (
@@ -262,6 +287,7 @@ registerView({
         n.focus();
         n.setSelectionRange(n.value.length, n.value.length);
       });
+    if (typeof admComptesBind === "function") admComptesBind();
     const pw = $("#admPw");
     if (pw)
       pw.addEventListener("keydown", e => {
@@ -276,7 +302,10 @@ registerNav({
   sec: "ADMINISTRATION",
   secOrder: 50,
   order: 1,
-  html: () => navBtn("admin", "Administration", '<span class="ic">⚙</span>'),
+  html: () =>
+    compteOn() && !(AUTH.user && AUTH.user.admin)
+      ? ""
+      : navBtn("admin", "Administration", '<span class="ic">⚙</span>'),
 });
 registerClick(e => {
   const b = e.target.closest("[data-adm]");
@@ -334,6 +363,7 @@ registerClick(e => {
     render();
   } else if (a === "tab") {
     ADM.tab = b.dataset.t;
+    if (ADM_TABS_COMPTES.includes(ADM.tab)) admComptesCharger();
     render();
   } else if (a === "reload") admCharger();
   else if (a === "mode") {

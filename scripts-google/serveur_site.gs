@@ -6,7 +6,8 @@
 //   - reçoit les jeux proposés depuis « Ma séance » (ligne ajoutée, non publiée) ;
 //   - enregistre / supprime les séances (onglet « Séances », créé tout seul) ;
 //   - envoie les schémas dessinés sur le site directement dans votre dépôt GitHub (dossier schemas/) ;
-//   - permet de relire, corriger, valider ou refuser les jeux en attente depuis le site (mot de passe admin).
+//   - permet de relire, corriger, valider ou refuser les jeux en attente depuis le site (compte Google administrateur, ou mot de passe admin sans comptes) ;
+//   - gère les utilisateurs et les équipes, et envoie les invitations par e-mail (désactivables).
 //
 // ⚠ Ce script est privé : ne le partagez pas (il contient votre mot de passe et votre jeton GitHub).
 
@@ -34,6 +35,11 @@ const GOOGLE_CLIENT_ID = "";
 const ADMIN_EMAILS = "";
 const SECRET_SESSION = "changez-moi-par-une-longue-suite-au-hasard";
 const DUREE_SESSION_JOURS = 30;
+// E-mails d'invitation envoyés depuis VOTRE compte Google quand on ajoute quelqu'un à une équipe.
+// true = envoyés ; false = jamais. Vous pouvez aussi les activer/désactiver depuis Administration > Réglages
+// (le réglage du site, s'il existe, l'emporte sur cette valeur).
+const ENVOYER_EMAILS = true;
+const NOM_EXPEDITEUR = "Jeux d'escalade";
 
 const NOM_FEUILLE = ""; // vide : la feuille qui contient les colonnes « Titre » et « Principe » est trouvée toute seule
 
@@ -42,8 +48,21 @@ function doPost(e) {
     const d = JSON.parse(e.postData.contents);
     const action = d.action || "jeu";
     if (action.indexOf("admin_") === 0) {
-      if (d.admin !== MOT_DE_PASSE_ADMIN)
-        return rep({ ok: false, error: "mot de passe administrateur incorrect" });
+      // administrateur = compte Google listé dans ADMIN_EMAILS (comptes activés) ou mot de passe administrateur
+      const su = GOOGLE_CLIENT_ID ? lireSession(d.session) : null;
+      if (!(su && su.admin) && d.admin !== MOT_DE_PASSE_ADMIN)
+        return rep({
+          ok: false,
+          error: GOOGLE_CLIENT_ID
+            ? "réservé à l'administrateur : connectez-vous avec un compte administrateur"
+            : "mot de passe administrateur incorrect",
+        });
+      if (action === "admin_utilisateurs") return adminUtilisateurs();
+      if (action === "admin_utilisateur") return adminUtilisateur(d);
+      if (action === "admin_equipe") return adminEquipe(d, su);
+      if (action === "admin_seances") return adminSeances();
+      if (action === "admin_seance_proprio") return adminSeanceProprio(d);
+      if (action === "admin_reglages") return adminReglages(d);
       if (action === "admin_liste") return adminListe(d.tous);
       if (action === "admin_enregistrer") return adminEnregistrer(d);
       if (action === "admin_refuser") return adminRefuser(d);
@@ -54,8 +73,16 @@ function doPost(e) {
     }
     if (action === "auth") return connexionGoogle(d);
     if (GOOGLE_CLIENT_ID && /^(seance|equipe)/.test(action)) {
-      const u = lireSession(d.session);
+      let u = lireSession(d.session);
       if (!u) return rep({ ok: false, error: "connexion requise : reconnectez-vous", code: "auth" });
+      if (u.admin && d.comme) {
+        // « voir comme » : l'administrateur consulte (lecture seule) ce que verrait cette personne
+        if (["seances_liste", "seance_lire", "equipes_liste"].indexOf(action) < 0)
+          return rep({ ok: false, error: "lecture seule : vous voyez le site comme un autre utilisateur" });
+        const c = String(d.comme).trim().toLowerCase();
+        u = { email: c, nom: c, admin: false };
+      } else if (!u.admin && estBloque(u.email))
+        return rep({ ok: false, error: "ce compte est désactivé par l'administrateur" });
       if (action === "seances_liste") return listeSeances(u);
       if (action === "seance") return enregistrerSeance(d.seance || {}, u);
       if (action === "seance_suppr") return supprimerSeance(d.id, u);
@@ -229,6 +256,9 @@ function connexionGoogle(d) {
     return rep({ ok: false, error: "jeton Google invalide" });
   const email = String(t.email).toLowerCase(),
     nom = String(t.name || email).slice(0, 80);
+  if (emailsAdmin().indexOf(email) < 0 && estBloque(email))
+    return rep({ ok: false, error: "ce compte est désactivé par l'administrateur" });
+  noterUtilisateur(email, nom);
   return rep({
     ok: true,
     session: creerSession(email, nom),
@@ -505,9 +535,11 @@ function enregistrerEquipe(q, u) {
   const sh = feuilleEquipes();
   let id = String(q.id || "");
   const l = id ? ligneEquipe(sh, id) : 0;
+  let avant = [];
   if (l) {
     const proprio = String(sh.getRange(l, 3).getValue()).toLowerCase();
     if (!u.admin && proprio !== u.email) return rep({ ok: false, error: "seul le responsable peut modifier l'équipe" });
+    avant = listePartage(sh.getRange(l, 5).getValue());
     sh.getRange(l, 2).setValue(nom);
     sh.getRange(l, 5).setValue(membres.join(", "));
   } else {
@@ -515,7 +547,8 @@ function enregistrerEquipe(q, u) {
     sh.appendRow([id, nom, u.email, u.nom, membres.join(", "), new Date().toISOString()]);
   }
   invalider();
-  return rep({ ok: true, id: id });
+  const mail = inviter(membres.filter(m => avant.indexOf(m) < 0), nom, u);
+  return rep({ ok: true, id: id, emails: mail });
 }
 function supprimerEquipe(id, u) {
   const sh = feuilleEquipes();
@@ -686,4 +719,235 @@ function testerConnexions() {
       ? "⚠ Pensez à changer CLE_SITE et MOT_DE_PASSE_ADMIN"
       : "✓ Mots de passe personnalisés"
   );
+}
+
+/* ---------- e-mails d'invitation ---------- */
+function emailsActifs() {
+  const v = PropertiesService.getScriptProperties().getProperty("EMAILS");
+  return v === null ? !!ENVOYER_EMAILS : v === "oui";
+}
+// prévient par e-mail les personnes ajoutées à une équipe. Renvoie { envoyes, etat } (jamais d'erreur bloquante).
+function inviter(adresses, nomEquipe, u) {
+  if (!adresses.length) return { envoyes: 0, etat: "aucun" };
+  if (!emailsActifs()) return { envoyes: 0, etat: "desactive" };
+  // garde-fous anti-abus : 20 invitations par enregistrement, 50 par jour et par personne (l'admin n'est pas limité)
+  const cache = CacheService.getScriptCache();
+  const cle = "inv:" + u.email + ":" + new Date().toISOString().slice(0, 10);
+  let deja = +cache.get(cle) || 0;
+  let envoyes = 0;
+  try {
+    for (const a of adresses) {
+      if (!u.admin && (envoyes >= 20 || deja >= 50)) break;
+      if (MailApp.getRemainingDailyQuota() < 1) return { envoyes: envoyes, etat: "quota" };
+      MailApp.sendEmail({
+        to: a,
+        subject: u.nom + " vous a ajouté à l'équipe « " + nomEquipe + " » — Jeux d'escalade",
+        body:
+          "Bonjour,\n\n" + u.nom + " (" + u.email + ") vous a ajouté à l'équipe « " + nomEquipe + " » sur le site Jeux d'escalade.\n" +
+          "Les séances et cycles partagés avec cette équipe sont maintenant visibles pour vous.\n\n" +
+          "Pour les voir : ouvrez " + URL_DU_SITE + " puis connectez-vous avec Google, avec cette adresse (" + a + ").\n\n" +
+          "Si vous ne connaissez pas cette personne, ignorez simplement ce message.",
+        name: NOM_EXPEDITEUR,
+        replyTo: u.email,
+      });
+      envoyes++;
+      deja++;
+    }
+    cache.put(cle, String(deja), 86400);
+  } catch (err) {
+    return { envoyes: envoyes, etat: "erreur", detail: String(err).slice(0, 200) };
+  }
+  return { envoyes: envoyes, etat: "ok" };
+}
+
+/* ---------- utilisateurs (onglet « Utilisateurs », rempli à chaque connexion) ---------- */
+const COLONNES_UTILISATEURS = ["Email", "Nom", "Première connexion", "Dernière connexion", "Connexions", "Bloqué"];
+function feuilleUtilisateurs() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Utilisateurs");
+  if (!sh) {
+    sh = ss.insertSheet("Utilisateurs");
+    sh.appendRow(COLONNES_UTILISATEURS);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function utilisateursLus() {
+  const sh = feuilleUtilisateurs();
+  const n = sh.getLastRow();
+  if (n < 2) return [];
+  return sh
+    .getRange(2, 1, n - 1, COLONNES_UTILISATEURS.length)
+    .getValues()
+    .map((r, i) => ({
+      ligne: i + 2,
+      email: String(r[0]).toLowerCase(),
+      nom: String(r[1]),
+      premiere: r[2] instanceof Date ? r[2].toISOString() : String(r[2]),
+      derniere: r[3] instanceof Date ? r[3].toISOString() : String(r[3]),
+      connexions: +r[4] || 0,
+      bloque: String(r[5]).toUpperCase() === "OUI",
+    }))
+    .filter(x => x.email);
+}
+function noterUtilisateur(email, nom) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = feuilleUtilisateurs();
+    const u = utilisateursLus().find(x => x.email === email);
+    const maintenant = new Date().toISOString();
+    if (u) {
+      sh.getRange(u.ligne, 2).setValue(nom);
+      sh.getRange(u.ligne, 4, 1, 2).setValues([[maintenant, u.connexions + 1]]);
+    } else sh.appendRow([email, nom, maintenant, maintenant, 1, ""]);
+  } finally {
+    lock.releaseLock();
+  }
+}
+function estBloque(email) {
+  const cache = CacheService.getScriptCache();
+  let v = cache.get("bloques");
+  if (v === null) {
+    v = JSON.stringify(utilisateursLus().filter(x => x.bloque).map(x => x.email));
+    cache.put("bloques", v, 300);
+  }
+  return JSON.parse(v).indexOf(email) >= 0;
+}
+function adminUtilisateurs() {
+  const sh = feuilleSeances();
+  const head = enteteSeances(sh),
+    n = sh.getLastRow();
+  const ids = n > 1 ? lectureColonne(sh, head, "id", n) : [],
+    prop = n > 1 ? lectureColonne(sh, head, "Propriétaire", n) : [];
+  const nbS = {},
+    nbC = {};
+  ids.forEach((id, i) => {
+    const e = proprietaireDe(prop[i]);
+    if (String(id).indexOf("cy") === 0) nbC[e] = (nbC[e] || 0) + 1;
+    else nbS[e] = (nbS[e] || 0) + 1;
+  });
+  const eq = equipesLues();
+  const L = utilisateursLus().map(x => ({
+    email: x.email,
+    nom: x.nom,
+    premiere: x.premiere,
+    derniere: x.derniere,
+    connexions: x.connexions,
+    bloque: x.bloque,
+    admin: emailsAdmin().indexOf(x.email) >= 0,
+    seances: nbS[x.email] || 0,
+    cycles: nbC[x.email] || 0,
+    equipes: eq.filter(q => q.owner === x.email || q.membres.indexOf(x.email) >= 0).length,
+  }));
+  // personnes qui ont des séances mais ne sont pas (encore) notées dans l'onglet « Utilisateurs »
+  Object.keys(nbS)
+    .concat(Object.keys(nbC))
+    .forEach(e => {
+      if (e && !L.some(x => x.email === e))
+        L.push({ email: e, nom: "", premiere: "", derniere: "", connexions: 0, bloque: false, admin: emailsAdmin().indexOf(e) >= 0, seances: nbS[e] || 0, cycles: nbC[e] || 0, equipes: eq.filter(q => q.owner === e || q.membres.indexOf(e) >= 0).length });
+    });
+  return rep({ ok: true, utilisateurs: L });
+}
+// modifier / supprimer un utilisateur : { email, op: "bloquer" | "debloquer" | "supprimer", seances: "supprimer" | "garder" }
+function adminUtilisateur(d) {
+  const email = String(d.email || "").toLowerCase();
+  if (!email) return rep({ ok: false, error: "adresse manquante" });
+  if (emailsAdmin().indexOf(email) >= 0) return rep({ ok: false, error: "un administrateur ne peut pas être modifié ici" });
+  const sh = feuilleUtilisateurs();
+  const u = utilisateursLus().find(x => x.email === email);
+  if (d.op === "bloquer" || d.op === "debloquer") {
+    if (u) sh.getRange(u.ligne, 6).setValue(d.op === "bloquer" ? "OUI" : "");
+    else if (d.op === "bloquer") sh.appendRow([email, email, "", "", 0, "OUI"]);
+  } else if (d.op === "supprimer") {
+    if (u) sh.deleteRow(u.ligne);
+    // retire l'adresse des équipes ; les équipes dont il est responsable restent (à réaffecter)
+    const se = feuilleEquipes();
+    equipesLues().forEach(q => {
+      if (q.membres.indexOf(email) >= 0) {
+        const l = ligneEquipe(se, q.id);
+        if (l) se.getRange(l, 5).setValue(q.membres.filter(m => m !== email).join(", "));
+      }
+    });
+    if (d.seances === "supprimer") {
+      const ss = feuilleSeances();
+      const head = enteteSeances(ss);
+      const prop = lectureColonne(ss, head, "Propriétaire", ss.getLastRow());
+      for (let i = prop.length - 1; i >= 0; i--)
+        if (proprietaireDe(prop[i]) === email) ss.deleteRow(i + 2);
+    }
+  } else return rep({ ok: false, error: "opération inconnue" });
+  CacheService.getScriptCache().remove("bloques");
+  invalider();
+  return rep({ ok: true });
+}
+// modifier une équipe en tant qu'administrateur : { id, nom, proprietaire, membres[] } ou { id, supprimer: true }
+function adminEquipe(d, su) {
+  const sh = feuilleEquipes();
+  const l = ligneEquipe(sh, d.id);
+  if (!l) return rep({ ok: false, error: "équipe introuvable" });
+  if (d.supprimer) {
+    sh.deleteRow(l);
+    invalider();
+    return rep({ ok: true });
+  }
+  const nom = String(d.nom || "").trim().slice(0, 80);
+  if (!nom) return rep({ ok: false, error: "nom de l'équipe manquant" });
+  const avant = listePartage(sh.getRange(l, 5).getValue());
+  const proprio = adressesValides([d.proprietaire])[0] || String(sh.getRange(l, 3).getValue()).toLowerCase();
+  const membres = adressesValides(d.membres).filter(m => m !== proprio);
+  sh.getRange(l, 2).setValue(nom);
+  if (proprio !== String(sh.getRange(l, 3).getValue()).toLowerCase()) {
+    const x = utilisateursLus().find(z => z.email === proprio);
+    sh.getRange(l, 3, 1, 2).setValues([[proprio, x ? x.nom : proprio]]);
+  }
+  sh.getRange(l, 5).setValue(membres.join(", "));
+  invalider();
+  const qui = su || { email: "admin", nom: "L'administrateur", admin: true };
+  return rep({ ok: true, emails: inviter(membres.filter(m => avant.indexOf(m) < 0), nom, qui) });
+}
+function adminSeances() {
+  const sh = feuilleSeances();
+  const head = enteteSeances(sh),
+    n = sh.getLastRow();
+  const out = [];
+  if (n > 1) {
+    const col = {};
+    ["id", "Horodateur", "Titre", "Propriétaire", "Nom", "Partage"].forEach(h => (col[h] = lectureColonne(sh, head, h, n)));
+    col.id.forEach((id, i) => {
+      if (!id) return;
+      const t = col.Horodateur[i];
+      out.push({
+        id: String(id),
+        titre: String(col.Titre[i] || ""),
+        date: t instanceof Date ? t.toISOString() : String(t || ""),
+        proprietaire: proprietaireDe(col["Propriétaire"][i]),
+        nom: String(col.Nom[i] || ""),
+        partage: String(col.Partage[i] || ""),
+      });
+    });
+  }
+  return rep({ ok: true, seances: out });
+}
+function adminSeanceProprio(d) {
+  const e = adressesValides([d.proprietaire])[0];
+  if (!e) return rep({ ok: false, error: "adresse invalide" });
+  const sh = feuilleSeances();
+  const l = ligneSeance(sh, d.id);
+  if (!l) return rep({ ok: false, error: "séance introuvable" });
+  const head = enteteSeances(sh);
+  const x = utilisateursLus().find(z => z.email === e);
+  sh.getRange(l, head.indexOf("Propriétaire") + 1).setValue(e);
+  sh.getRange(l, head.indexOf("Nom") + 1).setValue(x ? x.nom : e);
+  invalider();
+  return rep({ ok: true });
+}
+// réglages du site : { emails: true|false } ; sans paramètre, renvoie l'état
+function adminReglages(d) {
+  if (typeof d.emails === "boolean") PropertiesService.getScriptProperties().setProperty("EMAILS", d.emails ? "oui" : "non");
+  let quota = null;
+  try {
+    quota = MailApp.getRemainingDailyQuota();
+  } catch (e) {}
+  return rep({ ok: true, emails: emailsActifs(), quotaMails: quota });
 }
