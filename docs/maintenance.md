@@ -10,21 +10,7 @@ Le site est **statique** : aucun serveur à lui, aucune compilation. Ce sont des
 - **lecture** : le navigateur télécharge des feuilles Google **publiées en CSV** (public, sans mot de passe) ;
 - **écriture** : le navigateur envoie un `POST` à un **script Apps Script** (une « application web » Google), qui écrit dans le Google Sheet ou dans le dépôt GitHub.
 
-```
-                         ┌──────────────────────┐
-   navigateur  ──GET──▶  │ GitHub Pages (dépôt) │  index.html, JS, CSS, images
-   (le site)             └──────────────────────┘
-       │ GET (CSV publié)             ▲ commit (API GitHub, jeton)
-       ▼                              │
- ┌───────────────┐   POST    ┌────────────────────┐
- │ Google Sheet  │ ◀──────── │ Apps Script        │ ◀── navigateur
- │ (jeux,séances,│  écrit    │ serveur_site.gs    │     (POST text/plain)
- │  retours)     │           └────────────────────┘
- └───────────────┘
-       ▲
-       │ réponses
- Formulaires Google (« Proposer un jeu », « Retour terrain »)
-```
+![Schéma d'architecture du site](architecture.svg)
 
 Points clés :
 
@@ -343,6 +329,8 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-10-31 | 43 | Passage à l'échelle : liste de séances légère et mise en cache, contenu chargé à la demande (`seance_lire`), logos stockés une fois (onglet `Logos`), colonne `Objectif` ; **script Apps Script à redéployer** |
 | 2026-10-31 | 44 | Menu : « Créer une séance », « Dessiner un schéma », « Créer un cycle », « Séances et cycles » (ancienne page « Séances & cycles » supprimée, ses modèles Google Docs sont dans l'onglet « Drive et modèles ») ; clic sur une séance d'un cycle enregistré = fenêtre (`popOuvrir` dans `seances.js`, impression/Word/ouvrir) ; bulles d'aide « ? » (`aide()` dans `core/nav.js`, 3ᵉ paramètre de `gsec`) |
 | 2026-10-31 | 45 | Administration avec le compte Google (sans mot de passe) ; onglets Utilisateurs / Équipes / Séances et cycles / Réglages ; « voir comme » (lecture seule) ; e-mails d'invitation d'équipe désactivables ; onglet `Utilisateurs` ; **script Apps Script à redéployer et à réautoriser** |
+| 2026-10-31 | 46 | Administration : boutons `.abtn` (même forme que le menu, teinte turquoise), tableaux `.adt` triables (`admTri`, `admTh` dans `comptes.js`), équipes en tableau avec fenêtre de détail (`admModal`), onglets Séances et Cycles séparés avec aperçu en fenêtre (`popOuvrir` gère aussi les cycles) ; correction `ENVOYER_EMAILS is not defined` (constantes du script tolérées absentes) ; **script Apps Script à redéployer** |
+| 2026-10-31 | 47 | Schéma d'architecture refait en image (`docs/architecture.svg`, affichée par la documentation du site) ; le filtre « Format anniversaire » s'appelle « Sans expérience » (constante `LBL_SANS_EXP` dans `core/games.js` ; la colonne du Sheet garde son nom) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
 | 2026-10-30 | 39 | « Mon cycle » : outil de création du cycle de formation (séances de la bibliothèque, enregistrement partagé, impression/PDF, Word) ; onglet « Cycles de formation » dans la bibliothèque |

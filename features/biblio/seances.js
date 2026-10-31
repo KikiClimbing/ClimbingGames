@@ -326,14 +326,23 @@ async function popOuvrir(id) {
   document.body.appendChild(p);
   document.body.classList.add("pp");
   try {
-    await sbCharger(id);
+    const data = await sbCharger(id);
     if (POPID !== id) return;
-    const rec = sbTous().find(r => r.id === id),
-      d = rec && sbParse(rec);
+    if (id.startsWith("cy")) {
+      /* cycle : aperçu du tableau (pas d'export Word depuis la fenêtre) */
+      const cy = cyData({ data });
+      if (!cy) throw new Error("illisible");
+      SBCUR = null;
+      $("#popt").textContent = cy.titre || "Cycle";
+      document.querySelector('[data-pop="word"]').style.display = "none";
+      $("#popbody").innerHTML = cycleSheetHTML(cy).replace('id="sheet"', 'id="popsheet"');
+      return;
+    }
+    const d = sbParse({ data });
     if (!d) throw new Error("illisible");
     SBCUR = d;
     SBID = id;
-    $("#popt").textContent = d.meta.titre || rec.titre || "Séance";
+    $("#popt").textContent = d.meta.titre || "Séance";
     $("#popbody").innerHTML = withSeance(d.meta, d.se, () => sheetHTML()).replace(
       'id="sheet"',
       'id="popsheet"'
@@ -363,7 +372,7 @@ registerClick(e => {
   else if (k === "open") {
     const id = POPID;
     popFermer();
-    go("sb/" + id);
+    go((id.startsWith("cy") ? "cy/" : "sb/") + id);
   }
   return true;
 });

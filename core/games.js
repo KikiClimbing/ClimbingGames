@@ -7,6 +7,8 @@ const style = g => {
 };
 const pubOK = g => /^(oui|yes|true|1|x|✓)$/i.test(g["Publié"] || "");
 const isEmb = g => g.Code && EMBED.some(e => e.Code === g.Code);
+/* nom affiché du filtre « jeux sans expérience » (la colonne du Google Sheet s'appelle toujours « Format anniversaire ») */
+const LBL_SANS_EXP = "Sans expérience";
 const isAnniv = g => /oui|checked|✓|true/i.test(g["Format anniversaire"] || "");
 const noMat = g => /^(aucun|—)/i.test((g["Matériel"] || "").trim());
 const key = g => g.Code || g.Titre;

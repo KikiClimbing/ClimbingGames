@@ -20,7 +20,7 @@ function openFiche(code) {
   const fact = (l, v) => (v ? `<div class="fact"><b>${l}</b>${esc(v)}</div>` : "");
   $("#fiche").setAttribute("style", style(g));
   $("#fiche").innerHTML =
-    `<div class="fh"><div class="code">${esc(g.Code || "★")}</div><div class="tt"><div class="fam">${esc((g.Famille || "").toUpperCase())}${isAnniv(g) ? " · FORMAT ANNIVERSAIRE" : ""}</div><h2>${esc(g.Titre)}</h2><div class="br">${esc(g["Résumé"])}</div></div><button class="x" aria-label="Fermer">×</button></div>
+    `<div class="fh"><div class="code">${esc(g.Code || "★")}</div><div class="tt"><div class="fam">${esc((g.Famille || "").toUpperCase())}${isAnniv(g) ? " · " + LBL_SANS_EXP.toUpperCase() : ""}</div><h2>${esc(g.Titre)}</h2><div class="br">${esc(g["Résumé"])}</div></div><button class="x" aria-label="Fermer">×</button></div>
   <div class="tabs"><button class="tab on" data-p="p1">Principe</button><button class="tab" data-p="p2">Pratique</button><button class="tab" data-p="p3">Variantes</button><button class="tab" data-p="p4">Conseils</button></div>
   <div class="pane on" id="p1"><p>${boldTitles(g.Principe)}</p>${img ? `<img src="${img}" alt="Schéma : ${esc(g.Titre)}" onerror="this.remove()">` : ""}</div>
   <div class="pane" id="p2"><div class="facts">${fact("PARTICIPANTS", g.Participants)}${fact("MATÉRIEL", g["Matériel"])}${fact("ESPACE", g.Espace)}${fact("DURÉE", g["Durée"])}${g.Objectif ? `<div class="fact obj"><b>OBJECTIF</b>${esc(g.Objectif)}</div>` : ""}${fact("INTENSITÉ", g["Intensité"])}${fact("OBJECTIFS TRAVAILLÉS", g["Objectifs (tags)"])}</div></div>

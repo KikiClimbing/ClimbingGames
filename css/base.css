@@ -318,13 +318,33 @@ h2.pt {
 .aide .tip{display:none;position:absolute;left:0;top:26px;z-index:60;width:min(340px,80vw);background:#26364D;color:#fff;font:400 13.5px/1.45 system-ui,sans-serif;text-align:left;padding:10px 12px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.25);letter-spacing:0;text-transform:none}
 .aide:hover .tip,.aide:focus .tip,.aide.open .tip{display:block}
 /* séance ouverte en fenêtre */
-#pop{position:fixed;inset:0;z-index:100;background:rgba(20,28,45,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
-#pop .popbox{background:#F4F7FB;border-radius:12px;width:min(1200px,100%);padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
-#pop .poptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0;background:#F4F7FB;padding:4px 0;z-index:2}
-#pop .chip{cursor:pointer}
+#pop,#apop{position:fixed;inset:0;z-index:100;background:rgba(20,28,45,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+#pop .popbox,#apop .popbox{background:#F4F7FB;border-radius:12px;width:min(1200px,100%);padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#pop .poptools,#apop .poptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0;background:#F4F7FB;padding:4px 0;z-index:2}
+#pop .chip,#apop .chip{cursor:pointer}
 @media print{
   body.pp > *:not(#pop){display:none !important}
   body.pp #pop{position:static;background:none;padding:0;display:block;overflow:visible}
-  body.pp #pop .popbox{box-shadow:none;padding:0;background:none;width:auto;page:seance}
-  body.pp #pop .poptools{display:none}
+  body.pp #pop .popbox,#apop .popbox{box-shadow:none;padding:0;background:none;width:auto;page:seance}
+  body.pp #pop .poptools,#apop .poptools{display:none}
 }
+
+/* boutons de l'administration : même forme que le menu de gauche, couleurs différentes */
+.atabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.abtn{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;border:0;cursor:pointer;font:600 14px/1.2 inherit;font-family:inherit;background:#E3F1F6;color:#1E6B87;text-decoration:none;margin:2px}
+.abtn:hover{background:#CFE6EF}
+.abtn.on{background:#3A8FB0;color:#fff}
+.abtn.ok{background:#2E7D4F;color:#fff}
+.abtn.ok:hover{background:#276943}
+.abtn.no{background:#FBE9EC;color:#B2263A}
+.abtn.no:hover{background:#F6D3D9}
+.abtn.sm{padding:5px 10px;font-size:13px}
+/* tableaux de l'administration */
+.adt{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.adt th{background:#26364D;color:#fff;text-align:left;padding:8px 10px;font-size:12px;letter-spacing:.4px;white-space:nowrap}
+.adt th.tri{cursor:pointer;user-select:none}
+.adt th.tri:hover{background:#34496A}
+.adt td{padding:7px 10px;border-top:1px solid #E3E8F2;vertical-align:middle}
+.adt tr.cl{cursor:pointer}
+.adt tr.cl:hover td{background:#F0F6FA}
+.adt input{font:inherit;padding:5px 7px;border:1px solid #d5dae5;border-radius:6px;min-width:260px;width:100%}

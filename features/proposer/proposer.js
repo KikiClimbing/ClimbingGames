@@ -41,9 +41,10 @@ const PROP_CHAMPS = [
   { k: "Objectifs (tags)", t: "tags", opts: () => OBJS },
   {
     k: "Format anniversaire",
+    lab: LBL_SANS_EXP,
     t: "select",
     opts: () => ["Non", "Oui"],
-    aide: "Oui si le jeu convient à un anniversaire (6 à 12 enfants de 6 à 11 ans, débutants).",
+    aide: "Oui si le jeu est ludique et ne demande aucune expérience de l'escalade (animation, anniversaire, initiation).",
   },
   { k: "Auteur", req: 1, aide: "Votre prénom." },
   { k: "Compléments", t: "area", aide: "Facultatif : listes ou tableaux utiles au jeu." },
@@ -102,7 +103,7 @@ function propView() {
   if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.nom;
   const champ = f => {
     const val = v[f.k] || "";
-    const lab = `${esc(f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
+    const lab = `${esc(f.lab || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
     if (f.t === "select")
       return `<label class="sml">${lab}<select data-pf="${esc(f.k)}">${f.vide ? '<option value=""></option>' : ""}${f
         .opts()

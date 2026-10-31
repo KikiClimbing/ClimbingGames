@@ -11,7 +11,7 @@ function homeView() {
     .reverse();
   return `<p class="warn" id="warn"></p><div class="hero"><h2>Les jeux d'escalade, prêts à animer</h2><p>${DATA.length} fiches d'exercices pédagogiques sous forme de jeux, avec schéma, variantes et conseils de sécurité, pour apprendre à grimper à tous les âges : enfants, ados et adultes.</p><input class="search" id="hq" type="search" placeholder="Rechercher un jeu, un matériel, un mot…" autocomplete="off"></div>
   <div class="sh">CHOISIR UNE FAMILLE</div><div class="tiles">${tiles}</div>
-  <div class="sh">ACCÈS RAPIDE</div><div class="chips"><button class="chip" data-go="anniv">★ Format anniversaire</button><button class="chip" data-go="nomat">○ Sans matériel</button>${OBJS.map(o => `<button class="chip" data-go="obj/${o}">${o}</button>`).join("")}<button class="chip" id="rnd">🎲 Un jeu au hasard</button></div>
+  <div class="sh">ACCÈS RAPIDE</div><div class="chips"><button class="chip" data-go="anniv">★ ${LBL_SANS_EXP}</button><button class="chip" data-go="nomat">○ Sans matériel</button>${OBJS.map(o => `<button class="chip" data-go="obj/${o}">${o}</button>`).join("")}<button class="chip" id="rnd">🎲 Un jeu au hasard</button></div>
   ${fresh.length ? `<div class="sh">DERNIÈRES FICHES AJOUTÉES</div>${((S.mode = "grid"), gridHTML(fresh))}` : ""}
   <div class="sh">GUIDES POUR PRÉPARER SA SÉANCE</div><div class="g2">${GUIDES.slice(0, 6)
     .map(

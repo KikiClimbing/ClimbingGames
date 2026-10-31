@@ -724,7 +724,8 @@ function testerConnexions() {
 /* ---------- e-mails d'invitation ---------- */
 function emailsActifs() {
   const v = PropertiesService.getScriptProperties().getProperty("EMAILS");
-  return v === null ? !!ENVOYER_EMAILS : v === "oui";
+  // (si la constante ENVOYER_EMAILS manque dans une ancienne copie du script, l'envoi est actif par défaut)
+  return v === null ? (typeof ENVOYER_EMAILS === "undefined" ? true : !!ENVOYER_EMAILS) : v === "oui";
 }
 // prévient par e-mail les personnes ajoutées à une équipe. Renvoie { envoyes, etat } (jamais d'erreur bloquante).
 function inviter(adresses, nomEquipe, u) {
@@ -747,7 +748,7 @@ function inviter(adresses, nomEquipe, u) {
           "Les séances et cycles partagés avec cette équipe sont maintenant visibles pour vous.\n\n" +
           "Pour les voir : ouvrez " + URL_DU_SITE + " puis connectez-vous avec Google, avec cette adresse (" + a + ").\n\n" +
           "Si vous ne connaissez pas cette personne, ignorez simplement ce message.",
-        name: NOM_EXPEDITEUR,
+        name: typeof NOM_EXPEDITEUR === "undefined" ? "Jeux d'escalade" : NOM_EXPEDITEUR,
         replyTo: u.email,
       });
       envoyes++;

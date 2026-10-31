@@ -28,8 +28,8 @@ function viewTitle(v) {
     ];
   if (v === "anniv")
     return [
-      "Format anniversaire",
-      "Jeux pensés pour un anniversaire : 6 à 12 enfants de 6 à 11 ans, débutants, environ 1 heure.",
+      LBL_SANS_EXP,
+      "Jeux ludiques qui ne demandent aucune expérience de l'escalade (hors cours d'escalade) : animation, anniversaire, initiation, groupe de débutants.",
     ];
   if (v === "nomat") return ["Sans matériel", "Jeux qui ne demandent aucun matériel particulier."];
   return ["", ""];
@@ -129,7 +129,7 @@ registerNav({
   secOrder: 20,
   order: 0,
   html: () =>
-    navBtn("anniv", "Format anniversaire", '<span class="ic">★</span>') +
+    navBtn("anniv", LBL_SANS_EXP, '<span class="ic">★</span>') +
     navBtn("nomat", "Sans matériel", '<span class="ic">○</span>') +
     OBJS.map(o => navBtn("obj/" + o, o, '<span class="ic">›</span>')).join(""),
 });

@@ -34,7 +34,14 @@ function mdHTML(md) {
   let i = 0;
   while (i < L.length) {
     const l = L[i];
-    if (/^```/.test(l)) {
+    const im = l.match(/^!\[([^\]]*)\]\(([\w.\/-]+)\)\s*$/);
+    if (im) {
+      /* image du dossier docs/ (le fichier .md est lu depuis la racine du site) */
+      out.push(
+        `<p><img src="docs/${esc(im[2])}" alt="${esc(im[1])}" style="width:100%;max-width:1000px;height:auto;border-radius:10px"></p>`
+      );
+      i++;
+    } else if (/^```/.test(l)) {
       const buf = [];
       i++;
       while (i < L.length && !/^```/.test(L[i])) buf.push(L[i++]);
