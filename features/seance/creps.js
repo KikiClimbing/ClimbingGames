@@ -26,6 +26,8 @@ const CREPS_COLS = [
   ["ORGANISATION", "Matériel, espace, durée…", "#5B6B82", "#EDF0F4", 11],
 ];
 const isCreps = () => SMETA && SMETA.modele === "creps";
+/* schémas : « page » = sur une page à part (défaut) ; « sous » = sous chaque situation */
+const schemaSous = () => SMETA && SMETA.schemaMode === "sous";
 /* fiche du jeu de la bibliothèque (ou null pour un exercice libre) */
 const crepsJeu = it => (it.t === "lib" ? DATA.find(x => key(x) === it.k) : null);
 /* lignes de la table : échauffement puis chaque exercice = une situation */
@@ -123,22 +125,32 @@ function crepsHTML() {
       0,
       `<b>${esc(r.nom)}</b>${r.titre ? `<div style="margin-top:3px">${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${esc(r.titre)}</a>` : esc(r.titre)}</div>` : ""}${r.sub ? `<div style="color:#6B7280;font-size:10px;font-style:italic">${esc(r.sub)}</div>` : ""}`
     )}${td(1, bloc(r.obj))}${td(2, bloc(r.but))}${td(3, bloc(r.cons, "▸", C1))}${td(4, bloc(r.crit, "✓", "#2E6F3E"))}${td(5, bloc(r.comp, "•", "#8A55B5"))}${td(6, `${r.plus ? `<div style="margin-bottom:4px"><b style="color:${C2}">+ Plus difficile</b>${bloc(r.plus, "", "")}</div>` : ""}${r.moins ? `<div><b style="color:#2E6F3E">– Plus facile</b>${bloc(r.moins, "", "")}</div>` : ""}${r.plus || r.moins ? "" : ph("—")}`)}${td(7, `<div>${durs}</div>${bloc(r.orga, "", "")}`)}</tr>`;
+    if (schemaSous() && crepsImg(r.g)) {
+      const img = crepsImg(r.g);
+      h += `<tr style="page-break-inside:avoid"><td colspan="8" style="border:1px solid #D5DAE5;padding:0"><div style="display:flex;align-items:stretch;min-height:120px"><div style="background:#F4F6FA;font-size:10px;color:#5B6B82;font-weight:700;padding:6px 8px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center">SCHÉMA</div><div style="display:flex;align-items:center;justify-content:center;padding:6px;width:34%;min-width:230px"><img src="${esc(img)}" alt="Schéma" onerror="this.closest('tr').remove()" style="max-width:100%;max-height:200px;object-fit:contain"></div><div style="flex:1;border-left:1px dashed #D5DAE5"></div></div></td></tr>`;
+    }
   });
   h += `</tbody></table>`;
-  /* page des schémas */
-  h += `<div style="page-break-before:always;break-before:page;margin-top:14px"><div style="background:${NAVYC};color:#fff;text-align:center;font-weight:700;padding:6px">Schémas (si besoin…)</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid #D5DAE5">${L.map(
-    r => {
-      const img = crepsImg(r.g);
-      return `<div style="border:1px solid #D5DAE5"><div style="background:#F4F6FA;font-size:11px;padding:3px 8px">${esc(r.nom === "Échauffement / mise en train" ? "Échauffement" : r.nom)}${r.titre ? " — " + esc(r.titre) : ""}</div><div style="min-height:190px;display:flex;align-items:center;justify-content:center">${img ? `<img src="${esc(img)}" alt="Schéma" style="max-width:100%;max-height:230px;object-fit:contain">` : ""}</div></div>`;
-    }
-  ).join("")}</div></div></div>`;
+  /* page des schémas : seulement les situations qui ont une image (sauf si les schémas sont sous chaque situation) */
+  const avecImg = L.filter(r => crepsImg(r.g));
+  if (!schemaSous() && avecImg.length)
+    h += `<div style="page-break-before:always;break-before:page;margin-top:14px"><div style="background:${NAVYC};color:#fff;text-align:center;font-weight:700;padding:6px">Schémas</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid #D5DAE5">${avecImg
+      .map(
+        r =>
+          `<div class="sch" style="border:1px solid #D5DAE5"><div style="background:#F4F6FA;font-size:11px;padding:3px 8px">${esc(r.nom)}${r.titre ? " — " + esc(r.titre) : ""}</div><div style="min-height:190px;display:flex;align-items:center;justify-content:center"><img src="${esc(crepsImg(r.g))}" alt="Schéma" onerror="this.closest('.sch').remove()" style="max-width:100%;max-height:230px;object-fit:contain"></div></div>`
+      )
+      .join("")}</div></div>`;
   return h;
 }
 /* ---- formulaire : sélecteur de modèle + champs propres au modèle CREPS ---- */
 function crepsChoixHTML() {
   const b = (m, l) =>
     `<button data-sa="modele" data-m="${m}" class="${(SMETA.modele === "creps" ? "creps" : "std") === m ? "on" : ""}">${l}</button>`;
-  return `<div class="tools" style="margin:8px 0 4px"><span style="font-weight:700">Modèle de fiche :</span><div class="seg">${b("std", "Fiche habituelle")}${b("creps", "Fiche CREPS")}</div><span style="color:#6B7280;font-size:13px">Même séance, autre présentation (tableau à 8 colonnes + page de schémas).</span></div>`;
+  return `<div class="tools" style="margin:8px 0 4px"><span style="font-weight:700">Modèle de fiche :</span><div class="seg">${b("std", "Fiche habituelle")}${b("creps", "Fiche CREPS")}</div><span style="color:#6B7280;font-size:13px">Même séance, autre présentation (tableau à 8 colonnes).</span></div>${
+    isCreps()
+      ? `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schemode" data-m="page" class="${schemaSous() ? "" : "on"}">Sur une page à part</button><button data-sa="schemode" data-m="sous" class="${schemaSous() ? "on" : ""}">Sous chaque situation</button></div></div>`
+      : ""
+  }`;
 }
 function crepsFormHTML() {
   if (!isCreps()) return "";
@@ -235,20 +247,19 @@ function buildCrepsDoc(logo) {
   const right = M.G.map(g =>
     P([R("■ ", { c: hex(g.c), b: true }), R(g.nom + " – " + M.tot[g.i] + " min", { c: "FFFFFF" })])
   );
-  out.push(
-    tbl(
-      [
-        new TableRow({
-          children: [
-            cell(head, 6400, "1E2630"),
-            cell(mid, 6000, "1E2630"),
-            cell(right, 3438, "1E2630"),
-          ],
-        }),
-      ],
-      [6400, 6000, 3438]
-    )
+  const entete = tbl(
+    [
+      new TableRow({
+        children: [
+          cell(head, 6400, "1E2630"),
+          cell(mid, 6000, "1E2630"),
+          cell(right, 3438, "1E2630"),
+        ],
+      }),
+    ],
+    [6400, 6000, 3438]
   );
+  out.push(entete);
   out.push(
     new Paragraph({
       spacing: { before: 0, after: 80 },
@@ -277,6 +288,22 @@ function buildCrepsDoc(logo) {
       ? a.map(l => P([...(sg ? [R(sg + " ", { b: true, c: col })] : []), R(l)]))
       : [P(R("—", { i: true, c: "8A93A3" }))];
   };
+  const hasImg = r => {
+    const u = crepsImg(r.g);
+    return !!(u && CREPS_IMGS[u]);
+  };
+  const imgCell = (r, w, maxW, maxH, fill = "FFFFFF", span) => {
+    const url = crepsImg(r.g),
+      run = url && crepsImgRun(D, url, maxW, maxH);
+    return cell(
+      run ? [new Paragraph({ children: [run], alignment: AlignmentType.CENTER })] : [],
+      w,
+      fill,
+      { span }
+    );
+  };
+  const titreSch = r =>
+    (r.nom.startsWith("Échauffement") ? "Échauffement" : r.nom) + (r.titre ? " — " + r.titre : "");
   L.forEach(r => {
     const var_ = [];
     if (r.plus) var_.push(P(R("+ Plus difficile", { b: true, c: "E8662F" })), ...lg(r.plus));
@@ -309,50 +336,52 @@ function buildCrepsDoc(logo) {
         ],
       })
     );
+    if (schemaSous() && hasImg(r))
+      rows.push(
+        new TableRow({
+          cantSplit: true,
+          children: [
+            cell([], W[0], "F4F6FA"),
+            imgCell(r, W[1] + W[2] + W[3], 330, 170, "FFFFFF", 3),
+            cell([], W[4] + W[5] + W[6] + W[7], "FFFFFF", { span: 4 }),
+          ],
+        })
+      );
   });
   out.push(tbl(rows, W));
-  /* page des schémas : cases à remplir (images à coller depuis le site) */
-  out.push(
-    new Paragraph({
-      pageBreakBefore: true,
-      spacing: { before: 0, after: 80 },
-      children: [R("Schémas (si besoin…)", { b: true, size: 24 })],
-      alignment: AlignmentType.CENTER,
-    })
-  );
-  const W3 = [5279, 5279, 5280];
-  const sr = [];
-  for (let i = 0; i < L.length; i += 3) {
-    const grp = L.slice(i, i + 3);
-    sr.push(
-      new TableRow({
-        children: [0, 1, 2].map(j =>
-          cell(
-            grp[j]
-              ? [
-                  P(
-                    R(
-                      (grp[j].nom.startsWith("Échauffement") ? "Échauffement" : grp[j].nom) +
-                        (grp[j].titre ? " — " + grp[j].titre : ""),
-                      { size: 16 }
-                    )
-                  ),
-                ]
-              : [],
-            W3[j],
-            "F4F6FA"
-          )
-        ),
+  /* page des schémas : seulement les situations dont l'image a pu être chargée */
+  const avecImg = L.filter(hasImg);
+  if (!schemaSous() && avecImg.length) {
+    out.push(
+      new Paragraph({
+        pageBreakBefore: true,
+        spacing: { before: 0, after: 80 },
+        children: [R("Schémas", { b: true, size: 24 })],
+        alignment: AlignmentType.CENTER,
       })
     );
-    sr.push(
-      new TableRow({
-        height: { value: 3400, rule: D.HeightRule.ATLEAST },
-        children: [0, 1, 2].map(j => cell([], W3[j], "FFFFFF")),
-      })
-    );
+    const W3 = [5279, 5279, 5280];
+    const sr = [];
+    for (let i = 0; i < avecImg.length; i += 3) {
+      const grp = avecImg.slice(i, i + 3);
+      sr.push(
+        new TableRow({
+          children: [0, 1, 2].map(j =>
+            cell(grp[j] ? [P(R(titreSch(grp[j]), { size: 16 }))] : [], W3[j], "F4F6FA")
+          ),
+        })
+      );
+      sr.push(
+        new TableRow({
+          cantSplit: true,
+          children: [0, 1, 2].map(j =>
+            grp[j] ? imgCell(grp[j], W3[j], 330, 220) : cell([], W3[j], "FFFFFF")
+          ),
+        })
+      );
+    }
+    out.push(tbl(sr, W3));
   }
-  if (sr.length) out.push(tbl(sr, W3));
   return new Document({
     creator: "Base de données des jeux d'escalade",
     title: S.titre || "Fiche de séance",
@@ -368,5 +397,56 @@ function buildCrepsDoc(logo) {
         children: out,
       },
     ],
+  });
+}
+
+/* ---- images de schémas pour le Word : téléchargées puis converties en PNG (Word ne lit pas le WebP) ---- */
+const CREPS_IMGS = {};
+async function crepsImgPng(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error("introuvable");
+  const bmp = await createImageBitmap(await r.blob());
+  const k = Math.min(1, 900 / bmp.width);
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k);
+  c.height = Math.round(bmp.height * k);
+  const x = c.getContext("2d");
+  x.fillStyle = "#fff";
+  x.fillRect(0, 0, c.width, c.height);
+  x.drawImage(bmp, 0, 0, c.width, c.height);
+  const blob = await new Promise(ok => c.toBlob(ok, "image/png"));
+  return { data: new Uint8Array(await blob.arrayBuffer()), w: c.width, h: c.height };
+}
+/* prépare les images de la séance (rec : séance de la bibliothèque, sinon la séance en cours) ; renvoie le nombre d'images indisponibles */
+async function crepsPreload(rec) {
+  const L = rec
+    ? withSeance(rec.meta, rec.se, () => crepsLignes(seModel()))
+    : crepsLignes(seModel());
+  const urls = [...new Set(L.map(r => crepsImg(r.g)).filter(Boolean))];
+  let manque = 0;
+  await Promise.all(
+    urls.map(async u => {
+      if (CREPS_IMGS[u]) return;
+      try {
+        CREPS_IMGS[u] = await Promise.race([
+          crepsImgPng(u),
+          new Promise((_, ko) => setTimeout(() => ko(new Error("délai")), 8000)),
+        ]);
+      } catch (e) {
+        manque++;
+      }
+    })
+  );
+  return manque;
+}
+/* image réduite pour tenir dans (maxW × maxH) pixels, ou null si elle n'a pas pu être chargée */
+function crepsImgRun(D, url, maxW, maxH) {
+  const im = CREPS_IMGS[url];
+  if (!im) return null;
+  const k = Math.min(maxW / im.w, maxH / im.h, 1);
+  return new D.ImageRun({
+    type: "png",
+    data: im.data,
+    transformation: { width: Math.round(im.w * k), height: Math.round(im.h * k) },
   });
 }

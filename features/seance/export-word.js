@@ -463,6 +463,11 @@ async function seanceWord(rec) {
     await loadDocx();
     const meta = rec ? rec.meta : SMETA;
     const logo = await logoInfo(meta.logo);
+    let manque = 0;
+    if (meta.modele === "creps" && typeof crepsPreload === "function") {
+      msg("Récupération des schémas…");
+      manque = await crepsPreload(rec);
+    }
     const doc = rec
       ? withSeance(rec.meta, rec.se, () => buildSeanceDoc(logo))
       : buildSeanceDoc(logo);
@@ -479,7 +484,9 @@ async function seanceWord(rec) {
       a.remove();
     }, 500);
     msg(
-      "Fichier Word téléchargé. Déposez-le dans votre Drive : clic droit › Ouvrir avec Google Docs."
+      "Fichier Word téléchargé." +
+        (manque ? " " + manque + " schéma(s) non intégré(s) (image inaccessible)." : "") +
+        " Déposez-le dans votre Drive : clic droit › Ouvrir avec Google Docs."
     );
   } catch (e) {
     msg(

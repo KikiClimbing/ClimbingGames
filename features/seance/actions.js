@@ -259,6 +259,9 @@ document.addEventListener("click", e => {
   if (a === "modele") {
     SMETA.modele = b.dataset.m === "creps" ? "creps" : "std";
     saveMeta();
+  } else if (a === "schemode") {
+    SMETA.schemaMode = b.dataset.m === "sous" ? "sous" : "page";
+    saveMeta();
   } else if (a === "addsub")
     SE.subs.push({ id: SEUID++, titre: "", gs: null, d: SMETA.groups.map(() => 10), items: [] });
   else if (a === "srm") {
