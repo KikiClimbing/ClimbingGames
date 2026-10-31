@@ -9,6 +9,21 @@ const admcDate = t => {
 /* bouton de l'administration (variantes : "", on, ok, no ; sm = petit) */
 const admcBtn = (a, extra, txt, variante = "sm") =>
   `<a class="abtn ${variante}" data-admc="${a}" ${extra}>${txt}</a>`;
+/* une couleur par onglet, pour les distinguer d'un coup d'œil */
+const ADM_COULEURS = {
+  jeux: ["#C2571A", "#FBE9DC"],
+  schemas: ["#7A4FA3", "#EEE5F6"],
+  doc: ["#5B6B82", "#E6EAF0"],
+  users: ["#2B5A9E", "#E1EBF8"],
+  equipes: ["#2E7D4F", "#E0F1E7"],
+  seances: ["#1F8A8A", "#DDF1F1"],
+  cycles: ["#B03A7A", "#F8E2EE"],
+  reglages: ["#9A7400", "#F8EFCF"],
+};
+function admOnglet(t, l) {
+  const [c, bg] = ADM_COULEURS[t] || ["#3A8FB0", "#E3F1F6"];
+  return `<button class="abtn coul ${ADM.tab === t ? "on" : ""}" style="--c:${c};--bg:${bg}" data-adm="tab" data-t="${t}">${l}</button>`;
+}
 function admOngletsComptes() {
   if (!compteOn()) return "";
   return [
@@ -18,10 +33,7 @@ function admOngletsComptes() {
     ["cycles", "Cycles"],
     ["reglages", "Réglages"],
   ]
-    .map(
-      ([t, l]) =>
-        `<button class="abtn ${ADM.tab === t ? "on" : ""}" data-adm="tab" data-t="${t}">${l}</button>`
-    )
+    .map(([t, l]) => admOnglet(t, l))
     .join("");
 }
 async function admcCharger() {
