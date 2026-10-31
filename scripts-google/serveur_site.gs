@@ -26,6 +26,15 @@ const GITHUB_DEPOT = "votre-compte/votre-depot"; // ex. "christophe/jeux-escalad
 const GITHUB_BRANCHE = "main";
 const URL_DU_SITE = "https://votre-compte.github.io/votre-depot/"; // avec la barre / à la fin
 
+// 4) Comptes Google (facultatif). Laissez GOOGLE_CLIENT_ID vide pour garder l'ancien fonctionnement (sans comptes).
+//    GOOGLE_CLIENT_ID : l'identifiant client OAuth créé dans la console Google Cloud (voir docs/maintenance.md, § Comptes).
+//    ADMIN_EMAILS : votre adresse Google (plusieurs : séparées par des virgules). Ces comptes voient tout.
+//    SECRET_SESSION : une longue suite de caractères au hasard (jamais dans config.js).
+const GOOGLE_CLIENT_ID = "";
+const ADMIN_EMAILS = "";
+const SECRET_SESSION = "changez-moi-par-une-longue-suite-au-hasard";
+const DUREE_SESSION_JOURS = 30;
+
 const NOM_FEUILLE = ""; // vide : la feuille qui contient les colonnes « Titre » et « Principe » est trouvée toute seule
 
 function doPost(e) {
@@ -43,13 +52,23 @@ function doPost(e) {
       if (action === "admin_schema_fichier") return adminSchemaFichier(d);
       return rep({ ok: false, error: "action inconnue" });
     }
+    if (action === "auth") return connexionGoogle(d);
+    if (GOOGLE_CLIENT_ID && /^seance/.test(action)) {
+      const u = lireSession(d.session);
+      if (!u) return rep({ ok: false, error: "connexion requise : reconnectez-vous", code: "auth" });
+      if (action === "seances_liste") return listeSeances(u);
+      if (action === "seance") return enregistrerSeance(d.seance || {}, u);
+      if (action === "seance_suppr") return supprimerSeance(d.id, u);
+      if (action === "seance_partage") return partagerSeance(d.id, d.partage, u);
+      return rep({ ok: false, error: "action inconnue" });
+    }
     if (d.key !== CLE_SITE)
       return rep({
         ok: false,
         error: "mot de passe du site incorrect (GAME_ADD_KEY de config.js ≠ CLE_SITE du script)",
       });
-    if (action === "seance") return enregistrerSeance(d.seance || {});
-    if (action === "seance_suppr") return supprimerSeance(d.id);
+    if (action === "seance") return enregistrerSeance(d.seance || {}, null);
+    if (action === "seance_suppr") return supprimerSeance(d.id, null);
     if (action === "schema") return envoyerSchema(d);
     if (action === "schemas_liste") return adminSchemasListe();
     return ajouterJeu(d.jeu || {});
@@ -83,6 +102,7 @@ function ajouterJeu(jeu) {
   if (!jeu.Titre || !jeu.Principe) return rep({ ok: false, error: "titre ou principe manquant" });
   const sh = feuilleJeux();
   if (!sh) return rep({ ok: false, error: "feuille des fiches introuvable" });
+  colonneAssurer(sh, "Remplace le jeu", jeu);
   const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
   const ligne = head.map(h =>
     h === "Horodateur"
@@ -97,6 +117,12 @@ function ajouterJeu(jeu) {
   );
   sh.appendRow(ligne);
   return rep({ ok: true });
+}
+// ajoute la colonne si elle manque (seulement quand le jeu proposé la renseigne)
+function colonneAssurer(sh, nom, jeu) {
+  if (!jeu[nom]) return;
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  if (head.indexOf(nom) < 0) sh.getRange(1, head.length + 1).setValue(nom);
 }
 function estPublie(v) {
   return /^(oui|yes|true|1|x|✓)$/i.test(String(v || "").trim());
@@ -153,17 +179,80 @@ function adminRefuser(d) {
   return rep({ ok: true });
 }
 
-/* ---------- séances ---------- */
+/* ---------- comptes Google ---------- */
+function b64u(octets) {
+  return Utilities.base64EncodeWebSafe(octets).replace(/=+$/, "");
+}
+function signer(txt) {
+  return b64u(Utilities.computeHmacSha256Signature(txt, SECRET_SESSION));
+}
+function emailsAdmin() {
+  return String(ADMIN_EMAILS || "")
+    .toLowerCase()
+    .split(/[,;\s]+/)
+    .filter(Boolean);
+}
+function creerSession(email, nom) {
+  const corps = b64u(
+    Utilities.newBlob(
+      JSON.stringify({ e: email, n: nom, x: Date.now() + DUREE_SESSION_JOURS * 86400000 })
+    ).getBytes()
+  );
+  return corps + "." + signer(corps);
+}
+function lireSession(tok) {
+  const p = String(tok || "").split(".");
+  if (p.length !== 2 || signer(p[0]) !== p[1]) return null;
+  try {
+    const o = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(p[0])).getDataAsString());
+    if (!o.e || o.x < Date.now()) return null;
+    return { email: o.e, nom: o.n || o.e, admin: emailsAdmin().indexOf(o.e) >= 0 };
+  } catch (e) {
+    return null;
+  }
+}
+// échange le jeton Google (connexion « Se connecter avec Google ») contre une session du site
+function connexionGoogle(d) {
+  if (!GOOGLE_CLIENT_ID) return rep({ ok: false, error: "comptes non activés (GOOGLE_CLIENT_ID vide)" });
+  const r = UrlFetchApp.fetch(
+    "https://oauth2.googleapis.com/tokeninfo?id_token=" + encodeURIComponent(String(d.credential || "")),
+    { muteHttpExceptions: true }
+  );
+  if (r.getResponseCode() !== 200) return rep({ ok: false, error: "connexion Google refusée" });
+  const t = JSON.parse(r.getContentText());
+  if (t.aud !== GOOGLE_CLIENT_ID || String(t.email_verified) !== "true" || !t.email)
+    return rep({ ok: false, error: "jeton Google invalide" });
+  const email = String(t.email).toLowerCase(),
+    nom = String(t.name || email).slice(0, 80);
+  return rep({
+    ok: true,
+    session: creerSession(email, nom),
+    user: { email: email, nom: nom, admin: emailsAdmin().indexOf(email) >= 0 },
+  });
+}
+
+/* ---------- séances et cycles ---------- */
+const COLONNES_SEANCES = ["id", "Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Données", "Publié", "Propriétaire", "Nom", "Partage"];
 function feuilleSeances() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const ent = ["id", "Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Données", "Publié"];
   let sh = ss.getSheetByName("Séances");
   if (!sh) {
     sh = ss.insertSheet("Séances");
-    sh.appendRow(ent);
+    sh.appendRow(COLONNES_SEANCES);
     sh.setFrozenRows(1);
   }
+  // colonnes ajoutées plus tard (comptes) : créées si elles manquent
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  COLONNES_SEANCES.forEach(c => {
+    if (head.indexOf(c) < 0) {
+      sh.getRange(1, head.length + 1).setValue(c);
+      head.push(c);
+    }
+  });
   return sh;
+}
+function enteteSeances(sh) {
+  return sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
 }
 function ligneSeance(sh, id) {
   const n = sh.getLastRow();
@@ -171,30 +260,94 @@ function ligneSeance(sh, id) {
   const i = ids.indexOf(String(id));
   return i >= 0 ? i + 2 : 0;
 }
-function enregistrerSeance(s) {
+function proprietaireDe(valeur) {
+  return String(valeur || "").trim().toLowerCase() || emailsAdmin()[0] || "";
+}
+function listePartage(txt) {
+  return String(txt || "")
+    .toLowerCase()
+    .split(/[,;\s]+/)
+    .filter(Boolean);
+}
+// séances visibles par l'utilisateur : les siennes, celles partagées avec lui ; l'administrateur voit tout
+function listeSeances(u) {
+  const sh = feuilleSeances();
+  const head = enteteSeances(sh);
+  const n = sh.getLastRow();
+  const out = [];
+  if (n > 1) {
+    const vals = sh.getRange(2, 1, n - 1, head.length).getValues();
+    const ip = head.indexOf("Propriétaire"),
+      is = head.indexOf("Partage");
+    vals.forEach(r => {
+      if (!r[0]) return;
+      const proprio = proprietaireDe(r[ip]);
+      if (u.admin || proprio === u.email || listePartage(r[is]).indexOf(u.email) >= 0) {
+        const o = {};
+        head.forEach((h, k) => (o[h] = h === "Horodateur" && r[k] instanceof Date ? r[k].toISOString() : String(r[k])));
+        o["Propriétaire"] = proprio;
+        out.push(o);
+      }
+    });
+  }
+  return rep({ ok: true, seances: out });
+}
+function enregistrerSeance(s, u) {
   if (!s.id || !s.data) return rep({ ok: false, error: "séance incomplète" });
   const sh = feuilleSeances();
-  const ligne = [
-    s.id,
-    new Date().toISOString(),
-    String(s.titre || "").slice(0, 300),
-    String(s.theme || "").slice(0, 300),
-    String(s.educ || "").slice(0, 300),
-    String(s.dates || "").slice(0, 300),
-    s.nb || "",
-    String(s.data).slice(0, 49000),
-    "OUI",
-  ];
+  const head = enteteSeances(sh);
   const l = ligneSeance(sh, s.id);
-  if (l) sh.getRange(l, 1, 1, ligne.length).setValues([ligne]);
-  else sh.appendRow(ligne);
+  const ip = head.indexOf("Propriétaire");
+  if (l && u && !u.admin && proprietaireDe(sh.getRange(l, ip + 1).getValue()) !== u.email)
+    return rep({ ok: false, error: "cette séance appartient à un autre compte : faites-en une copie" });
+  const val = {
+    id: s.id,
+    Horodateur: new Date().toISOString(),
+    Titre: String(s.titre || "").slice(0, 300),
+    "Thème": String(s.theme || "").slice(0, 300),
+    "Éducateurs": String(s.educ || "").slice(0, 300),
+    Dates: String(s.dates || "").slice(0, 300),
+    Exercices: s.nb || "",
+    "Données": String(s.data).slice(0, 49000),
+    "Publié": "OUI",
+  };
+  if (u && !l) {
+    val["Propriétaire"] = u.email;
+    val["Nom"] = u.nom;
+    val["Partage"] = "";
+  }
+  if (l) {
+    head.forEach((h, k) => {
+      if (val[h] !== undefined) sh.getRange(l, k + 1).setValue(val[h]);
+    });
+  } else sh.appendRow(head.map(h => (val[h] !== undefined ? val[h] : "")));
   return rep({ ok: true });
 }
-function supprimerSeance(id) {
+function supprimerSeance(id, u) {
   const sh = feuilleSeances();
   const l = ligneSeance(sh, id);
-  if (l) sh.deleteRow(l);
+  if (!l) return rep({ ok: true });
+  const ip = enteteSeances(sh).indexOf("Propriétaire");
+  if (u && !u.admin && proprietaireDe(sh.getRange(l, ip + 1).getValue()) !== u.email)
+    return rep({ ok: false, error: "seul le propriétaire peut supprimer" });
+  sh.deleteRow(l);
   return rep({ ok: true });
+}
+// partage : liste d'adresses Google (par personne). Réservé au propriétaire et à l'administrateur.
+function partagerSeance(id, liste, u) {
+  const sh = feuilleSeances();
+  const l = ligneSeance(sh, id);
+  if (!l) return rep({ ok: false, error: "séance introuvable" });
+  const head = enteteSeances(sh);
+  if (!u.admin && proprietaireDe(sh.getRange(l, head.indexOf("Propriétaire") + 1).getValue()) !== u.email)
+    return rep({ ok: false, error: "seul le propriétaire peut partager" });
+  const ok = [];
+  (Array.isArray(liste) ? liste : []).forEach(x => {
+    const e = String(x).trim().toLowerCase();
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && ok.indexOf(e) < 0 && ok.length < 200) ok.push(e);
+  });
+  sh.getRange(l, head.indexOf("Partage") + 1).setValue(ok.join(", "));
+  return rep({ ok: true, partage: ok });
 }
 
 /* ---------- schémas → GitHub ---------- */
@@ -335,6 +488,12 @@ function testerConnexions() {
       ? "✓ GitHub : dépôt " + GITHUB_DEPOT + " accessible"
       : "✗ GitHub a répondu " + c + " : vérifiez GITHUB_DEPOT et le jeton"
   );
+  Logger.log(
+    GOOGLE_CLIENT_ID
+      ? "✓ Comptes Google activés" + (emailsAdmin().length ? " (administrateur : " + emailsAdmin().join(", ") + ")" : " ⚠ ADMIN_EMAILS est vide")
+      : "ℹ Comptes Google non activés (GOOGLE_CLIENT_ID vide) : ancien fonctionnement"
+  );
+  if (GOOGLE_CLIENT_ID && SECRET_SESSION.indexOf("changez-moi") === 0) Logger.log("⚠ Changez SECRET_SESSION");
   Logger.log(
     CLE_SITE === "changez-moi" || MOT_DE_PASSE_ADMIN === "changez-moi-aussi"
       ? "⚠ Pensez à changer CLE_SITE et MOT_DE_PASSE_ADMIN"

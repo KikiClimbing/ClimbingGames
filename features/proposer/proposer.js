@@ -2,6 +2,13 @@
 const PROP_CHAMPS = [
   { k: "Titre", req: 1, aide: "Nom courant du jeu. Si deux noms existent : « Nom 1 / Nom 2 »." },
   { k: "Famille", req: 1, t: "select", opts: () => Object.keys(FAMS) },
+  {
+    k: "Remplace le jeu",
+    t: "select",
+    vide: 1,
+    opts: () => DATA.filter(g => g.Code).map(g => g.Code + " · " + g.Titre),
+    aide: "Facultatif : si cette fiche doit remplacer un jeu existant, choisissez-le.",
+  },
   { k: "Résumé", req: 1, aide: "Une phrase : le but du jeu." },
   {
     k: "Principe",
@@ -92,6 +99,7 @@ function propView() {
       `<div class="box" style="border-left:6px solid #2E7D4F"><b>Merci !</b> Votre jeu a été envoyé. Il sera relu avant d'apparaître sur le site.<div class="tools" style="margin-top:10px"><a class="btn" data-pr="again" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Proposer un autre jeu</a></div></div>`
     );
   const v = PROP.v;
+  if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.nom;
   const champ = f => {
     const val = v[f.k] || "";
     const lab = `${esc(f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
@@ -117,7 +125,7 @@ function propView() {
   const F = FAMS[v.Famille] || FAMS[Object.keys(FAMS)[0]];
   const theme = `--l:${F.l};--m:${F.m};--d:${F.d};--a:${F.a}`;
   const GROUPES = [
-    ["L'ESSENTIEL", ["Titre", "Famille", "Résumé", "Principe"]],
+    ["L'ESSENTIEL", ["Titre", "Famille", "Remplace le jeu", "Résumé", "Principe"]],
     [
       "ORGANISATION",
       ["Participants", "Matériel", "Espace", "Durée", "Effectif court", "Intensité"],
@@ -162,6 +170,7 @@ async function propEnvoyer() {
     render();
     return;
   }
+  if (v["Remplace le jeu"]) v["Remplace le jeu"] = v["Remplace le jeu"].split(" · ")[0];
   PROP.busy = true;
   PROP.msg = "";
   render();

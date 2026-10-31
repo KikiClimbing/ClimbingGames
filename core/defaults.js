@@ -11,6 +11,7 @@ const CONFIG = Object.assign(
     SEANCES_CSV_URL: "",
     GAME_ADD_URL: "",
     GAME_ADD_KEY: "",
+    GOOGLE_CLIENT_ID: "",
     SCHEMA_UPLOAD_URL: "",
     SCHEMA_UPLOAD_KEY: "",
   },

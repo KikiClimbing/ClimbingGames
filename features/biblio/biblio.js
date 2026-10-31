@@ -25,7 +25,8 @@ function driveHTML() {
   <p style="color:#6B7280;font-size:14px">Rien ne s'affiche, ou une page de connexion apparaît ? Connectez-vous à Google dans ce navigateur avec le compte qui a reçu l'accès, ou utilisez le bouton « Ouvrir dans Google Drive ». Vous pouvez y déposer d'autres formats (PDF, Word…). Les droits de partage de chaque document s'appliquent.</p>`;
 }
 function biblioView() {
-  const tab = BTAB || (CONFIG.SEANCES_CSV_URL || sbLocal().length ? "outil" : "drive");
+  const tab =
+    BTAB || (compteOn() || CONFIG.SEANCES_CSV_URL || sbLocal().length ? "outil" : "drive");
   const head = gsec(
     "Bibliothèque de séances",
     "Les séances créées avec l'outil, et le dossier Google Drive où déposer vos documents (PDF, Word…)."

@@ -1,6 +1,6 @@
 /* Séances enregistrées dans l'application : base de données (onglet « Séances » de la feuille Google) */
 let SEANCES = []; /* séances publiées, lues dans la feuille */
-const LS_SB = "seancesEnregistrees";
+const LS_SB = "seancesEnregistrees" + compteSuffixe();
 const sbLocal = () => {
   try {
     return JSON.parse(localStorage.getItem(LS_SB) || "[]");
@@ -21,6 +21,17 @@ function toast(t) {
   toast.t = setTimeout(() => el.classList.remove("on"), 4500);
 }
 async function loadSeances() {
+  if (compteOn()) {
+    /* avec comptes : seules les séances de l'utilisateur et celles partagées avec lui, par le serveur */
+    SEANCES = [];
+    if (!AUTH.session) return;
+    try {
+      SEANCES = (await comptePost("seances_liste")).seances.filter(x => x.id && x["Données"]);
+    } catch (e) {
+      SEANCES = [];
+    }
+    return;
+  }
   if (!CONFIG.SEANCES_CSV_URL) return;
   try {
     const r = await fetch(CONFIG.SEANCES_CSV_URL, { cache: "no-store" });
@@ -33,7 +44,7 @@ async function loadSeances() {
   }
 }
 registerLoader(loadSeances);
-const LS_DEL = "seancesSupprimees";
+const LS_DEL = "seancesSupprimees" + compteSuffixe();
 const sbSupprimees = () => {
   try {
     return JSON.parse(localStorage.getItem(LS_DEL) || "[]");
@@ -64,9 +75,21 @@ function sbTous() {
       nb: x["Exercices"],
       ts: x["Horodateur"],
       data: x["Données"],
+      owner: x["Propriétaire"] || "",
+      ownerNom: x["Nom"] || "",
+      partage: x["Partage"] || "",
     })
   );
   const del = new Set(sbSupprimees());
+  /* propriétaire et partage : toujours ceux du serveur, même si la copie locale est plus récente */
+  m.forEach(r => {
+    const x = SEANCES.find(s => s.id === r.id);
+    if (x) {
+      r.owner = x["Propriétaire"] || "";
+      r.ownerNom = x["Nom"] || "";
+      r.partage = x["Partage"] || "";
+    }
+  });
   return [...m.values()]
     .filter(r => !del.has(r.id))
     .sort((a, b) => String(b.ts).localeCompare(String(a.ts)));
@@ -85,6 +108,7 @@ function sbParse(rec) {
 const nbExercices = () => SE.subs.reduce((a, s) => a + s.items.length, 0);
 /* enregistre la séance en cours dans la base (nouvel enregistrement, ou mise à jour si déjà enregistrée) */
 async function enregistrerSeance() {
+  if (compteRequis()) return;
   seDefaults();
   if (!SE.id) SE.id = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const meta = { ...SMETA };
@@ -125,13 +149,8 @@ async function enregistrerSeance() {
   }
   toast("Enregistrement en cours…");
   try {
-    const r = await fetch(CONFIG.GAME_ADD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "seance", seance: rec }),
-    });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || "refusé");
+    await serveurSeance("seance", { seance: rec });
+    if (compteOn()) await loadSeances();
     toast("✓ Séance enregistrée dans la bibliothèque de séances.");
   } catch (e) {
     toast("Échec de l'enregistrement (" + e.message + "). La séance reste dans ce navigateur.");
@@ -154,7 +173,8 @@ function sbAdopter(d, id) {
 }
 /* ---------- liste ---------- */
 function seancesListeHTML() {
-  if (!CONFIG.SEANCES_CSV_URL && !sbLocal().length)
+  if (compteOn() && !AUTH.user) return compteInvite();
+  if (!compteOn() && !CONFIG.SEANCES_CSV_URL && !sbLocal().length)
     return `<div class="box">La base de séances n'est pas encore configurée. L'administrateur du site doit renseigner <b>SEANCES_CSV_URL</b> et <b>GAME_ADD_URL</b> dans <i>config.js</i>. En attendant, les séances enregistrées depuis ce navigateur apparaissent ici.</div>`;
   const q = norm(SBQ);
   const L = sbAll()
@@ -168,17 +188,19 @@ function seancesListeHTML() {
         dates: m.dates || r.dates || "",
         theme: m.theme || r.theme || "",
         obj: m.objectif || "",
+        mien: compteMien(r),
+        par: compteMien(r) ? "" : r.ownerNom || r.owner,
       };
     })
     .filter(r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj].join(" ")).includes(q));
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     r =>
-      `<tr class="r" data-go="sb/${esc(r.id)}">${cel(r.titre).replace("<td", '<td style="font-weight:700"')}${cel(r.educ)}${cel(r.dates)}${cel(r.theme)}${cel(r.obj)}<td style="text-align:right"><a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a></td></tr>`
+      `<tr class="r" data-go="sb/${esc(r.id)}">${cel(r.titre).replace("<td", '<td style="font-weight:700"')}${cel(r.educ)}${cel(r.dates)}${cel(r.theme)}${cel(r.obj)}${compteOn() ? cel(r.mien ? "Moi" : r.par) : ""}<td style="text-align:right">${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px"></div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Ma séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Ma séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "";
@@ -199,13 +221,7 @@ async function sbSupprimer(id) {
   render();
   if (CONFIG.GAME_ADD_URL) {
     try {
-      const rep = await fetch(CONFIG.GAME_ADD_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "seance_suppr", id }),
-      });
-      const j = await rep.json();
-      if (!j.ok) throw new Error(j.error || "refusé");
+      await serveurSeance("seance_suppr", { id });
       toast("Séance supprimée.");
     } catch (e) {
       toast("Supprimée ici, mais pas dans la feuille Google (" + e.message + ").");
@@ -226,8 +242,9 @@ function seanceFicheView(id) {
   }
   SBCUR = d;
   SBID = id;
+  const mien = compteMien(rec);
   const sheet = withSeance(d.meta, d.se, () => sheetHTML());
-  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a><a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a><a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Utiliser comme modèle (copie)</a><a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>
+  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Utiliser comme modèle (copie)</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
   <div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheet}</div>`;
 }
 registerView({

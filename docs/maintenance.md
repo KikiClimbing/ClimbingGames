@@ -68,7 +68,7 @@ Reconnu par le script grâce à la présence des colonnes `Titre` et `Principe`.
 ### 3.2 Onglet `Séances`
 Créé automatiquement par le script à la première séance enregistrée.
 
-`id` · `Horodateur` (ISO) · `Titre` · `Thème` · `Éducateurs` · `Dates` · `Exercices` (nombre) · `Données` (JSON complet de la séance, 49 000 caractères max) · `Publié` (`OUI`)
+`id` · `Horodateur` (ISO) · `Titre` · `Thème` · `Éducateurs` · `Dates` · `Exercices` (nombre) · `Données` (JSON complet de la séance, 49 000 caractères max) · `Publié` (`OUI`) · `Propriétaire` (e-mail du compte) · `Nom` · `Partage` (e-mails séparés par des virgules). Les trois dernières colonnes sont créées toutes seules ; une ligne sans propriétaire appartient au premier administrateur. Les **cycles** sont dans le même onglet (`id` commençant par `cy`).
 
 La liste du site lit surtout `Données` (titre, auteur, date, thème, objectif sont relus dans le JSON).
 
@@ -94,6 +94,7 @@ Fichier à la racine, **le vôtre** : il n'est jamais écrasé par une mise à j
 | `TEMPLATE_SEANCE_URL`, `TEMPLATE_CYCLE_URL` | modèles Google Docs (page « Séances & cycles ») |
 | `LIBRARY_URL` | dossier Drive de la bibliothèque (onglet « Dossier Google Drive ») |
 | `GAME_ADD_URL` | adresse `/exec` de l'application web Apps Script (**une seule pour tout**) |
+| `GOOGLE_CLIENT_ID` | identifiant client OAuth Google (pas un secret). Vide = pas de comptes (ancien fonctionnement) |
 | `GAME_ADD_KEY` | mot de passe « du site » : doit être identique à `CLE_SITE` dans le script. Visible publiquement : ce n'est pas un secret, seulement un filtre anti-spam |
 | `SCHEMA_UPLOAD_URL`, `SCHEMA_UPLOAD_KEY` | obsolètes : à laisser vides (si renseignés, l'envoi des schémas utilise l'ancien script) |
 
@@ -307,9 +308,21 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 ## 9. Sécurité et confidentialité
 
 - `GAME_ADD_KEY` est publique (dans `config.js`) : toute personne qui la lit peut proposer un jeu, enregistrer ou supprimer une séance. Seule la page Administration (jeux) est réellement protégée par mot de passe, vérifié côté script.
-- Les onglets publiés en CSV sont lisibles par quiconque a l'adresse.
+- Les onglets publiés en CSV sont lisibles par quiconque a l'adresse. **Avec les comptes, l'onglet `Séances` ne doit plus être publié** (sinon toutes les séances restent lisibles).
+- Avec les comptes : la session est un jeton signé (HMAC, secret `SECRET_SESSION` dans le script), valable 30 jours ; le serveur filtre les séances (les siennes, celles partagées avec l'adresse, tout pour les administrateurs) et refuse la modification ou la suppression par un autre que le propriétaire. Les données personnelles conservées : adresse Google et nom (à mentionner dans une page d'information RGPD).
 - Le jeton GitHub ne vit que dans le script Apps Script privé. Ne le copiez jamais dans le dépôt.
 - Les données saisies dans « Ma séance » restent dans le navigateur tant qu'on n'enregistre pas dans la bibliothèque.
+
+### Comptes Google (mise en place)
+Les jeux restent publics ; seuls les séances et cycles dépendent d'un compte. Tout détenteur d'un compte Google peut se connecter (inscription ouverte) ; les administrateurs sont listés dans `ADMIN_EMAILS` du script.
+
+1. **Console Google Cloud** (console.cloud.google.com), gratuit : créer un projet > *API et services* > *Écran de consentement OAuth* (type « Externe », nom de l'application, votre e-mail) > **Publier l'application** (passer de « Test » à « En production », sinon seules les adresses « utilisateurs test » peuvent se connecter) > *Identifiants* > *Créer des identifiants* > *ID client OAuth* > type **Application Web** > *Origines JavaScript autorisées* : `https://VOTRE-COMPTE.github.io` (sans chemin, sans `/` final). Dans « Branding » : nom, e-mail d'assistance, page d'accueil = adresse du site, règles de confidentialité = `…/confidentialite.html` (page fournie ; y renseigner votre adresse de contact). Copier l'ID client (`…apps.googleusercontent.com`). Les permissions demandées (adresse e-mail, nom) ne nécessitent pas de validation par Google.
+2. **config.js** : `GOOGLE_CLIENT_ID: "…apps.googleusercontent.com"`.
+3. **Script Apps Script** : renseigner `GOOGLE_CLIENT_ID` (le même), `ADMIN_EMAILS` (votre adresse Google), `SECRET_SESSION` (longue suite au hasard) ; puis *Déployer > Gérer les déploiements > ✎ > Nouvelle version*.
+4. **Feuille Google** : *Fichier > Partager > Publier sur le Web* > arrêter la publication de l'onglet `Séances` (garder fiches et retours). Retirer `SEANCES_CSV_URL` de `config.js`.
+5. Pousser le site, Ctrl+F5, ouvrir « Se connecter » dans le menu.
+
+Fonctionnement : `features/compte/compte.js` (bouton Google, session dans `localStorage.compteSession`, `comptePost`, `serveurSeance`, partage). Actions du script : `auth` (échange le jeton Google contre une session, vérifié auprès de `oauth2.googleapis.com/tokeninfo`), `seances_liste`, `seance`, `seance_suppr`, `seance_partage`. Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. Le formulaire « Proposer un jeu » reste ouvert à tous ; son champ « Remplace le jeu » est écrit dans une colonne du même nom (créée automatiquement) et un bandeau le signale dans Administration.
 
 ## 10. Limites connues
 
@@ -325,6 +338,8 @@ Le dépôt GitHub (historique complet du code et des images) ; pour la feuille :
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
+| 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
 | 2026-10-30 | 39 | « Mon cycle » : outil de création du cycle de formation (séances de la bibliothèque, enregistrement partagé, impression/PDF, Word) ; onglet « Cycles de formation » dans la bibliothèque |
 | 2026-10-30 | 38 | Formulaire « Proposer un jeu » en sections colorées (couleurs de la famille choisie, comme la fiche d'un jeu ; variantes facile/difficile en deux colonnes) : `features/proposer/proposer.css` |
 | 2026-10-30 | 37 | Bouton « Proposer un jeu » déplacé avant la section PARCOURIR du menu (généré par `proposeHTML()` dans `core/nav.js`), plus petit |

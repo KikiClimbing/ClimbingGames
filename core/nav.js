@@ -17,12 +17,14 @@ function buildNav() {
   let h = "",
     last = null;
   items.forEach(it => {
+    const b = it.html();
+    if (!b) return;
     if (it.sec && it.sec !== last) {
       if (it.sec === "PARCOURIR") h += proposeHTML();
       h += `<div class="sec">${it.sec}</div>`;
     }
     last = it.sec;
-    h += it.html();
+    h += b;
   });
   $("#navbox").innerHTML = h;
 }

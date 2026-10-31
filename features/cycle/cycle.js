@@ -156,6 +156,7 @@ const cyMsg = t => {
   if (m) m.textContent = t;
 };
 async function cyEnregistrer() {
+  if (compteRequis()) return;
   if (!CY.titre.trim()) {
     cyMsg("Donnez un titre au cycle.");
     return;
@@ -192,13 +193,8 @@ async function cyEnregistrer() {
   }
   cyMsg("Enregistrement en cours…");
   try {
-    const r = await fetch(CONFIG.GAME_ADD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "seance", seance: rec }),
-    });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error || "refusé");
+    await serveurSeance("seance", { seance: rec });
+    if (compteOn()) await loadSeances();
     cyMsg("✓ Cycle enregistré dans la bibliothèque.");
   } catch (e) {
     cyMsg("Échec (" + e.message + "). Le cycle reste dans ce navigateur.");
@@ -218,13 +214,14 @@ function cyAll() {
     .filter(x => x && x.cy);
 }
 function cyListeHTML() {
+  if (compteOn() && !AUTH.user) return compteInvite("pour voir et enregistrer vos cycles");
   const L = cyAll();
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     ({ rec, cy }) =>
-      `<tr class="r" data-go="cy/${esc(rec.id)}">${cel(cy.titre).replace("<td", '<td style="font-weight:700"')}${cel(cy.groupe)}${cel(cy.periode)}${cel(cy.lignes.length + " séance" + (cy.lignes.length > 1 ? "s" : ""))}<td style="text-align:right"><a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a></td></tr>`
+      `<tr class="r" data-go="cy/${esc(rec.id)}">${cel(cy.titre).replace("<td", '<td style="font-weight:700"')}${cel(cy.groupe)}${cel(cy.periode)}${cel(cy.lignes.length + " séance" + (cy.lignes.length > 1 ? "s" : ""))}${compteOn() ? cel(compteMien(rec) ? "Moi" : rec.ownerNom || rec.owner) : ""}<td style="text-align:right">${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
-  return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
+  return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
 }
 async function cySupprimer(id) {
   const x = cyAll().find(c => c.rec.id === id);
@@ -239,13 +236,7 @@ async function cySupprimer(id) {
   cySave();
   if (CONFIG.GAME_ADD_URL) {
     try {
-      const rep = await fetch(CONFIG.GAME_ADD_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "seance_suppr", id }),
-      });
-      const j = await rep.json();
-      if (!j.ok) throw new Error(j.error || "refusé");
+      await serveurSeance("seance_suppr", { id });
       toast("Cycle supprimé.");
     } catch (e) {
       toast("Supprimé ici, mais pas dans la feuille Google (" + e.message + ").");
@@ -484,7 +475,8 @@ registerView({
       return back + `<div class="box">Ce cycle est introuvable ou illisible.</div>`;
     }
     CYVU = { id, cy: x.cy };
-    return `${back}<div class="tools noprint">${cyBtn("vprint", "Imprimer / PDF", "#26364D")}${cyBtn("vword", "Télécharger en Word", "#2B5A9E")}${cyBtn("vedit", "✎ Modifier ce cycle", "#2E7D4F")}${cyBtn("vdel", "🗑 Supprimer", "#fff", "#B2263A", "border:1px solid #E8B4BC;")}<span id="cyMsg" style="font-weight:700;color:#2E7D4F"></span></div>${cycleSheetHTML(x.cy)}`;
+    const mien = compteMien(x.rec);
+    return `${back}<div class="tools noprint">${cyBtn("vprint", "Imprimer / PDF", "#26364D")}${cyBtn("vword", "Télécharger en Word", "#2B5A9E")}${cyBtn("vedit", mien ? "✎ Modifier ce cycle" : "Utiliser comme modèle (copie)", "#2E7D4F")}${mien ? cyBtn("vdel", "🗑 Supprimer", "#fff", "#B2263A", "border:1px solid #E8B4BC;") : ""}<span id="cyMsg" style="font-weight:700;color:#2E7D4F"></span></div>${partageBloc(x.rec)}${cycleSheetHTML(x.cy)}`;
   },
 });
 registerClick(e => {
@@ -509,7 +501,8 @@ registerClick(e => {
     )
       return true;
     CY = JSON.parse(JSON.stringify(CYVU.cy));
-    CY.id = CYVU.id;
+    if (compteMien((cyAll().find(c => c.rec.id === CYVU.id) || {}).rec || {})) CY.id = CYVU.id;
+    else delete CY.id;
     CYUID = CY.lignes.reduce((m, l) => Math.max(m, l.id || 0), 0) + 1;
     cySave();
     go("cycle");

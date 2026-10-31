@@ -21,6 +21,9 @@ window.SITE_CONFIG = {
   GAME_ADD_URL: "",
   // Mot de passe du site, à inventer : identique à CLE_SITE dans le script (visible publiquement, ce n'est pas un secret)
   GAME_ADD_KEY: "",
+  // Comptes Google (facultatif) : identifiant client OAuth (console Google Cloud). Vide = pas de comptes.
+  // Il n'est pas secret. Voir docs/maintenance.md, section « Comptes ».
+  GOOGLE_CLIENT_ID: "",
   // Obsolètes : laisser vides (anciens scripts d'envoi de schémas vers Drive)
   SCHEMA_UPLOAD_URL: "",
   SCHEMA_UPLOAD_KEY: "",
