@@ -322,7 +322,7 @@ Les jeux restent publics ; seuls les séances et cycles dépendent d'un compte. 
 4. **Feuille Google** : *Fichier > Partager > Publier sur le Web* > arrêter la publication de l'onglet `Séances` (garder fiches et retours). Retirer `SEANCES_CSV_URL` de `config.js`.
 5. Pousser le site, Ctrl+F5, ouvrir « Se connecter » dans le menu.
 
-Fonctionnement : `features/compte/compte.js` (bouton Google, session dans `localStorage.compteSession`, `comptePost`, `serveurSeance`, partage). Actions du script : `auth` (échange le jeton Google contre une session, vérifié auprès de `oauth2.googleapis.com/tokeninfo`), `seances_liste`, `seance`, `seance_suppr`, `seance_partage`. Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. Le formulaire « Proposer un jeu » reste ouvert à tous ; son champ « Remplace le jeu » est écrit dans une colonne du même nom (créée automatiquement) et un bandeau le signale dans Administration.
+Fonctionnement : `features/compte/compte.js` (bouton Google, session dans `localStorage.compteSession`, `comptePost`, `serveurSeance`, partage). Actions du script : `auth` (échange le jeton Google contre une session, vérifié auprès de `oauth2.googleapis.com/tokeninfo`), `seances_liste`, `seance`, `seance_suppr`, `seance_partage`. Équipes (v42) : onglet `Équipes` (`id`, `Nom`, `Propriétaire`, `Nom propriétaire`, `Membres`, `Créée`), créé automatiquement. Actions `equipes_liste`, `equipe_enregistrer`, `equipe_suppr`, `equipe_quitter`. Partager avec une équipe écrit `team:ID` dans la colonne `Partage` de la séance ; une séance est visible par tous les membres (et le responsable) de l'équipe. Le responsable gère nom et membres ; un membre peut quitter ; supprimer une équipe retire l'accès de ses membres. Seul un membre (ou le responsable) peut partager avec cette équipe. Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. Le formulaire « Proposer un jeu » reste ouvert à tous ; son champ « Remplace le jeu » est écrit dans une colonne du même nom (créée automatiquement) et un bandeau le signale dans Administration.
 
 ## 10. Limites connues
 
@@ -338,6 +338,7 @@ Fonctionnement : `features/compte/compte.js` (bouton Google, session dans `local
 
 | Date | Version | Changement |
 |---|---|---|
+| 2026-10-31 | 42 | Équipes : page « Mes équipes » (créer, membres, quitter, supprimer) et partage d'une séance ou d'un cycle avec une équipe ; onglet `Équipes` créé automatiquement ; **script Apps Script à redéployer** |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
 | 2026-10-30 | 39 | « Mon cycle » : outil de création du cycle de formation (séances de la bibliothèque, enregistrement partagé, impression/PDF, Word) ; onglet « Cycles de formation » dans la bibliothèque |

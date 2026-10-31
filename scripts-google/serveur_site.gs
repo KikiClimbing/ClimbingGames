@@ -53,13 +53,17 @@ function doPost(e) {
       return rep({ ok: false, error: "action inconnue" });
     }
     if (action === "auth") return connexionGoogle(d);
-    if (GOOGLE_CLIENT_ID && /^seance/.test(action)) {
+    if (GOOGLE_CLIENT_ID && /^(seance|equipe)/.test(action)) {
       const u = lireSession(d.session);
       if (!u) return rep({ ok: false, error: "connexion requise : reconnectez-vous", code: "auth" });
       if (action === "seances_liste") return listeSeances(u);
       if (action === "seance") return enregistrerSeance(d.seance || {}, u);
       if (action === "seance_suppr") return supprimerSeance(d.id, u);
       if (action === "seance_partage") return partagerSeance(d.id, d.partage, u);
+      if (action === "equipes_liste") return listeEquipes(u);
+      if (action === "equipe_enregistrer") return enregistrerEquipe(d.equipe || {}, u);
+      if (action === "equipe_suppr") return supprimerEquipe(d.id, u);
+      if (action === "equipe_quitter") return quitterEquipe(d.id, u);
       return rep({ ok: false, error: "action inconnue" });
     }
     if (d.key !== CLE_SITE)
@@ -271,6 +275,9 @@ function listePartage(txt) {
 }
 // séances visibles par l'utilisateur : les siennes, celles partagées avec lui ; l'administrateur voit tout
 function listeSeances(u) {
+  const mesEq = equipesLues()
+    .filter(q => q.owner === u.email || q.membres.indexOf(u.email) >= 0)
+    .map(q => "team:" + q.id);
   const sh = feuilleSeances();
   const head = enteteSeances(sh);
   const n = sh.getLastRow();
@@ -282,7 +289,8 @@ function listeSeances(u) {
     vals.forEach(r => {
       if (!r[0]) return;
       const proprio = proprietaireDe(r[ip]);
-      if (u.admin || proprio === u.email || listePartage(r[is]).indexOf(u.email) >= 0) {
+      const part = listePartage(r[is]);
+      if (u.admin || proprio === u.email || part.indexOf(u.email) >= 0 || part.some(t => mesEq.indexOf(t) >= 0)) {
         const o = {};
         head.forEach((h, k) => (o[h] = h === "Horodateur" && r[k] instanceof Date ? r[k].toISOString() : String(r[k])));
         o["Propriétaire"] = proprio;
@@ -342,12 +350,104 @@ function partagerSeance(id, liste, u) {
   if (!u.admin && proprietaireDe(sh.getRange(l, head.indexOf("Propriétaire") + 1).getValue()) !== u.email)
     return rep({ ok: false, error: "seul le propriétaire peut partager" });
   const ok = [];
+  const eq = equipesLues();
   (Array.isArray(liste) ? liste : []).forEach(x => {
     const e = String(x).trim().toLowerCase();
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && ok.indexOf(e) < 0 && ok.length < 200) ok.push(e);
+    if (ok.indexOf(e) >= 0 || ok.length >= 200) return;
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) ok.push(e);
+    else if (/^team:[a-z0-9]+$/.test(e)) {
+      // on ne partage qu'avec une équipe dont on fait partie
+      const q = eq.find(z => "team:" + z.id === e);
+      if (q && (u.admin || q.owner === u.email || q.membres.indexOf(u.email) >= 0)) ok.push(e);
+    }
   });
   sh.getRange(l, head.indexOf("Partage") + 1).setValue(ok.join(", "));
   return rep({ ok: true, partage: ok });
+}
+
+/* ---------- équipes (partage d'une séance avec plusieurs personnes à la fois) ---------- */
+const COLONNES_EQUIPES = ["id", "Nom", "Propriétaire", "Nom propriétaire", "Membres", "Créée"];
+function feuilleEquipes() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Équipes");
+  if (!sh) {
+    sh = ss.insertSheet("Équipes");
+    sh.appendRow(COLONNES_EQUIPES);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function equipesLues() {
+  const sh = feuilleEquipes();
+  const n = sh.getLastRow();
+  if (n < 2) return [];
+  return sh
+    .getRange(2, 1, n - 1, COLONNES_EQUIPES.length)
+    .getValues()
+    .filter(r => r[0])
+    .map(r => ({
+      id: String(r[0]),
+      nom: String(r[1]),
+      owner: String(r[2]).toLowerCase(),
+      ownerNom: String(r[3]),
+      membres: listePartage(r[4]),
+    }));
+}
+function formeEquipe(q, u) {
+  return { id: q.id, nom: q.nom, owner: q.owner, ownerNom: q.ownerNom, membres: q.membres, mien: q.owner === u.email || u.admin };
+}
+function listeEquipes(u) {
+  const L = equipesLues().filter(q => u.admin || q.owner === u.email || q.membres.indexOf(u.email) >= 0);
+  return rep({ ok: true, equipes: L.map(q => formeEquipe(q, u)) });
+}
+function ligneEquipe(sh, id) {
+  const n = sh.getLastRow();
+  const ids = n > 1 ? sh.getRange(2, 1, n - 1, 1).getValues().map(r => String(r[0])) : [];
+  const i = ids.indexOf(String(id));
+  return i >= 0 ? i + 2 : 0;
+}
+function adressesValides(liste) {
+  const ok = [];
+  (Array.isArray(liste) ? liste : []).forEach(x => {
+    const e = String(x).trim().toLowerCase();
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && ok.indexOf(e) < 0 && ok.length < 500) ok.push(e);
+  });
+  return ok;
+}
+function enregistrerEquipe(q, u) {
+  const nom = String(q.nom || "").trim().slice(0, 80);
+  if (!nom) return rep({ ok: false, error: "nom de l'équipe manquant" });
+  const membres = adressesValides(q.membres).filter(m => m !== u.email);
+  const sh = feuilleEquipes();
+  let id = String(q.id || "");
+  const l = id ? ligneEquipe(sh, id) : 0;
+  if (l) {
+    const proprio = String(sh.getRange(l, 3).getValue()).toLowerCase();
+    if (!u.admin && proprio !== u.email) return rep({ ok: false, error: "seul le responsable peut modifier l'équipe" });
+    sh.getRange(l, 2).setValue(nom);
+    sh.getRange(l, 5).setValue(membres.join(", "));
+  } else {
+    id = "e" + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+    sh.appendRow([id, nom, u.email, u.nom, membres.join(", "), new Date().toISOString()]);
+  }
+  return rep({ ok: true, id: id });
+}
+function supprimerEquipe(id, u) {
+  const sh = feuilleEquipes();
+  const l = ligneEquipe(sh, id);
+  if (!l) return rep({ ok: true });
+  if (!u.admin && String(sh.getRange(l, 3).getValue()).toLowerCase() !== u.email)
+    return rep({ ok: false, error: "seul le responsable peut supprimer l'équipe" });
+  sh.deleteRow(l);
+  return rep({ ok: true });
+}
+function quitterEquipe(id, u) {
+  const sh = feuilleEquipes();
+  const l = ligneEquipe(sh, id);
+  if (!l) return rep({ ok: true });
+  const reste = listePartage(sh.getRange(l, 5).getValue()).filter(m => m !== u.email);
+  sh.getRange(l, 5).setValue(reste.join(", "));
+  return rep({ ok: true });
 }
 
 /* ---------- schémas → GitHub ---------- */

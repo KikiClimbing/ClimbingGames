@@ -153,7 +153,102 @@ registerClick(e => {
   return true;
 });
 
-/* ---------- partage d'une séance ou d'un cycle (par personne) ---------- */
+/* ---------- équipes ---------- */
+let EQUIPES = [];
+async function loadEquipes() {
+  EQUIPES = [];
+  if (!compteOn() || !AUTH.session) return;
+  try {
+    EQUIPES = (await comptePost("equipes_liste")).equipes;
+  } catch (e) {
+    EQUIPES = [];
+  }
+}
+registerLoader(loadEquipes);
+const equipeNom = id => (EQUIPES.find(q => q.id === id) || {}).nom || "équipe";
+function equipesView() {
+  const head = gsec(
+    "Mes équipes",
+    "Une équipe est un groupe de personnes (adresses Google). Partager une séance avec l'équipe la rend lisible par tous ses membres."
+  );
+  if (!AUTH.user) return head + compteInvite("pour gérer vos équipes");
+  const mes = EQUIPES.filter(q => q.owner === AUTH.user.email);
+  const autres = EQUIPES.filter(q => q.owner !== AUTH.user.email);
+  const carte = q =>
+    `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">👥 ${esc(q.nom)}</b><span style="color:#6B7280;font-size:13px">${q.membres.length} membre${q.membres.length > 1 ? "s" : ""}</span></div>
+    <label class="sml" style="margin-top:8px">Nom de l'équipe<input data-eqf="nom" data-id="${esc(q.id)}" value="${esc(q.nom)}"></label>
+    <label class="sml" style="margin-top:8px">Membres (adresses Google, une par ligne)<textarea rows="4" data-eqf="membres" data-id="${esc(q.id)}">${esc(q.membres.join("\n"))}</textarea></label>
+    <div class="tools" style="margin-top:8px"><a class="btn" data-eq="save" data-id="${esc(q.id)}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer</a><a class="btn" data-eq="del" data-id="${esc(q.id)}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer l'équipe</a></div></div>`;
+  const autre = q =>
+    `<div class="box" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">👥 ${esc(q.nom)}</b><span style="color:#6B7280;font-size:13px">responsable : ${esc(q.ownerNom || q.owner)} · ${q.membres.length + 1} personnes</span><a class="chip" data-eq="quit" data-id="${esc(q.id)}" style="cursor:pointer">Quitter</a></div>`;
+  return `${head}<div class="box" style="background:#F7F9FD"><b>Créer une équipe</b><label class="sml" style="margin-top:8px">Nom<input id="eqNouveau" placeholder="Ex. Équipe Bloc Party"></label><div class="tools" style="margin-top:8px"><a class="btn" data-eq="new" style="background:#26364D;color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">+ Créer</a><span id="eqMsg" style="font-weight:700;color:#B2263A"></span></div></div>
+  ${mes.length ? `<p class="count">Équipes dont vous êtes responsable</p>${mes.map(carte).join("")}` : ""}
+  ${autres.length ? `<p class="count">Équipes dont vous êtes membre</p>${autres.map(autre).join("")}` : ""}
+  ${!EQUIPES.length ? '<div class="empty">Aucune équipe pour le moment.</div>' : ""}`;
+}
+registerNav({
+  sec: "MON COMPTE",
+  secOrder: 8,
+  order: 2,
+  html: () =>
+    compteOn() && AUTH.user
+      ? navBtn(
+          "equipes",
+          `Mes équipes<span class="n">${EQUIPES.length || ""}</span>`,
+          '<span class="ic">👥</span>'
+        )
+      : "",
+});
+registerView({ match: v => v === "equipes", html: () => equipesView() });
+registerClick(e => {
+  const b = e.target.closest("[data-eq]");
+  if (!b) return;
+  const id = b.dataset.id,
+    a = b.dataset.eq;
+  const rafraichir = async msg => {
+    await loadEquipes();
+    buildNav();
+    render();
+    if (msg) toast(msg);
+  };
+  const echec = err => toast("Échec : " + err.message);
+  if (a === "new") {
+    const nom = ($("#eqNouveau").value || "").trim();
+    if (!nom) {
+      $("#eqMsg").textContent = "Donnez un nom à l'équipe.";
+      return true;
+    }
+    comptePost("equipe_enregistrer", { equipe: { nom, membres: [] } })
+      .then(() => rafraichir("✓ Équipe créée : ajoutez ses membres."))
+      .catch(echec);
+  } else if (a === "save") {
+    const nom = document.querySelector(`[data-eqf=nom][data-id="${id}"]`).value;
+    const membres = document
+      .querySelector(`[data-eqf=membres][data-id="${id}"]`)
+      .value.split(/[\s,;]+/)
+      .filter(Boolean);
+    comptePost("equipe_enregistrer", { equipe: { id, nom, membres } })
+      .then(() => rafraichir("✓ Équipe enregistrée."))
+      .catch(echec);
+  } else if (a === "del") {
+    if (
+      !confirm(
+        "Supprimer cette équipe ? Les séances partagées avec elle ne seront plus visibles de ses membres."
+      )
+    )
+      return true;
+    comptePost("equipe_suppr", { id })
+      .then(() => rafraichir("Équipe supprimée."))
+      .catch(echec);
+  } else if (a === "quit") {
+    if (!confirm("Quitter cette équipe ?")) return true;
+    comptePost("equipe_quitter", { id })
+      .then(() => rafraichir("Vous avez quitté l'équipe."))
+      .catch(echec);
+  }
+  return true;
+});
+/* ---------- partage d'une séance ou d'un cycle (par personne ou par équipe) ---------- */
 let PARTAGE_OUVERT = null;
 const partageListe = r =>
   String(r.partage || "")
@@ -163,11 +258,18 @@ function partageBloc(r) {
   if (!compteOn() || !r) return "";
   if (!compteMien(r))
     return `<div class="box noprint" style="border-left:6px solid #8A55B5;padding:8px 14px">Partagé avec vous par <b>${esc(r.ownerNom || r.owner)}</b> ${r.owner && r.ownerNom ? `<span style="color:#6B7280">(${esc(r.owner)})</span>` : ""} · lecture seule : « Utiliser comme modèle » crée votre propre copie.</div>`;
-  const L = partageListe(r);
+  const L = partageListe(r),
+    pers = L.filter(x => !x.startsWith("team:")),
+    eqs = L.filter(x => x.startsWith("team:")).map(x => x.slice(5));
   const ouvert = PARTAGE_OUVERT === r.id;
-  return `<div class="box noprint" style="padding:8px 14px"><a class="chip" data-partage="toggle" data-id="${esc(r.id)}" style="cursor:pointer">👥 Partager${L.length ? " (" + L.length + ")" : ""}</a> <span style="color:#6B7280;font-size:13px">${L.length ? "Partagé avec : " + esc(L.join(", ")) : "Privé : vous seul la voyez."}</span>${
+  const resume = [...eqs.map(i => "👥 " + equipeNom(i)), ...pers];
+  return `<div class="box noprint" style="padding:8px 14px"><a class="chip" data-partage="toggle" data-id="${esc(r.id)}" style="cursor:pointer">👥 Partager${L.length ? " (" + L.length + ")" : ""}</a> <span style="color:#6B7280;font-size:13px">${L.length ? "Partagé avec : " + esc(resume.join(", ")) : "Privé : vous seul la voyez."}</span>${
     ouvert
-      ? `<div style="margin-top:8px"><label class="sml">Adresses Google des personnes (une par ligne)<textarea id="partageTxt" rows="4" placeholder="prenom.nom@gmail.com">${esc(L.join("\n"))}</textarea></label><div class="tools" style="margin-top:8px"><a class="btn" data-partage="save" data-id="${esc(r.id)}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer le partage</a><span id="partageMsg" style="font-weight:700"></span></div><p style="color:#6B7280;font-size:13px;margin:6px 0 0">Ces personnes pourront la lire (pas la modifier) après s'être connectées avec cette adresse. La séance doit d'abord être enregistrée dans la bibliothèque.</p></div>`
+      ? `<div style="margin-top:8px">${
+          EQUIPES.length
+            ? `<div class="sml">Équipes<div class="gchk">${EQUIPES.map(q => `<label class="fl"><input type="checkbox" data-pteam="${esc(q.id)}" ${eqs.includes(q.id) ? "checked" : ""}> ${esc(q.nom)}</label>`).join("")}</div></div>`
+            : `<p style="color:#6B7280;font-size:13px;margin:0 0 6px">Pas encore d'équipe : créez-en dans « Mes équipes » pour partager avec plusieurs personnes d'un coup.</p>`
+        }<label class="sml" style="margin-top:8px">Personnes (adresses Google, une par ligne)<textarea id="partageTxt" rows="4" placeholder="prenom.nom@gmail.com">${esc(pers.join("\n"))}</textarea></label><div class="tools" style="margin-top:8px"><a class="btn" data-partage="save" data-id="${esc(r.id)}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer le partage</a><span id="partageMsg" style="font-weight:700"></span></div><p style="color:#6B7280;font-size:13px;margin:6px 0 0">Ils pourront la lire (pas la modifier) après s'être connectés avec leur adresse Google. Elle doit d'abord être enregistrée dans la bibliothèque.</p></div>`
       : ""
   }</div>`;
 }
@@ -180,11 +282,14 @@ registerClick(e => {
     render();
   } else if (b.dataset.partage === "save") {
     const m = $("#partageMsg");
-    const liste = ($("#partageTxt").value || "").split(/[\s,;]+/).filter(Boolean);
+    const liste = [
+      ...[...document.querySelectorAll("[data-pteam]:checked")].map(c => "team:" + c.dataset.pteam),
+      ...($("#partageTxt").value || "").split(/[\s,;]+/).filter(Boolean),
+    ];
     m.style.color = "#26364D";
     m.textContent = "Enregistrement…";
     comptePost("seance_partage", { id, partage: liste })
-      .then(j => {
+      .then(() => {
         toast("✓ Partage enregistré.");
         return loadSeances().then(render);
       })
