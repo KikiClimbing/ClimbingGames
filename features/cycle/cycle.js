@@ -57,7 +57,7 @@ function cyLigneDe(rec) {
     theme: m.theme || rec.theme || "",
     objectif: m.objectif || "",
     jeux: cyJeuxDe(d),
-    notes: "",
+    notes: bilanTexte(m.bilan),
   };
 }
 const cyCodeCouleur = c => {
@@ -138,8 +138,9 @@ function cycleView() {
   <div class="box noprint"><div class="smg">${inp("titre", "Titre du cycle", "Ex. Cycle 1 — Découverte")}${inp("periode", "Période", "Ex. sept. – déc. 2026")}${inp("groupe", "Public", "Ex. enfants 8-11 ans")}${inp("lieu", "Lieu", "Ex. Bloc Party, Mougins")}${inp("educ", "Éducateurs")}
   <label class="sml" style="grid-column:1/-1">Objectif général<textarea rows="2" data-cy="objectif">${esc(CY.objectif)}</textarea></label></div></div>
   <div class="box noprint"><b>Séances du cycle</b> <span style="color:#6B7280;font-size:13px">(${nl})</span>
-  <div class="tools" style="margin:8px 0">${cyBtn("picker", "+ Ajouter une séance de la bibliothèque", "#3A8FB0")}${cyBtn("blank", "+ Ligne vide", "#EEF1F8", "#26364D")}</div>
+  <div class="tools" style="margin:8px 0">${cyBtn("picker", "+ Ajouter une séance de la bibliothèque", "#3A8FB0")}${cyBtn("blank", "+ Ligne vide", "#EEF1F8", "#26364D")}${cyBtn("bilans", "↧ Reprendre les bilans des séances", "#E8A33D", "#26364D")}</div>
   ${CYPICK ? cyPicker() : ""}${CY.lignes.map(ligne).join("") || '<div class="empty">Aucune séance. Ajoutez-en depuis la bibliothèque, ou créez une ligne vide.</div>'}
+  <div id="cyComp" style="margin-top:10px;font-size:14px;background:#F7F9FD;border-radius:8px;padding:8px 12px"><b>Compétences du cycle</b><div style="margin-top:4px">${cyCompHTML()}</div></div>
   <label class="sml" style="margin-top:10px">Bilan du cycle<textarea rows="3" data-cy="bilan">${esc(CY.bilan)}</textarea></label></div>
   <p class="noprint" style="color:#6B7280;font-size:13px;margin:12px 0 4px">APERÇU (c'est ce qui sera imprimé ou exporté)</p>
   ${cycleSheetHTML(CY)}`;
@@ -147,6 +148,19 @@ function cycleView() {
 function cyPreview() {
   const s = $("#sheet");
   if (s) s.outerHTML = cycleSheetHTML(CY);
+  const c = $("#cyComp div");
+  if (c) c.innerHTML = cyCompHTML();
+}
+function cyCompHTML() {
+  const codes = [
+    ...new Set(
+      CY.lignes
+        .flatMap(l => String(l.jeux || "").split(/[\s,;]+/))
+        .map(x => x.trim())
+        .filter(Boolean)
+    ),
+  ];
+  return compHTML(codes, "dans le cycle");
 }
 const cyMsg = t => {
   const m = $("#cyMsg");
@@ -590,6 +604,23 @@ registerClick(e => {
     [CY.lignes[i], CY.lignes[j]] = [CY.lignes[j], CY.lignes[i]];
     cySave();
     render();
+  } else if (a === "bilans") {
+    const L = CY.lignes.filter(l => l.sid);
+    Promise.all(L.map(l => sbCharger(l.sid).catch(() => null))).then(() => {
+      let n = 0;
+      L.forEach(l => {
+        const r = sbAll().find(x => x.id === l.sid),
+          d = r && sbParse(r),
+          t = d && bilanTexte(d.meta.bilan);
+        if (t) {
+          l.notes = t;
+          n++;
+        }
+      });
+      cySave();
+      render();
+      toast(n ? n + " bilan(s) repris des séances." : "Aucun bilan renseigné dans ces séances.");
+    });
   } else if (a === "sync" && i >= 0) {
     const sid = CY.lignes[i].sid,
       lid = CY.lignes[i].id;
@@ -598,7 +629,11 @@ registerClick(e => {
         const r = sbAll().find(x => x.id === sid);
         const j = CY.lignes.findIndex(l => l.id === lid);
         if (r && j >= 0) {
-          CY.lignes[j] = { ...cyLigneDe(r), id: lid, notes: CY.lignes[j].notes };
+          CY.lignes[j] = {
+            ...cyLigneDe(r),
+            id: lid,
+            notes: CY.lignes[j].notes || bilanTexte((sbParse(r) || { meta: {} }).meta.bilan),
+          };
           cySave();
           render();
         }

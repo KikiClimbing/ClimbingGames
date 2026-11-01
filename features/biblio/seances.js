@@ -321,7 +321,7 @@ function seanceFicheView(id) {
   SBID = id;
   const mien = compteMien(rec);
   const sheet = withSeance(d.meta, d.se, () => sheetHTML());
-  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">⧉ Dupliquer cette séance</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
+  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="terrain" style="background:#E8A33D;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">▶ Mode terrain</a><a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">⧉ Dupliquer cette séance</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
   <div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheet}</div>`;
 }
 registerView({
@@ -369,14 +369,20 @@ registerClick(e => {
   else if (k === "word") seanceWord(SBCUR);
   else if (k === "del") {
     sbSupprimer(SBID).then(ok => ok && go("biblio"));
-  } else if (k === "copy" || k === "edit") {
+  } else if (k === "copy" || k === "edit" || k === "terrain") {
     const txt =
-      k === "edit"
-        ? "Ouvrir cette séance dans « Créer une séance » pour la modifier ? Le contenu actuel de « Créer une séance » sera remplacé. Enregistrez ensuite pour mettre à jour la séance de la bibliothèque."
-        : "Remplacer le contenu de « Créer une séance » par une copie de cette séance ?";
+      k === "terrain"
+        ? "Ouvrir cette séance en mode terrain ? Elle sera chargée dans « Créer une séance » (le contenu actuel sera remplacé), et le bilan pourra être enregistré dans la séance."
+        : k === "edit"
+          ? "Ouvrir cette séance dans « Créer une séance » pour la modifier ? Le contenu actuel de « Créer une séance » sera remplacé. Enregistrez ensuite pour mettre à jour la séance de la bibliothèque."
+          : "Remplacer le contenu de « Créer une séance » par une copie de cette séance ?";
     if (!confirm(txt)) return true;
-    sbAdopter(SBCUR, k === "edit" ? SBID : "");
+    sbAdopter(
+      SBCUR,
+      k === "edit" || (k === "terrain" && compteMien(sbAll().find(x => x.id === SBID))) ? SBID : ""
+    );
     go("seance");
+    if (k === "terrain") terrainOuvrir();
   }
   return true;
 });

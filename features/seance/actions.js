@@ -70,6 +70,9 @@ function seanceBind() {
     const c = $("#seControle");
     if (c) c.innerHTML = seControleInner();
   };
+  bilanBind(upd);
+  const tb = $("#sTerrain");
+  if (tb) tb.addEventListener("click", terrainOuvrir);
   const sub = id => SE.subs.find(x => x.id === +id);
   document.querySelectorAll("[data-sm]").forEach(i =>
     i.addEventListener("input", e => {

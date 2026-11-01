@@ -348,6 +348,7 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-10-31 | 52 | Fiche CREPS : plus de case de schéma vide (ni sous les situations, ni sur la page de schémas, ni dans le Word) ; la page de schémas n'existe que si au moins une image est disponible |
 | 2026-10-31 | 53 | « Séances et cycles » : en-têtes de colonnes en pastel (texte foncé) |
 | 2026-11-01 | 54 | Jeux favoris (`jeux/favoris.js`, étoile + « Mes favoris », par compte, dans le navigateur) ; bouton « Dupliquer » (séances et cycles) ; colonne « Modifié » et recherche dans les noms de jeux (colonne `Jeux` de l'onglet Séances, remplie à l'enregistrement) ; filtres de recherche d'exercices (`seance/filtres.js`) ; contrôle de la séance : durée prévue par groupe, 3 exercices intenses d'affilée, éléments manquants (`seance/controle.js`) ; **script Apps Script à redéployer** |
+| 2026-11-01 | 55 | Mode terrain (`seance/terrain.js`), bilan de séance (`SMETA.bilan`, repris dans le cycle), compétences travaillées par séance et par cycle (d'après `AX.COMP`). Site seulement, pas de changement du script Google. |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
@@ -372,3 +373,12 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-10-29 | 18 | « Ma séance » : groupes libres (2 à 4), échauffement par groupe, sous-sections par groupe |
 | 2026-10-29 | 17 | Base de séances (onglet `Séances`), bibliothèque à deux onglets, logo, effacement, impression d'une fiche de jeu sur une page |
 | avant | ≤ 16 | Refactor en dossiers par fonctionnalité, éditeur de schémas, export Word, retours de terrain |
+
+
+## Mode terrain, bilan et compétences (v55)
+
+Tout est dans `features/seance/terrain.js` (chargé avant `controle.js`).
+
+- **Mode terrain** : bouton « ▶ Mode terrain » dans « Créer une séance » et dans la fiche d'une séance enregistrée (la séance est alors chargée dans l'éditeur, avec confirmation). Plein écran (`#terrain`), un exercice à la fois pour le groupe choisi : accueil, échauffement, exercices, retour au calme, bilan. Chronomètre (±1 min, bip + vibration à zéro), écran maintenu allumé (Wake Lock, si le navigateur le permet). Les cartes sont calculées une fois à l'ouverture (`terrainCartes`).
+- **Bilan** : `SMETA.bilan = {pres, bien, diff, suite}`, enregistré avec la séance (aucune colonne en plus). Saisie dans le formulaire (encadré orange) ou en mode terrain ; affiché en bas de la fiche (`bilanFicheHTML`, écran et impression ; pas encore dans l'export Word). Dans « Créer un cycle », le bouton « Reprendre les bilans des séances » copie le texte dans les remarques de chaque ligne, et le bouton ↻ le fait aussi si la remarque est vide.
+- **Compétences** : `compBilan(codes)` compare les codes des jeux aux 10 compétences de `AX.COMP`. Affiché dans le contrôle de la séance et dans un encadré « Compétences du cycle » (codes de la colonne « Jeux » des lignes).

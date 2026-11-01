@@ -36,7 +36,8 @@ function seControleInner() {
   if (!w.length && !ok.length) ok.push("Rien à signaler");
   return (
     w.map(t => `<div style="color:#8A4B00;margin:3px 0">⚠ ${t}</div>`).join("") +
-    ok.map(t => `<div style="color:#2E7D4F;margin:3px 0">✓ ${t}</div>`).join("")
+    ok.map(t => `<div style="color:#2E7D4F;margin:3px 0">✓ ${t}</div>`).join("") +
+    `<div style="margin-top:8px;font-size:13px">${compHTML(compCodes(M), "dans cette séance")}</div>`
   );
 }
 function seControleHTML() {

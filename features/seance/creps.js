@@ -140,7 +140,7 @@ function crepsHTML() {
           `<div class="sch" style="border:1px solid #D5DAE5"><div style="background:#F4F6FA;font-size:11px;padding:3px 8px">${esc(r.nom)}${r.titre ? " — " + esc(r.titre) : ""}</div><div style="min-height:190px;display:flex;align-items:center;justify-content:center"><img src="${esc(crepsImg(r.g))}" alt="Schéma" onerror="this.closest('.sch').remove()" style="max-width:100%;max-height:230px;object-fit:contain"></div></div>`
       )
       .join("")}</div></div>`;
-  return h;
+  return h + bilanFicheHTML();
 }
 /* ---- formulaire : sélecteur de modèle + champs propres au modèle CREPS ---- */
 function crepsChoixHTML() {
