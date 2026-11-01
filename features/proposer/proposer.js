@@ -242,7 +242,7 @@ registerClick(e => {
     ED.ctx = null;
     ED.back = "proposer";
     PROP.schemas = null;
-    go("editeur");
+    edPopup("proposer");
   }
   return true;
 });

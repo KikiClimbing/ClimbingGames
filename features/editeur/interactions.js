@@ -195,7 +195,7 @@ function edInit() {
   document.addEventListener("keydown", edKey);
 }
 function edKey(ev) {
-  if (VIEW !== "editeur") return;
+  if (VIEW !== "editeur" && !ED.popup) return;
   const tag = (ev.target.tagName || "").toLowerCase();
   if (["input", "textarea", "select"].includes(tag)) return;
   if ((ev.ctrlKey || ev.metaKey) && ev.key === "z") {

@@ -140,7 +140,7 @@ function ajouterJeu(jeu) {
   if (!jeu.Titre || !jeu.Principe) return rep({ ok: false, error: "titre ou principe manquant" });
   const sh = feuilleJeux();
   if (!sh) return rep({ ok: false, error: "feuille des fiches introuvable" });
-  colonneAssurer(sh, "Remplace le jeu", jeu);
+  ["Remplace le jeu", "Objectif", "But", "Comportements attendus", "Organisation", "Critères de réussite"].forEach(c => colonneAssurer(sh, c, jeu));
   const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
   const ligne = head.map(h =>
     h === "Horodateur"

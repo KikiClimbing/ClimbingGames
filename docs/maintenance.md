@@ -30,7 +30,7 @@ Points clés :
 | Nouveaux schémas | `schemas/NOM.png` (+ `schemas/CODE.json`, dessin source, pour ceux faits depuis Administration) dans le dépôt | script Apps Script (API GitHub) | fiche d'un jeu (via « Schéma (lien) ») |
 | **Tous les jeux** (nouveaux compris) | Google Sheet, onglet des fiches (colonnes `Titre` + `Principe`) | formulaire, « Ma séance », page Administration | site (CSV publié) |
 | Séances créées avec l'outil | Google Sheet, onglet `Séances` | script (action `seance`) | site (CSV publié) + copie dans le navigateur |
-| Retours de terrain | Google Sheet, onglet des retours | popup « Donner mon retour » du site (action `retour`) | site (CSV publié, lignes dont « Publié » = OUI) |
+| Retours de terrain | Google Sheet, onglet des retours | formulaire « Retour terrain » | site (CSV publié) |
 | Séances en Word / PDF / Docs | dossier Google Drive (`LIBRARY_URL`) | éducateurs | iframe Drive |
 | Séance en cours, logo, préférences | `localStorage` du navigateur | le site | le site |
 
@@ -148,7 +148,7 @@ scripts-google/       scripts Apps Script (copies de référence)
 ```
 
 #### Favoris, duplication, filtres, contrôle (v54)
-- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Depuis la v56, synchronisés avec le serveur pour les comptes connectés (voir v56).
+- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Non synchronisés entre appareils.
 - **Dupliquer** : `sbDupliquer` (séances) et `cyDupliquer` (cycles) copient dans « Créer une séance / un cycle » sans identifiant, avec « (copie) » dans le titre.
 - **Recherche dans les noms de jeux** : la colonne `Jeux` (codes et noms, 600 caractères) est écrite par `enregistrerSeance` ; les séances enregistrées avant la v54 ne sont retrouvées par nom de jeu qu'après un nouvel enregistrement.
 - **Filtres** (`filtres.js`) : la liste de suggestions `#gl` est reconstruite selon famille, objectif, intensité, durée (≤ valeur maximale lue dans « Durée »), sans matériel, sans expérience.

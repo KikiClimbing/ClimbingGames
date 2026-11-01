@@ -69,13 +69,13 @@ function crepsLignes(M) {
         fx: "it",
         src: it,
         obj: it.cp_obj || (g && g.Objectif) || "",
-        but: it.cp_but || v.resume || "",
+        but: it.cp_but || (g && g.But) || v.resume || "",
         cons: it.cp_cons || v.desc || "",
         crit: v.crit || "",
-        comp: it.cp_comp || "",
+        comp: it.cp_comp || (g && g["Comportements attendus"]) || "",
         plus: v.plus || "",
         moins: v.moins || "",
-        orga: it.cp_orga || v.meta || "",
+        orga: it.cp_orga || (g && g.Organisation) || v.meta || "",
         dur: tgs(M, s.d, s.idx),
         g,
         url: v.url,
@@ -90,6 +90,8 @@ const crepsImg = g =>
     : isEmb(g)
       ? "schemas/" + g.Code + ".webp"
       : driveImg(g["Schéma (lien)"] || g["Schéma"]) || "";
+/* image de la situation : le schéma dessiné pour elle (it.sch) sinon celui du jeu */
+const crepsImgRow = r => (r.src && r.src.sch && edSvgUrl(r.src.sch)) || crepsImg(r.g);
 function crepsHTML() {
   const M = seModel(),
     S = SMETA,
@@ -125,19 +127,19 @@ function crepsHTML() {
       0,
       `<b>${esc(r.nom)}</b>${r.titre ? `<div style="margin-top:3px">${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${esc(r.titre)}</a>` : esc(r.titre)}</div>` : ""}${r.sub ? `<div style="color:#6B7280;font-size:10px;font-style:italic">${esc(r.sub)}</div>` : ""}`
     )}${td(1, bloc(r.obj))}${td(2, bloc(r.but))}${td(3, bloc(r.cons, "▸", C1))}${td(4, bloc(r.crit, "✓", "#2E6F3E"))}${td(5, bloc(r.comp, "•", "#8A55B5"))}${td(6, `${r.plus ? `<div style="margin-bottom:4px"><b style="color:${C2}">+ Plus difficile</b>${bloc(r.plus, "", "")}</div>` : ""}${r.moins ? `<div><b style="color:#2E6F3E">– Plus facile</b>${bloc(r.moins, "", "")}</div>` : ""}${r.plus || r.moins ? "" : ph("—")}`)}${td(7, `<div>${durs}</div>${bloc(r.orga, "", "")}`)}</tr>`;
-    if (schemaSous() && crepsImg(r.g)) {
-      const img = crepsImg(r.g);
+    if (schemaSous() && crepsImgRow(r)) {
+      const img = crepsImgRow(r);
       h += `<tr style="page-break-inside:avoid"><td colspan="8" style="border:1px solid #D5DAE5;padding:0"><div style="display:flex;align-items:stretch;min-height:120px"><div style="background:#F4F6FA;font-size:10px;color:#5B6B82;font-weight:700;padding:6px 8px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center">SCHÉMA</div><div style="display:flex;align-items:center;justify-content:center;padding:6px;width:34%;min-width:230px"><img src="${esc(img)}" alt="Schéma" onerror="this.closest('tr').remove()" style="max-width:100%;max-height:200px;object-fit:contain"></div><div style="flex:1;border-left:1px dashed #D5DAE5"></div></div></td></tr>`;
     }
   });
   h += `</tbody></table>`;
   /* page des schémas : seulement les situations qui ont une image (sauf si les schémas sont sous chaque situation) */
-  const avecImg = L.filter(r => crepsImg(r.g));
+  const avecImg = L.filter(r => crepsImgRow(r));
   if (!schemaSous() && avecImg.length)
     h += `<div style="page-break-before:always;break-before:page;margin-top:14px"><div style="background:${NAVYC};color:#fff;text-align:center;font-weight:700;padding:6px">Schémas</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid #D5DAE5">${avecImg
       .map(
         r =>
-          `<div class="sch" style="border:1px solid #D5DAE5"><div style="background:#F4F6FA;font-size:11px;padding:3px 8px">${esc(r.nom)}${r.titre ? " — " + esc(r.titre) : ""}</div><div style="min-height:190px;display:flex;align-items:center;justify-content:center"><img src="${esc(crepsImg(r.g))}" alt="Schéma" onerror="this.closest('.sch').remove()" style="max-width:100%;max-height:230px;object-fit:contain"></div></div>`
+          `<div class="sch" style="border:1px solid #D5DAE5"><div style="background:#F4F6FA;font-size:11px;padding:3px 8px">${esc(r.nom)}${r.titre ? " — " + esc(r.titre) : ""}</div><div style="min-height:190px;display:flex;align-items:center;justify-content:center"><img src="${esc(crepsImgRow(r))}" alt="Schéma" onerror="this.closest('.sch').remove()" style="max-width:100%;max-height:230px;object-fit:contain"></div></div>`
       )
       .join("")}</div></div>`;
   return h + bilanFicheHTML();
@@ -152,26 +154,43 @@ function crepsChoixHTML() {
       : ""
   }`;
 }
-function crepsFormHTML() {
-  if (!isCreps()) return "";
-  const M = seModel(),
-    L = crepsLignes(M);
-  const f = (r, k, lab, ph, def) => {
+/* champs propres au modèle CREPS d'une situation (r : ligne de crepsLignes) — placés dans le cadre de l'exercice lui-même */
+function crepsChampsHTML(r) {
+  const g = r.g;
+  const f = (k, lab, ph, def) => {
     const val = r.src[k] || "";
     const attr = r.fx === "ech" ? `data-se="${k}"` : `data-si="${k}" data-id="${r.src.id}"`;
     return `<label class="sml">${lab}<textarea rows="2" ${attr} placeholder="${esc(def || ph)}">${esc(val)}</textarea></label>`;
   };
-  const cart = L.map(r => {
-    const g = r.g;
-    return `<div class="sit"><div class="sith"><b>${esc(r.nom)}${r.titre ? " · " + esc(r.titre) : ""}</b></div><div class="smg">
+  const sch =
+    r.fx === "ech"
+      ? ""
+      : `<div class="tools" style="margin:8px 0 0"><button class="chip" data-sa="edsch" data-id="${r.src.id}">✏ Dessiner un schéma pour cette situation</button>${
+          r.src.sch && edSvgUrl(r.src.sch)
+            ? `<img src="${edSvgUrl(r.src.sch)}" alt="" style="height:46px;border:1px solid #D5DAE5;border-radius:4px;background:#fff"><button class="chip" data-sa="edschrm" data-id="${r.src.id}">Effacer le schéma dessiné</button>`
+            : g && crepsImg(g)
+              ? '<span class="hint">(le schéma du jeu sera utilisé)</span>'
+              : ""
+        }</div>`;
+  return `<div class="cpbox" style="margin-top:10px;border:1px dashed #8A55B5;border-radius:8px;padding:8px 10px;background:#FAF7FD"><b style="color:#8A55B5;font-size:13px">Compléments fiche CREPS</b> <span class="hint" style="font-size:12px">— les champs vides reprennent la fiche du jeu (texte grisé)</span><div class="smg" style="margin-top:6px">
     ${f(r, "cp_obj", "Objectif de la situation", "Quelle transformation visée ?", (g && g.Objectif) || "")}
     ${f(r, "cp_but", "But à atteindre pour les pratiquants", "Ce que les pratiquants doivent réussir", r.src.id && r.but)}
     ${f(r, "cp_cons", "Consignes et règles du jeu", "À donner aux pratiquants", r.cons)}
     ${f(r, "cp_comp", "Comportements attendus", "Critères techniques / tactiques de réalisation")}
     ${f(r, "cp_orga", "Organisation", "Matériel, espace, durée…", r.orga)}
-    </div></div>`;
-  }).join("");
-  return `<div class="box noprint" style="border-left:6px solid #8A55B5"><b>Fiche CREPS — compléments par situation</b><p class="hint" style="margin:4px 0 8px">Les champs vides reprennent la fiche du jeu (texte grisé). Critères de réussite et variantes se règlent dans « Corps de séance ».</p>${cart}</div>`;
+    </div>${sch}</div>`;
+}
+/* dans le cadre d'un exercice (L : crepsLignes de la séance, calculé une fois par affichage) */
+function crepsItemHTML(it, L) {
+  if (!isCreps()) return "";
+  const r = L.find(x => x.src === it);
+  return r ? crepsChampsHTML(r) : "";
+}
+/* dans le cadre de l'échauffement */
+function crepsEchHTML() {
+  if (!isCreps() || !SE.ech.on) return "";
+  const r = crepsLignes(seModel()).find(x => x.fx === "ech");
+  return r ? crepsChampsHTML(r) : "";
 }
 /* ---- Word ---- */
 function buildCrepsDoc(logo) {
@@ -289,11 +308,11 @@ function buildCrepsDoc(logo) {
       : [P(R("—", { i: true, c: "8A93A3" }))];
   };
   const hasImg = r => {
-    const u = crepsImg(r.g);
+    const u = crepsImgRow(r);
     return !!(u && CREPS_IMGS[u]);
   };
   const imgCell = (r, w, maxW, maxH, fill = "FFFFFF", span) => {
-    const url = crepsImg(r.g),
+    const url = crepsImgRow(r),
       run = url && crepsImgRun(D, url, maxW, maxH);
     return cell(
       run ? [new Paragraph({ children: [run], alignment: AlignmentType.CENTER })] : [],
@@ -403,9 +422,28 @@ function buildCrepsDoc(logo) {
 /* ---- images de schémas pour le Word : téléchargées puis converties en PNG (Word ne lit pas le WebP) ---- */
 const CREPS_IMGS = {};
 async function crepsImgPng(url) {
+  let bmp;
+  if (/^data:image\/svg/.test(url)) {
+    /* schéma dessiné : le SVG est converti via une image (createImageBitmap ne lit pas le SVG) */
+    bmp = await new Promise((ok, ko) => {
+      const im = new Image();
+      im.onload = () => ok({ im, width: 1600, height: 576 });
+      im.onerror = () => ko(new Error("illisible"));
+      im.src = url;
+    });
+    const c = document.createElement("canvas");
+    c.width = 1200;
+    c.height = 432;
+    const x = c.getContext("2d");
+    x.fillStyle = "#fff";
+    x.fillRect(0, 0, c.width, c.height);
+    x.drawImage(bmp.im, 0, 0, c.width, c.height);
+    const blob = await new Promise(ok => c.toBlob(ok, "image/png"));
+    return { data: new Uint8Array(await blob.arrayBuffer()), w: c.width, h: c.height };
+  }
   const r = await fetch(url);
   if (!r.ok) throw new Error("introuvable");
-  const bmp = await createImageBitmap(await r.blob());
+  bmp = await createImageBitmap(await r.blob());
   const k = Math.min(1, 900 / bmp.width);
   const c = document.createElement("canvas");
   c.width = Math.round(bmp.width * k);
@@ -422,7 +460,7 @@ async function crepsPreload(rec) {
   const L = rec
     ? withSeance(rec.meta, rec.se, () => crepsLignes(seModel()))
     : crepsLignes(seModel());
-  const urls = [...new Set(L.map(r => crepsImg(r.g)).filter(Boolean))];
+  const urls = [...new Set(L.map(r => crepsImgRow(r)).filter(Boolean))];
   let manque = 0;
   await Promise.all(
     urls.map(async u => {

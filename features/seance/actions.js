@@ -32,6 +32,12 @@ function seToLib(id) {
     "Plus facile": puces(it.moins),
     "Plus difficile": puces(it.plus),
     Auteur: auteur,
+    /* compléments de la fiche CREPS, s'ils sont renseignés */
+    Objectif: it.cp_obj || "",
+    But: it.cp_but || "",
+    "Comportements attendus": it.cp_comp || "",
+    Organisation: it.cp_orga || "",
+    "Critères de réussite": puces(it.crit),
   };
   if (CONFIG.GAME_ADD_URL) {
     m.textContent = "Envoi de l'exercice en cours…";
@@ -311,6 +317,12 @@ document.addEventListener("click", e => {
     }
     const s = SE.subs.find(x => x.id === sid);
     s.items.push({ id: SEUID++, t: "lib", k: key(g), crit: "" });
+  } else if (a === "edsch") {
+    edPopup("item:" + id);
+    re = false;
+  } else if (a === "edschrm") {
+    const f = seFind(id);
+    if (f) delete f.s.items[f.i].sch;
   } else if (a === "irm") {
     const f = seFind(id);
     f.s.items.splice(f.i, 1);

@@ -276,3 +276,13 @@ body.trOn {
     display: none;
   }
 }
+
+/* recherche d'exercices (popup) */
+.rx{display:grid;grid-template-columns:minmax(300px,2fr) 3fr;gap:14px;min-height:60vh}
+.rxl{max-height:72vh;overflow:auto}
+.rxr{max-height:72vh;overflow:auto;background:#fff;border-radius:10px;padding:12px}
+.rxi{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.rxi:hover{background:#EEF3FA}.rxi.on{background:#E3EEF8;border-color:#2B5A9E}
+.rxc{min-width:34px;text-align:center;color:#fff;font-weight:700;border-radius:6px;padding:2px 4px;font-size:13px}
+.rxt{flex:1}.rxd{color:#2E7D4F;font-weight:700}
+@media(max-width:800px){.rx{grid-template-columns:1fr}}
