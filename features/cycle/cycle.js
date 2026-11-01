@@ -105,7 +105,7 @@ function cyPicker() {
   const q = norm(CYQ);
   const dans = new Set(CY.lignes.map(l => l.sid));
   const L = sbAll().filter(
-    r => !q || norm([r.titre, r.theme, r.dates, r.objectif].join(" ")).includes(q)
+    r => !q || norm([r.titre, r.theme, r.dates, r.objectif, r.jeux].join(" ")).includes(q)
   );
   return `<div class="box" style="background:#F7F9FD"><b>Séances de la bibliothèque</b> <a class="chip" data-cya="pickoff" style="cursor:pointer;float:right">Fermer</a>
   <input class="search" id="cyq" type="search" placeholder="Rechercher une séance…" value="${esc(CYQ)}" style="max-width:360px;display:block;margin:8px 0">
@@ -219,9 +219,29 @@ function cyListeHTML() {
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     ({ rec }) =>
-      `<tr class="r" data-go="cy/${esc(rec.id)}">${celTitre(rec.titre, rec.theme)}${celChip(rec.theme)}${cel(rec.dates)}${celChip((+rec.nb || 0) + " séance" + (+rec.nb > 1 ? "s" : ""))}${compteOn() ? celPar(compteMien(rec), rec.ownerNom || rec.owner) : ""}<td style="text-align:right">${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+      `<tr class="r" data-go="cy/${esc(rec.id)}">${celTitre(rec.titre, rec.theme)}${celChip(rec.theme)}${cel(rec.dates)}${celChip((+rec.nb || 0) + " séance" + (+rec.nb > 1 ? "s" : ""))}${compteOn() ? celPar(compteMien(rec), rec.ownerNom || rec.owner) : ""}<td style="text-align:right"><a class="chip" data-cydup="${esc(rec.id)}" title="Dupliquer : préparer un nouveau cycle à partir de celui-ci" style="cursor:pointer">⧉</a> ${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
   return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
+}
+/* duplique un cycle dans « Créer un cycle » */
+async function cyDupliquer(id) {
+  try {
+    await sbCharger(id);
+    const x = cyAll().find(c => c.rec.id === id),
+      cy = x && cyData(x.rec);
+    if (!cy) throw new Error("illisible");
+    if (CY.lignes.length && !confirm("Remplacer le cycle en cours par une copie de celui-ci ?"))
+      return;
+    CY = JSON.parse(JSON.stringify(cy));
+    delete CY.id;
+    CY.titre = (CY.titre || "Cycle") + " (copie)";
+    CYUID = CY.lignes.reduce((m, l) => Math.max(m, l.id || 0), 0) + 1;
+    cySave();
+    go("cycle");
+    toast("Copie prête : modifiez-la puis enregistrez-la.");
+  } catch (e) {
+    toast("Copie impossible : " + e.message);
+  }
 }
 async function cySupprimer(id) {
   const x = cyAll().find(c => c.rec.id === id);
@@ -491,6 +511,11 @@ registerView({
   },
 });
 registerClick(e => {
+  const dup = e.target.closest("[data-cydup]");
+  if (dup) {
+    cyDupliquer(dup.dataset.cydup);
+    return true;
+  }
   const d = e.target.closest("[data-cydel]");
   if (d) {
     cySupprimer(d.dataset.cydel).then(ok => ok && render());

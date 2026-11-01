@@ -147,6 +147,13 @@ css/                  base.css, responsive.css (mobile + impression)
 scripts-google/       scripts Apps Script (copies de référence)
 ```
 
+#### Favoris, duplication, filtres, contrôle (v54)
+- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Non synchronisés entre appareils.
+- **Dupliquer** : `sbDupliquer` (séances) et `cyDupliquer` (cycles) copient dans « Créer une séance / un cycle » sans identifiant, avec « (copie) » dans le titre.
+- **Recherche dans les noms de jeux** : la colonne `Jeux` (codes et noms, 600 caractères) est écrite par `enregistrerSeance` ; les séances enregistrées avant la v54 ne sont retrouvées par nom de jeu qu'après un nouvel enregistrement.
+- **Filtres** (`filtres.js`) : la liste de suggestions `#gl` est reconstruite selon famille, objectif, intensité, durée (≤ valeur maximale lue dans « Durée »), sans matériel, sans expérience.
+- **Contrôle** (`controle.js`) : encadré sous « Bas de fiche », mis à jour à chaque saisie (`upd` dans `actions.js`) ; la durée prévue est `SMETA.groups[i].prevu`.
+
 #### Modèle de fiche CREPS (v50)
 `features/seance/creps.js` ajoute une 2ᵉ présentation de la même séance (mêmes données `SE` / `SMETA`). `sheetHTML()` (fiche.js) et `buildSeanceDoc()` (export-word.js) y renvoient quand `SMETA.modele === "creps"`. Champs propres au modèle : `cp_obj`, `cp_but`, `cp_cons`, `cp_comp`, `cp_orga` (dans chaque exercice, et dans `SE.ech` pour l'échauffement) ; s'ils sont vides, on reprend la fiche du jeu (objectif, résumé, principe, matériel, variantes). Les critères de réussite et les variantes viennent de « Corps de séance ». La page de schémas reprend le schéma de chaque jeu de la bibliothèque ; dans le fichier Word, les images du site sont téléchargées et converties en PNG (`crepsPreload`) ; une image inaccessible (ex. lien Google Drive bloqué par le navigateur) laisse une case vide et le message du bouton Word le signale. `SMETA.schemaMode` vaut `page` (défaut) ou `sous` (une bande « schéma » sous chaque situation). Les colonnes sont décrites dans `CREPS_COLS`.
 
@@ -340,6 +347,7 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-10-31 | 51 | Fiche CREPS : choix « Schémas sur une page à part / sous chaque situation » (`SMETA.schemaMode`), images des schémas intégrées au fichier Word (`crepsPreload`, conversion en PNG) |
 | 2026-10-31 | 52 | Fiche CREPS : plus de case de schéma vide (ni sous les situations, ni sur la page de schémas, ni dans le Word) ; la page de schémas n'existe que si au moins une image est disponible |
 | 2026-10-31 | 53 | « Séances et cycles » : en-têtes de colonnes en pastel (texte foncé) |
+| 2026-11-01 | 54 | Jeux favoris (`jeux/favoris.js`, étoile + « Mes favoris », par compte, dans le navigateur) ; bouton « Dupliquer » (séances et cycles) ; colonne « Modifié » et recherche dans les noms de jeux (colonne `Jeux` de l'onglet Séances, remplie à l'enregistrement) ; filtres de recherche d'exercices (`seance/filtres.js`) ; contrôle de la séance : durée prévue par groupe, 3 exercices intenses d'affilée, éléments manquants (`seance/controle.js`) ; **script Apps Script à redéployer** |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |

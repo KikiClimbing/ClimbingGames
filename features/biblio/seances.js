@@ -76,6 +76,7 @@ function sbTous() {
       ts: x["Horodateur"],
       data: x["Données"] || SB_DATA[x.id] || "",
       objectif: x["Objectif"] || "",
+      jeux: x["Jeux"] || "",
       owner: x["Propriétaire"] || "",
       ownerNom: x["Nom"] || "",
       partage: x["Partage"] || "",
@@ -126,6 +127,17 @@ function sbParse(rec) {
     return null;
   }
 }
+/* noms des jeux utilisés (pour la recherche dans la liste) */
+function sbJeuxTexte() {
+  try {
+    return seModel()
+      .subs.flatMap(s => s.views.map(x => (x.v.code ? x.v.code + " " : "") + x.name))
+      .join(", ")
+      .slice(0, 600);
+  } catch (e) {
+    return "";
+  }
+}
 const nbExercices = () => SE.subs.reduce((a, s) => a + s.items.length, 0);
 /* enregistre la séance en cours dans la base (nouvel enregistrement, ou mise à jour si déjà enregistrée) */
 async function enregistrerSeance() {
@@ -146,6 +158,7 @@ async function enregistrerSeance() {
     id: SE.id,
     titre: SMETA.titre || "Séance sans titre",
     objectif: SMETA.objectif || "",
+    jeux: sbJeuxTexte(),
     theme: SMETA.theme || "",
     educ: SMETA.educ || "",
     dates: SMETA.dates || "",
@@ -211,19 +224,23 @@ function seancesListeHTML() {
         dates: m.dates || r.dates || "",
         theme: m.theme || r.theme || "",
         obj: m.objectif || r.objectif || "",
+        jeux: r.jeux || "",
+        ts: r.ts || "",
         mien: compteMien(r),
         par: compteMien(r) ? "" : r.ownerNom || r.owner,
       };
     })
-    .filter(r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj].join(" ")).includes(q));
+    .filter(
+      r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj, r.jeux].join(" ")).includes(q)
+    );
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     r =>
-      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme)}${cel(r.educ)}${cel(r.dates)}${celChip(r.theme)}${cel(r.obj)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right">${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme)}${cel(r.educ)}${cel(r.dates)}${celChip(r.theme)}${cel(r.obj)}${celDate(r.ts)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right"><a class="chip" data-sbdup="${esc(r.id)}" title="Dupliquer : préparer une nouvelle séance à partir de celle-ci" style="cursor:pointer">⧉</a> ${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px"></div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th class="c-mod">MODIFIÉ</th>${compteOn() ? '<th class="c-par">PAR</th>' : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "";
@@ -245,6 +262,10 @@ function sbCouleur(t) {
 }
 const sbPastille = (t, c = sbCouleur(t)) =>
   `<span class="tchip" style="color:${c[0]};background:${c[1]}">${esc(t)}</span>`;
+const celDate = ts => {
+  const d = new Date(ts);
+  return `<td>${ts && !isNaN(d) ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "2-digit" }) : ""}</td>`;
+};
 const celChip = t => `<td title="${esc(t)}">${t ? sbPastille(t) : ""}</td>`;
 const celTitre = (titre, theme) =>
   `<td title="${esc(titre)}" style="font-weight:700;border-left:6px solid ${theme ? sbCouleur(theme)[0] : "#C9D1DE"}">${esc(titre)}</td>`;
@@ -300,14 +321,42 @@ function seanceFicheView(id) {
   SBID = id;
   const mien = compteMien(rec);
   const sheet = withSeance(d.meta, d.se, () => sheetHTML());
-  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Utiliser comme modèle (copie)</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
+  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">⧉ Dupliquer cette séance</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
   <div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheet}</div>`;
 }
 registerView({
   match: v => v.startsWith("sb/"),
   html: v => seanceFicheView(decodeURIComponent(v.slice(3))),
 });
+/* duplique une séance dans « Créer une séance » (nouvelle séance, titre « … (copie) ») */
+async function sbDupliquer(id) {
+  try {
+    await sbCharger(id);
+    const rec = sbTous().find(r => r.id === id),
+      d = rec && sbParse(rec);
+    if (!d) throw new Error("illisible");
+    if (
+      selCount() > 0 &&
+      !confirm(
+        "Remplacer le contenu actuel de « Créer une séance » par une copie de cette séance ?"
+      )
+    )
+      return;
+    sbAdopter(d, "");
+    SMETA.titre = (SMETA.titre || "Séance") + " (copie)";
+    saveMeta();
+    go("seance");
+    toast("Copie prête : modifiez-la puis enregistrez-la.");
+  } catch (e) {
+    toast("Copie impossible : " + e.message);
+  }
+}
 registerClick(e => {
+  const dup = e.target.closest("[data-sbdup]");
+  if (dup) {
+    sbDupliquer(dup.dataset.sbdup);
+    return true;
+  }
   const del = e.target.closest("[data-sbdel]");
   if (del) {
     sbSupprimer(del.dataset.sbdel);

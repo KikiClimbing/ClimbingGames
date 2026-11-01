@@ -12,6 +12,11 @@ function thumb(g) {
 }
 function viewTitle(v) {
   if (v === "home") return ["Accueil", ""];
+  if (v === "fav")
+    return [
+      "Mes favoris",
+      "Les jeux que vous avez marqués d'une étoile (enregistrés dans ce navigateur, pour votre compte).",
+    ];
   if (v === "all")
     return [
       "Tous les jeux",
@@ -45,7 +50,8 @@ function filterGames(v) {
         .map(s => s.trim())
         .includes(o)
     );
-  } else if (v === "anniv") L = L.filter(isAnniv);
+  } else if (v === "fav") L = L.filter(isFav);
+  else if (v === "anniv") L = L.filter(isAnniv);
   else if (v === "nomat") L = L.filter(noMat);
   if (S.int) L = L.filter(g => g["Intensité"] === S.int);
   const q = norm(S.q);
@@ -78,14 +84,15 @@ function gridHTML(L) {
       `<table class="lst"><thead><tr><th>CODE</th><th>JEU</th><th>DURÉE</th><th class="hm">EFFECTIF</th><th class="hm">MATÉRIEL</th><th>INTENSITÉ</th></tr></thead><tbody>` +
       L.map(
         g =>
-          `<tr class="r" data-jeu="${esc(key(g))}" style="${style(g)}"><td>${esc(g.Code || "★")}</td><td><b>${esc(g.Titre)}</b><br><span style="color:#6B7280">${esc(g["Résumé"])}</span></td><td>${esc(g["Durée"])}</td><td class="hm">${esc(g["Effectif court"] || g.Participants)}</td><td class="hm">${esc(g["Matériel"])}</td><td>${esc(g["Intensité"])}</td></tr>`
+          `<tr class="r" data-jeu="${esc(key(g))}" style="${style(g)}"><td>${esc(g.Code || "★")} ${favEtoile(g)}</td><td><b>${esc(g.Titre)}</b><br><span style="color:#6B7280">${esc(g["Résumé"])}</span></td><td>${esc(g["Durée"])}</td><td class="hm">${esc(g["Effectif court"] || g.Participants)}</td><td class="hm">${esc(g["Matériel"])}</td><td>${esc(g["Intensité"])}</td></tr>`
       ).join("") +
       "</tbody></table>"
     );
   return (
     '<div class="grid">' +
     L.map(
-      g => `<div class="card" style="${style(g)}" data-jeu="${esc(key(g))}">${thumb(g)}</div>`
+      g =>
+        `<div class="card" style="${style(g)}" data-jeu="${esc(key(g))}">${thumb(g)}${favEtoile(g)}</div>`
     ).join("") +
     "</div>"
   );
@@ -136,7 +143,12 @@ registerNav({
 registerView({
   fallback: true,
   match: v =>
-    v === "all" || v === "anniv" || v === "nomat" || v.startsWith("fam/") || v.startsWith("obj/"),
+    v === "all" ||
+    v === "fav" ||
+    v === "anniv" ||
+    v === "nomat" ||
+    v.startsWith("fam/") ||
+    v.startsWith("obj/"),
   html: v => listView(v),
   bind: () => {
     const q = $("#q");

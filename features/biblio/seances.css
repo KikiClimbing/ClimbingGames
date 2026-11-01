@@ -48,8 +48,8 @@
 .sbl th:nth-child(4) {
   width: 22%;
 }
-.sbl th:last-child {
-  width: 56px;
+  .sbl th:last-child {
+  width: 92px;
 }
 .sbl td:first-child {
   width: auto;
@@ -82,7 +82,8 @@
 .sbl.colo th:nth-child(3) { background: #d5ebdc; color: #24663e; }
 .sbl.colo th:nth-child(4) { background: #e4d9f1; color: #5f3a87; }
 .sbl.colo th:nth-child(5) { background: #d0eaea; color: #176b6b; }
-.sbl.colo th:nth-child(6) { background: #f3d8e7; color: #8f2d62; }
+.sbl.colo th.c-mod { background: #f8efcf; color: #7a5a00; }
+.sbl.colo th.c-par { background: #f3d8e7; color: #8f2d62; }
 .sbl.colo th:last-child { background: #e3e8f0; border-radius: 0 8px 8px 0; }
 .sbl.colo td {
   background: #fff;
@@ -103,3 +104,4 @@
   font-size: 13px;
   font-weight: 700;
 }
+.sbl th.c-mod { width: 9%; }

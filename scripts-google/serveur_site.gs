@@ -267,7 +267,7 @@ function connexionGoogle(d) {
 }
 
 /* ---------- séances et cycles ---------- */
-const COLONNES_SEANCES = ["id", "Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Données", "Publié", "Propriétaire", "Nom", "Partage", "Objectif"];
+const COLONNES_SEANCES = ["id", "Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Données", "Publié", "Propriétaire", "Nom", "Partage", "Objectif", "Jeux"];
 function feuilleSeances() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName("Séances");
@@ -342,7 +342,7 @@ function listeSeances(u) {
       if (id && peutLire(u, proprietaireDe(prop[i]), part[i], mesEq)) vis.push(i);
     });
     if (vis.length) {
-      const champs = ["Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Nom", "Objectif"];
+      const champs = ["Horodateur", "Titre", "Thème", "Éducateurs", "Dates", "Exercices", "Nom", "Objectif", "Jeux"];
       const col = {};
       champs.forEach(h => (col[h] = lectureColonne(sh, head, h, n)));
       vis.forEach(i => {
@@ -428,6 +428,7 @@ function enregistrerSeance(s, u) {
     Exercices: s.nb || "",
     "Données": extraireLogo(String(s.data)).slice(0, 49000),
     Objectif: String(s.objectif || "").slice(0, 500),
+    Jeux: String(s.jeux || "").slice(0, 600),
     "Publié": "OUI",
   };
   if (u && !l) {

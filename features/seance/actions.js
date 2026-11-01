@@ -63,9 +63,12 @@ function seToLib(id) {
 }
 /* ---------- actions ---------- */
 function seanceBind() {
+  if (typeof glBind === "function") glBind();
   const upd = () => {
     const s = $("#sheet");
     if (s) s.innerHTML = sheetHTML();
+    const c = $("#seControle");
+    if (c) c.innerHTML = seControleInner();
   };
   const sub = id => SE.subs.find(x => x.id === +id);
   document.querySelectorAll("[data-sm]").forEach(i =>

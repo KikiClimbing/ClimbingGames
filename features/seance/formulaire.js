@@ -39,7 +39,7 @@ function seanceView() {
      ${items || '<p class="hint" style="margin:8px 0">Aucun exercice dans cette sous-section.</p>'}
      <div class="sadd"><input list="gl" data-lib="${s.id}" placeholder="Chercher un exercice de la bibliothèque (code ou nom)…"><button class="chip" data-sa="addlib" data-sub="${s.id}">＋ Ajouter</button><button class="chip" data-sa="addfree" data-sub="${s.id}">＋ Exercice libre</button></div></div>`;
   };
-  const dl = `<datalist id="gl">${DATA.map(g => `<option value="${esc((g.Code ? g.Code + " · " : "") + g.Titre)}"></option>`).join("")}</datalist>`;
+  const dl = `<datalist id="gl">${glOptionsHTML()}</datalist>`;
   const bar = `<div class="tools noprint" style="margin-bottom:14px"><a class="chip" id="sClear" style="cursor:pointer;color:#B2263A;border-color:#E8B4BC">🗑 Effacer le contenu de la page</a><label class="chip" style="cursor:pointer">🖼 ${S.logo ? "Changer le logo" : "Ajouter le logo de la salle"}<input type="file" id="sLogo" accept="image/*" hidden></label>${S.logo ? `<img src="${esc(S.logo)}" alt="Logo" style="height:30px;border-radius:4px;border:1px solid #D5DAE5"><a class="chip" id="sLogoOff" style="cursor:pointer">Retirer le logo de cette fiche</a>` : ""}<span class="grow" style="flex:1"></span><a class="chip" id="sSave" style="cursor:pointer;background:#26364D;color:#fff;border-color:#26364D">${SE.id ? "☁ Mettre à jour la séance enregistrée" : "☁ Enregistrer dans la bibliothèque de séances"}</a>${SE.id ? `<a class="chip" id="sSaveCopy" style="cursor:pointer">Enregistrer comme nouvelle séance</a>` : ""}</div>${SE.id ? `<p class="hint noprint" style="margin:-6px 0 12px">✎ Vous modifiez une séance de la bibliothèque : « Mettre à jour » remplace la version enregistrée.</p>` : ""}`;
   return (
     head +
@@ -56,9 +56,9 @@ function seanceView() {
        : ""
    }</div>
   <div class="box noprint" style="border-left:6px solid #6EA8DC"><b>Corps de séance</b> <span style="color:#6B7280;font-size:13px">— total : ${M.G.map(g => `<b style="color:${g.c}">${M.c[g.i]} min</b>`).join(" · ")}</span>
-   <div style="margin-top:8px">${SE.subs.map(subHTML).join("")}</div><div style="margin-top:10px"><a class="chip" data-sa="addsub" style="cursor:pointer;background:#26364D;color:#fff">＋ Ajouter une sous-section</a></div>${dl}</div>
+   ${glFiltresHTML()}<div style="margin-top:8px">${SE.subs.map(subHTML).join("")}</div><div style="margin-top:10px"><a class="chip" data-sa="addsub" style="cursor:pointer;background:#26364D;color:#fff">＋ Ajouter une sous-section</a></div>${dl}</div>
   ${crepsFormHTML()}<div class="box noprint"><b>Bas de fiche</b><div class="smg" style="margin-top:8px">${txa("objCol", "Objectif collectif", "Ce que le groupe doit réussir")}${txa("secu", "Sécurité", "Hauteur, tapis, pas de saut…")}${M.G.map(g => `<label class="sml" style="${colf(0, g.c)}">Retour au calme${two ? " — " + esc(g.nom) : ""}<textarea rows="2" data-gm="rc" data-gi="${g.i}" placeholder="Étirements, bilan…">${esc(g.rc)}</textarea></label>`).join("")}</div></div>
-  <h3 class="noprint" style="margin:18px 0 8px;color:#26364D">Aperçu de la fiche</h3><div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheetHTML()}</div>
+  ${seControleHTML()}<h3 class="noprint" style="margin:18px 0 8px;color:#26364D">Aperçu de la fiche</h3><div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheetHTML()}</div>
   <div class="tools noprint" style="margin-top:14px"><a class="btn" id="sPrint" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" id="sWord" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a><a class="btn" id="sCopy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Copier le texte</a><span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>`
   );
 }

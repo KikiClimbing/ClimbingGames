@@ -249,3 +249,25 @@ table.lst {
   font-size: 2.6cqw;
   font-weight: 700;
 }
+
+.card { position: relative; }
+.favb {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #fff;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.card:hover .favb,
+.favb.on {
+  opacity: 1;
+}
+.favb.on { color: #f5b301; }
+@media (hover: none) { .favb { opacity: 0.85; } }
+.lst .favb { position: static; opacity: 1; text-shadow: none; color: #c9a200; font-size: 18px; vertical-align: middle; }
