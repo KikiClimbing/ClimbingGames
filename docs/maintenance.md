@@ -30,7 +30,7 @@ Points clés :
 | Nouveaux schémas | `schemas/NOM.png` (+ `schemas/CODE.json`, dessin source, pour ceux faits depuis Administration) dans le dépôt | script Apps Script (API GitHub) | fiche d'un jeu (via « Schéma (lien) ») |
 | **Tous les jeux** (nouveaux compris) | Google Sheet, onglet des fiches (colonnes `Titre` + `Principe`) | formulaire, « Ma séance », page Administration | site (CSV publié) |
 | Séances créées avec l'outil | Google Sheet, onglet `Séances` | script (action `seance`) | site (CSV publié) + copie dans le navigateur |
-| Retours de terrain | Google Sheet, onglet des retours | formulaire « Retour terrain » | site (CSV publié) |
+| Retours de terrain | Google Sheet, onglet des retours | popup « Donner mon retour » du site (action `retour`) | site (CSV publié, lignes dont « Publié » = OUI) |
 | Séances en Word / PDF / Docs | dossier Google Drive (`LIBRARY_URL`) | éducateurs | iframe Drive |
 | Séance en cours, logo, préférences | `localStorage` du navigateur | le site | le site |
 
@@ -148,7 +148,7 @@ scripts-google/       scripts Apps Script (copies de référence)
 ```
 
 #### Favoris, duplication, filtres, contrôle (v54)
-- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Non synchronisés entre appareils.
+- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Depuis la v56, synchronisés avec le serveur pour les comptes connectés (voir v56).
 - **Dupliquer** : `sbDupliquer` (séances) et `cyDupliquer` (cycles) copient dans « Créer une séance / un cycle » sans identifiant, avec « (copie) » dans le titre.
 - **Recherche dans les noms de jeux** : la colonne `Jeux` (codes et noms, 600 caractères) est écrite par `enregistrerSeance` ; les séances enregistrées avant la v54 ne sont retrouvées par nom de jeu qu'après un nouvel enregistrement.
 - **Filtres** (`filtres.js`) : la liste de suggestions `#gl` est reconstruite selon famille, objectif, intensité, durée (≤ valeur maximale lue dans « Durée »), sans matériel, sans expérience.
@@ -350,6 +350,7 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-11-01 | 54 | Jeux favoris (`jeux/favoris.js`, étoile + « Mes favoris », par compte, dans le navigateur) ; bouton « Dupliquer » (séances et cycles) ; colonne « Modifié » et recherche dans les noms de jeux (colonne `Jeux` de l'onglet Séances, remplie à l'enregistrement) ; filtres de recherche d'exercices (`seance/filtres.js`) ; contrôle de la séance : durée prévue par groupe, 3 exercices intenses d'affilée, éléments manquants (`seance/controle.js`) ; **script Apps Script à redéployer** |
 | 2026-11-01 | 55 | Mode terrain (`seance/terrain.js`), bilan de séance (`SMETA.bilan`, repris dans le cycle), compétences travaillées par séance et par cycle (d'après `AX.COMP`). Site seulement, pas de changement du script Google. |
 | 2026-11-01 | 56 | Retours sur un jeu en popup (`retours.js`, action `retour`, plus de Google Forms), pseudos (`compte/pseudo.js`, action `profil_pseudo`, colonne « Pseudo » de l'onglet Utilisateurs), favoris enregistrés sur le serveur (onglet « Favoris »), nombre de jeux en attente sur le bouton Administration (`admin_attente`), e-mail de contact dans `confidentialite.html`, fenêtre générale `core/modal.js`. **Script Google à redéployer.** |
+| 2026-11-01 | 57 | Recherche d'exercice en popup avec filtres et aperçu (`seance/recherche.js`), compléments CREPS dans le cadre de chaque exercice (plus en bas), schéma dessiné pour une situation (`it.sch`), éditeur de schémas en popup (`editeur/popup.js`, aussi depuis « Proposer un jeu »), jeu proposé avec ses compléments CREPS (colonnes But, Comportements attendus, Organisation, Critères de réussite, Objectif). **Script Google à redéployer.** |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
@@ -392,3 +393,11 @@ Tout est dans `features/seance/terrain.js` (chargé avant `controle.js`).
 - **Pseudos** : colonne G « Pseudo » de l'onglet Utilisateurs (créée toute seule). Le pseudo, unique (insensible à la casse), remplace le nom Google dans la session, les séances (colonne Nom) et les équipes. L'adresse Google reste l'identifiant (connexion, invitations, partages). Proposé une fois après la connexion (« Plus tard » possible), modifiable dans « Mon compte ». Dans Administration > Utilisateurs, le nom s'affiche « pseudo (nom Google) ».
 - **Favoris** : onglet « Favoris » (Email, Liste JSON, Modifié). À la connexion le serveur fait foi ; s'il n'a rien, les favoris du navigateur lui sont envoyés. Chaque clic est envoyé après 0,8 s. Sans compte, ils restent dans le navigateur.
 - **Compteur** : action `admin_attente` (nombre de jeux dont « Publié » n'est ni OUI ni REFUSÉ), lue au chargement pour les comptes administrateurs, et remise à jour dans l'onglet « En attente ».
+
+
+## Recherche en popup, compléments CREPS, schémas en popup (v57)
+
+- **Recherche d'exercice** : `rxOuvrir(idSousSection)` (`seance/recherche.js`). Réutilise les filtres de `filtres.js` (`GLF`, `glListe`) et affiche à droite la fiche du jeu (schéma, principe, matériel, variantes). `seAdd` ajoute le jeu sans fermer la fenêtre. L'ancien champ de recherche avec liste déroulante a été retiré.
+- **Compléments CREPS** : `crepsChampsHTML(r)` (`seance/creps.js`) est affiché dans le cadre de chaque exercice (`crepsItemHTML`) et de l'échauffement (`crepsEchHTML`), seulement en modèle CREPS. Mêmes champs `cp_*` qu'avant, rien n'est perdu dans les séances existantes. Un jeu proposé depuis un exercice libre envoie aussi Objectif, But, Comportements attendus, Organisation et Critères de réussite ; le script ajoute les colonnes manquantes de l'onglet des fiches, et la fiche du jeu les affiche dans l'onglet « Pratique ». Les valeurs de la fiche du jeu servent de texte par défaut dans la fiche CREPS.
+- **Éditeur en popup** : `edPopup("proposer")` ou `edPopup("item:<id>")`. Pour un exercice, le dessin est gardé dans `it.sch = {els, opt}` (quelques Ko dans les données de la séance, pas d'envoi sur GitHub) et rendu en SVG par `edSvgUrl()`. Le brouillon de la page « Dessiner un schéma » est mis de côté pendant le dessin puis remis. Le schéma dessiné remplace celui du jeu dans la fiche CREPS (écran, impression, Word).
+- `core/modal.js` : options `{fond:false, fin:fn}`.
