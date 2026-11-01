@@ -91,6 +91,15 @@ function admFamChange(v, publie) {
   const pre = admPrefixe(v.Famille);
   if (!new RegExp("^" + pre + "\\d+$").test(v.Code || "")) v.Code = admCodeSuggere(v.Famille);
 }
+/* nombre de jeux en attente, affiché sur le bouton « Administration » du menu */
+let ADM_ATT = 0;
+registerLoader(async () => {
+  if (!compteOn() || !compteAdmin() || AUTH.reel) return;
+  try {
+    ADM_ATT = (await admPost("admin_attente")).n || 0;
+    buildNav();
+  } catch (e) {}
+});
 async function admCharger() {
   ADM.busy = true;
   ADM.msg = "Chargement…";
@@ -100,6 +109,10 @@ async function admCharger() {
     ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre, codeAvant: g.valeurs.Code || "" }));
     ADM.cols = j.colonnes;
     ADM.msg = "";
+    if (!ADM.tous) {
+      ADM_ATT = ADM.list.length;
+      buildNav();
+    }
     try {
       sessionStorage.setItem("admPw", ADM.pw);
     } catch (e) {}
@@ -306,7 +319,11 @@ registerNav({
   html: () =>
     compteOn() && !(AUTH.user && AUTH.user.admin)
       ? ""
-      : navBtn("admin", "Administration", '<span class="ic">⚙</span>'),
+      : navBtn(
+          "admin",
+          `Administration<span class="n">${ADM_ATT || ""}</span>`,
+          '<span class="ic">⚙</span>'
+        ),
 });
 registerClick(e => {
   const b = e.target.closest("[data-adm]");

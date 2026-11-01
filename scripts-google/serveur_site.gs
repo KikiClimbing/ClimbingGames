@@ -7,7 +7,8 @@
 //   - enregistre / supprime les séances (onglet « Séances », créé tout seul) ;
 //   - envoie les schémas dessinés sur le site directement dans votre dépôt GitHub (dossier schemas/) ;
 //   - permet de relire, corriger, valider ou refuser les jeux en attente depuis le site (compte Google administrateur, ou mot de passe admin sans comptes) ;
-//   - gère les utilisateurs et les équipes, et envoie les invitations par e-mail (désactivables).
+//   - gère les utilisateurs et les équipes, et envoie les invitations par e-mail (désactivables) ;
+//   - pseudos des comptes, favoris de chaque compte, retours de terrain sur les jeux, nombre de jeux en attente.
 //
 // ⚠ Ce script est privé : ne le partagez pas (il contient votre mot de passe et votre jeton GitHub).
 
@@ -64,6 +65,7 @@ function doPost(e) {
       if (action === "admin_seance_proprio") return adminSeanceProprio(d);
       if (action === "admin_reglages") return adminReglages(d);
       if (action === "admin_liste") return adminListe(d.tous);
+      if (action === "admin_attente") return adminAttente();
       if (action === "admin_enregistrer") return adminEnregistrer(d);
       if (action === "admin_refuser") return adminRefuser(d);
       if (action === "admin_schema") return adminSchema(d);
@@ -72,7 +74,7 @@ function doPost(e) {
       return rep({ ok: false, error: "action inconnue" });
     }
     if (action === "auth") return connexionGoogle(d);
-    if (GOOGLE_CLIENT_ID && /^(seance|equipe)/.test(action)) {
+    if (GOOGLE_CLIENT_ID && /^(seance|equipe|profil|favoris)/.test(action)) {
       let u = lireSession(d.session);
       if (!u) return rep({ ok: false, error: "connexion requise : reconnectez-vous", code: "auth" });
       if (u.admin && d.comme) {
@@ -92,6 +94,9 @@ function doPost(e) {
       if (action === "equipe_enregistrer") return enregistrerEquipe(d.equipe || {}, u);
       if (action === "equipe_suppr") return supprimerEquipe(d.id, u);
       if (action === "equipe_quitter") return quitterEquipe(d.id, u);
+      if (action === "profil_pseudo") return changerPseudo(d.pseudo, u);
+      if (action === "favoris_lire") return lireFavoris(u);
+      if (action === "favoris_ecrire") return ecrireFavoris(d.liste, u);
       return rep({ ok: false, error: "action inconnue" });
     }
     if (d.key !== CLE_SITE)
@@ -103,6 +108,7 @@ function doPost(e) {
     if (action === "seance_suppr") return supprimerSeance(d.id, null);
     if (action === "schema") return envoyerSchema(d);
     if (action === "schemas_liste") return adminSchemasListe();
+    if (action === "retour") return ajouterRetour(d.retour || {});
     return ajouterJeu(d.jeu || {});
   } catch (err) {
     return rep({ ok: false, error: String(err) });
@@ -254,15 +260,18 @@ function connexionGoogle(d) {
   const t = JSON.parse(r.getContentText());
   if (t.aud !== GOOGLE_CLIENT_ID || String(t.email_verified) !== "true" || !t.email)
     return rep({ ok: false, error: "jeton Google invalide" });
-  const email = String(t.email).toLowerCase(),
-    nom = String(t.name || email).slice(0, 80);
+  const email = String(t.email).toLowerCase();
+  let nom = String(t.name || email).slice(0, 80);
   if (emailsAdmin().indexOf(email) < 0 && estBloque(email))
     return rep({ ok: false, error: "ce compte est désactivé par l'administrateur" });
   noterUtilisateur(email, nom);
+  const fiche = utilisateursLus().find(x => x.email === email);
+  const pseudo = (fiche && fiche.pseudo) || "";
+  if (pseudo) nom = pseudo;
   return rep({
     ok: true,
     session: creerSession(email, nom),
-    user: { email: email, nom: nom, admin: emailsAdmin().indexOf(email) >= 0 },
+    user: { email: email, nom: nom, pseudo: pseudo, admin: emailsAdmin().indexOf(email) >= 0 },
   });
 }
 
@@ -763,7 +772,7 @@ function inviter(adresses, nomEquipe, u) {
 }
 
 /* ---------- utilisateurs (onglet « Utilisateurs », rempli à chaque connexion) ---------- */
-const COLONNES_UTILISATEURS = ["Email", "Nom", "Première connexion", "Dernière connexion", "Connexions", "Bloqué"];
+const COLONNES_UTILISATEURS = ["Email", "Nom", "Première connexion", "Dernière connexion", "Connexions", "Bloqué", "Pseudo"];
 function feuilleUtilisateurs() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName("Utilisateurs");
@@ -771,7 +780,7 @@ function feuilleUtilisateurs() {
     sh = ss.insertSheet("Utilisateurs");
     sh.appendRow(COLONNES_UTILISATEURS);
     sh.setFrozenRows(1);
-  }
+  } else if (!sh.getRange(1, 7).getValue()) sh.getRange(1, 7).setValue("Pseudo");
   return sh;
 }
 function utilisateursLus() {
@@ -789,6 +798,7 @@ function utilisateursLus() {
       derniere: r[3] instanceof Date ? r[3].toISOString() : String(r[3]),
       connexions: +r[4] || 0,
       bloque: String(r[5]).toUpperCase() === "OUI",
+      pseudo: String(r[6] || ""),
     }))
     .filter(x => x.email);
 }
@@ -832,7 +842,7 @@ function adminUtilisateurs() {
   const eq = equipesLues();
   const L = utilisateursLus().map(x => ({
     email: x.email,
-    nom: x.nom,
+    nom: x.pseudo ? x.pseudo + " (" + x.nom + ")" : x.nom,
     premiere: x.premiere,
     derniere: x.derniere,
     connexions: x.connexions,
@@ -940,7 +950,7 @@ function adminSeanceProprio(d) {
   const head = enteteSeances(sh);
   const x = utilisateursLus().find(z => z.email === e);
   sh.getRange(l, head.indexOf("Propriétaire") + 1).setValue(e);
-  sh.getRange(l, head.indexOf("Nom") + 1).setValue(x ? x.nom : e);
+  sh.getRange(l, head.indexOf("Nom") + 1).setValue(x ? x.pseudo || x.nom : e);
   invalider();
   return rep({ ok: true });
 }
@@ -952,4 +962,152 @@ function adminReglages(d) {
     quota = MailApp.getRemainingDailyQuota();
   } catch (e) {}
   return rep({ ok: true, emails: emailsActifs(), quotaMails: quota });
+}
+
+/* ---------- pseudos, favoris, retours, jeux en attente (v56) ---------- */
+// Pseudo choisi par la personne : affiché à la place de son nom Google (auteur des séances, responsable d'équipe…)
+function changerPseudo(pseudo, u) {
+  const p = String(pseudo || "").replace(/\s+/g, " ").trim();
+  if (p.length < 3 || p.length > 24) return rep({ ok: false, error: "le pseudo doit faire entre 3 et 24 caractères" });
+  if (!/^[\p{L}\p{N} _.\-]+$/u.test(p)) return rep({ ok: false, error: "caractères autorisés : lettres, chiffres, espace, _ . -" });
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = feuilleUtilisateurs();
+    let L = utilisateursLus();
+    if (L.some(x => x.email !== u.email && x.pseudo.toLowerCase() === p.toLowerCase()))
+      return rep({ ok: false, error: "ce pseudo est déjà pris" });
+    let moi = L.find(x => x.email === u.email);
+    if (!moi) {
+      noterUtilisateur(u.email, u.nom);
+      moi = utilisateursLus().find(x => x.email === u.email);
+    }
+    sh.getRange(moi.ligne, 7).setValue(p);
+  } finally {
+    lock.releaseLock();
+  }
+  // met à jour le nom affiché sur ses séances, cycles et équipes
+  const ss = feuilleSeances();
+  const head = enteteSeances(ss),
+    n = ss.getLastRow();
+  if (n > 1) {
+    const prop = lectureColonne(ss, head, "Propriétaire", n),
+      cN = head.indexOf("Nom") + 1;
+    prop.forEach((v, i) => {
+      if (proprietaireDe(v) === u.email) ss.getRange(i + 2, cN).setValue(p);
+    });
+  }
+  const se = feuilleEquipes();
+  const ne = se.getLastRow();
+  if (ne > 1) {
+    const v = se.getRange(2, 3, ne - 1, 1).getValues();
+    v.forEach((r, i) => {
+      if (String(r[0]).toLowerCase() === u.email) se.getRange(i + 2, 4).setValue(p);
+    });
+  }
+  invalider();
+  return rep({
+    ok: true,
+    session: creerSession(u.email, p),
+    user: { email: u.email, nom: p, pseudo: p, admin: !!u.admin },
+  });
+}
+// Favoris : un onglet « Favoris » (Email, Liste en JSON, Modifié), une ligne par personne
+function feuilleFavoris() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Favoris");
+  if (!sh) {
+    sh = ss.insertSheet("Favoris");
+    sh.appendRow(["Email", "Liste", "Modifié"]);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function ligneFavoris(sh, email) {
+  const n = sh.getLastRow();
+  if (n < 2) return 0;
+  const v = sh.getRange(2, 1, n - 1, 1).getValues();
+  for (let i = 0; i < v.length; i++) if (String(v[i][0]).toLowerCase() === email) return i + 2;
+  return 0;
+}
+function lireFavoris(u) {
+  const sh = feuilleFavoris();
+  const l = ligneFavoris(sh, u.email);
+  if (!l) return rep({ ok: true, existe: false, liste: [] });
+  let liste = [];
+  try {
+    liste = JSON.parse(String(sh.getRange(l, 2).getValue() || "[]"));
+  } catch (e) {}
+  return rep({ ok: true, existe: true, liste: liste });
+}
+function ecrireFavoris(liste, u) {
+  const L = (Array.isArray(liste) ? liste : []).map(x => String(x).slice(0, 80)).slice(0, 500);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = feuilleFavoris();
+    const l = ligneFavoris(sh, u.email);
+    const ligne = [u.email, JSON.stringify(L), new Date().toISOString()];
+    if (l) sh.getRange(l, 1, 1, 3).setValues([ligne]);
+    else sh.appendRow(ligne);
+  } finally {
+    lock.releaseLock();
+  }
+  return rep({ ok: true });
+}
+// Retours de terrain sur un jeu (formulaire du site, onglet « Retours ») ; « Publié » reste vide : vous validez en écrivant OUI
+const COLONNES_RETOURS = ["Horodateur", "Code du jeu", "Auteur", "Public", "Note", "Ce qui a bien marché", "À changer", "Publié"];
+function ajouterRetour(r) {
+  const code = String(r.code || "").trim().slice(0, 20);
+  if (!code) return rep({ ok: false, error: "jeu manquant" });
+  if (!String(r.bien || "").trim() && !String(r.changer || "").trim())
+    return rep({ ok: false, error: "écrivez au moins un commentaire" });
+  const cache = CacheService.getScriptCache();
+  const nb = +(cache.get("retours_h") || 0);
+  if (nb >= 40) return rep({ ok: false, error: "trop de retours en ce moment : réessayez plus tard" });
+  cache.put("retours_h", String(nb + 1), 3600);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Retours");
+  if (!sh) {
+    sh = ss.insertSheet("Retours");
+    sh.appendRow(COLONNES_RETOURS);
+    sh.setFrozenRows(1);
+  }
+  let head = sh.getRange(1, 1, 1, Math.max(1, sh.getLastColumn())).getValues()[0].map(String);
+  COLONNES_RETOURS.forEach(c => {
+    if (head.indexOf(c) < 0) {
+      sh.getRange(1, head.length + 1).setValue(c);
+      head.push(c);
+    }
+  });
+  const val = {
+    Horodateur: new Date(),
+    "Code du jeu": code,
+    Auteur: String(r.auteur || "").slice(0, 60),
+    Public: String(r.public || "").slice(0, 80),
+    Note: String(r.note || "").slice(0, 2),
+    "Ce qui a bien marché": String(r.bien || "").slice(0, 1500),
+    "À changer": String(r.changer || "").slice(0, 1500),
+    Publié: "",
+  };
+  sh.appendRow(head.map(h => (val[h] !== undefined ? val[h] : "")));
+  return rep({ ok: true });
+}
+// nombre de jeux en attente de validation (affiché sur le bouton Administration)
+function adminAttente() {
+  const sh = feuilleJeux();
+  if (!sh) return rep({ ok: true, n: 0 });
+  const n = sh.getLastRow();
+  if (n < 2) return rep({ ok: true, n: 0 });
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  const t = head.indexOf("Titre"),
+    p = head.indexOf("Publié");
+  let k = 0;
+  sh.getRange(2, 1, n - 1, head.length)
+    .getDisplayValues()
+    .forEach(r => {
+      const pub = String(r[p] || "").trim();
+      if (String(r[t] || "").trim() && !estPublie(pub) && !/^refus/i.test(pub)) k++;
+    });
+  return rep({ ok: true, n: k });
 }

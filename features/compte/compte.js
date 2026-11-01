@@ -138,7 +138,7 @@ function compteView() {
   if (AUTH.user)
     return (
       head +
-      `<div class="box"><b>${esc(AUTH.user.nom)}</b><div style="color:#6B7280">${esc(AUTH.user.email)}${AUTH.user.admin ? " · administrateur" : ""}</div><p style="margin:10px 0">Vos séances et vos cycles sont enregistrés sur votre compte : vous seul les voyez, sauf si vous les partagez (bouton « Partager » sur une séance ou un cycle).</p><a class="btn" data-compte="logout" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Se déconnecter</a></div>`
+      `<div class="box"><b>${esc(AUTH.user.nom)}</b><div style="color:#6B7280">${esc(AUTH.user.email)}${AUTH.user.admin ? " · administrateur" : ""}</div><div style="margin:6px 0"><a class="chip" data-pseudo="1" style="cursor:pointer">✎ ${AUTH.user.pseudo ? "Changer mon pseudo" : "Choisir un pseudo"}</a></div><p style="margin:10px 0">Vos séances et vos cycles sont enregistrés sur votre compte : vous seul les voyez, sauf si vous les partagez (bouton « Partager » sur une séance ou un cycle).</p><a class="btn" data-compte="logout" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Se déconnecter</a></div>`
     );
   return (
     head +
