@@ -1,5 +1,5 @@
-/* Ma séance — modèle de fiche « CREPS » (2ᵉ option, à côté de la fiche habituelle).
-   Mêmes données que la fiche habituelle (SE / SMETA) ; colonnes : Situation · Objectif de la situation · But à atteindre ·
+/* Ma séance — modèle de fiche « CREPS » (2ᵉ option, à côté de la fiche simplifiée).
+   Mêmes données que la fiche simplifiée (SE / SMETA) ; colonnes : Situation · Objectif de la situation · But à atteindre ·
    Consignes et règles du jeu · Critères de réussite · Comportements attendus · Variantes · Organisation, puis une page de schémas.
    Les champs propres à ce modèle sont stockés dans les exercices (it.cp_obj, cp_but, cp_cons, cp_comp, cp_orga) et dans
    l'échauffement (SE.ech.cp_*) ; s'ils sont vides, on reprend la fiche du jeu (résumé, principe, matériel, variantes…). */
@@ -148,7 +148,7 @@ function crepsHTML() {
 function crepsChoixHTML() {
   const b = (m, l) =>
     `<button data-sa="modele" data-m="${m}" class="${(SMETA.modele === "creps" ? "creps" : "std") === m ? "on" : ""}">${l}</button>`;
-  return `<div class="tools" style="margin:8px 0 4px"><span style="font-weight:700">Modèle de fiche :</span><div class="seg">${b("std", "Fiche habituelle")}${b("creps", "Fiche CREPS")}</div><span style="color:#6B7280;font-size:13px">Même séance, autre présentation (tableau à 8 colonnes).</span></div>${
+  return `<div class="tools" style="margin:8px 0 4px"><span style="font-weight:700">Modèle de fiche :</span><div class="seg">${b("std", "Fiche simplifiée")}${b("creps", "Fiche CREPS")}</div><span style="color:#6B7280;font-size:13px">Même séance, autre présentation (tableau à 8 colonnes).</span></div>${
     isCreps()
       ? `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schemode" data-m="page" class="${schemaSous() ? "" : "on"}">Sur une page à part</button><button data-sa="schemode" data-m="sous" class="${schemaSous() ? "on" : ""}">Sous chaque situation</button></div></div>`
       : ""
@@ -157,7 +157,7 @@ function crepsChoixHTML() {
 /* champs propres au modèle CREPS d'une situation (r : ligne de crepsLignes) — placés dans le cadre de l'exercice lui-même */
 function crepsChampsHTML(r) {
   const g = r.g;
-  const f = (k, lab, ph, def) => {
+  const f = (r, k, lab, ph, def) => {
     const val = r.src[k] || "";
     const attr = r.fx === "ech" ? `data-se="${k}"` : `data-si="${k}" data-id="${r.src.id}"`;
     return `<label class="sml">${lab}<textarea rows="2" ${attr} placeholder="${esc(def || ph)}">${esc(val)}</textarea></label>`;
@@ -172,10 +172,10 @@ function crepsChampsHTML(r) {
               ? '<span class="hint">(le schéma du jeu sera utilisé)</span>'
               : ""
         }</div>`;
-  return `<div class="cpbox" style="margin-top:10px;border:1px dashed #8A55B5;border-radius:8px;padding:8px 10px;background:#FAF7FD"><b style="color:#8A55B5;font-size:13px">Compléments fiche CREPS</b> <span class="hint" style="font-size:12px">— les champs vides reprennent la fiche du jeu (texte grisé)</span><div class="smg" style="margin-top:6px">
+  return `<div class="cpbox" style="margin-top:10px;border:1px dashed #8A55B5;border-radius:8px;padding:8px 10px;background:#FAF7FD"><b style="color:#8A55B5;font-size:13px">Autres champs de la fiche CREPS</b> <span class="hint" style="font-size:12px">— les champs vides reprennent la fiche du jeu (texte grisé)</span><div class="smg" style="margin-top:6px">
     ${f(r, "cp_obj", "Objectif de la situation", "Quelle transformation visée ?", (g && g.Objectif) || "")}
     ${f(r, "cp_but", "But à atteindre pour les pratiquants", "Ce que les pratiquants doivent réussir", r.src.id && r.but)}
-    ${f(r, "cp_cons", "Consignes et règles du jeu", "À donner aux pratiquants", r.cons)}
+    ${r.src.t === "free" ? "" : f(r, "cp_cons", "Consignes et règles du jeu", "À donner aux pratiquants", r.cons)}
     ${f(r, "cp_comp", "Comportements attendus", "Critères techniques / tactiques de réalisation")}
     ${f(r, "cp_orga", "Organisation", "Matériel, espace, durée…", r.orga)}
     </div>${sch}</div>`;

@@ -3,12 +3,21 @@
    - edPopup("item:<id>")  : « Dessiner un schéma pour cette situation » d'un exercice de la séance : le dessin est gardé dans
                              l'exercice (it.sch = { els, opt }) et affiché dans la fiche CREPS. Le brouillon de l'éditeur
                              (page « Dessiner un schéma ») est mis de côté puis remis à la fermeture. */
-function edPopup(back) {
-  ED.ctx = null;
+function edPopup(back, srcCtx, ctx) {
+  ED.ctx = back === "ctx" ? ctx : null;
   ED.back = back;
   ED.popup = true;
   ED.mis = null;
-  if (/^item:/.test(back)) {
+  if (back === "ctx") {
+    /* schéma d'un jeu (Administration) : le brouillon de l'éditeur est mis de côté puis remis */
+    try {
+      ED.mis = localStorage.getItem("edSchema");
+      localStorage.setItem("edSchema", JSON.stringify(srcCtx));
+    } catch (e) {}
+    ED.els = [];
+    ED.hist = [];
+    ED.redo = [];
+  } else if (/^item:/.test(back)) {
     const f = typeof seFind === "function" ? seFind(+back.slice(5)) : null;
     const it = f && f.s.items[f.i];
     try {
@@ -27,7 +36,7 @@ function edPopup(back) {
 }
 function edPopupFin() {
   ED.popup = false;
-  if (/^item:/.test(ED.back || "")) {
+  if (/^item:/.test(ED.back || "") || ED.back === "ctx") {
     try {
       if (ED.mis === null) localStorage.removeItem("edSchema");
       else localStorage.setItem("edSchema", ED.mis);
@@ -35,6 +44,8 @@ function edPopupFin() {
     ED.els = [];
     edLoad();
     ED.back = null;
+    ED.ctx = null;
+    ED.refImg = "";
   }
   ED.mis = null;
   if (typeof render === "function") render();

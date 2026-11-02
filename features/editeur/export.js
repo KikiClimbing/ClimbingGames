@@ -122,7 +122,13 @@ function edCtxHTML() {
   if (!c && ED.back === "proposer")
     return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu que vous proposez</b><div class="tools" style="margin-top:8px"><button class="chip" id="edBackForm" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">← Retour au formulaire</button></div><p class="hint" style="margin:6px 0 0">Dessinez, donnez un nom au fichier puis cliquez sur « Envoyer » : le lien sera ajouté automatiquement à votre proposition.</p></div>`;
   if (!c) return "";
-  return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? esc(c.nom) : "du jeu " + esc(c.code) + " · " + esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><label style="display:flex;gap:6px;align-items:center;font-size:14px">Nom du fichier<input id="edCtxName" value="${esc(c.nom || "")}" placeholder="ex. D12" style="padding:6px;border:1px solid #D5DAE5;border-radius:6px;width:160px"></label><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé (changez le nom pour en créer un nouveau)." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement. Un schéma peut servir à plusieurs jeux : gardez le nom pour modifier le fichier existant, changez-le pour en créer un nouveau."}</p></div>`;
+  const ref = ED.refImg
+    ? `<div class="box" style="margin:0 0 12px"><b>Image actuelle</b> <span style="color:#6B7280;font-size:13px">— pas de dessin source : redessinez-la ci-dessous en vous aidant de ce repère.</span><br><img src="${esc(ED.refImg)}" alt="" style="max-width:100%;max-height:220px;margin-top:6px;border:1px solid #D5DAE5;border-radius:6px" onerror="this.parentNode.remove()"></div>`
+    : "";
+  return (
+    ref +
+    `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? esc(c.nom) : "du jeu " + esc(c.code) + " · " + esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><label style="display:flex;gap:6px;align-items:center;font-size:14px">Nom du fichier<input id="edCtxName" value="${esc(c.nom || "")}" placeholder="ex. D12" style="padding:6px;border:1px solid #D5DAE5;border-radius:6px;width:160px"></label><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé (changez le nom pour en créer un nouveau)." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement. Un schéma peut servir à plusieurs jeux : gardez le nom pour modifier le fichier existant, changez-le pour en créer un nouveau."}</p></div>`
+  );
 }
 function edCtxBind() {
   const c = ED.ctx;
@@ -155,7 +161,7 @@ function edCtxBind() {
     return;
   }
   if (!c) return;
-  $("#edCtxBack").onclick = () => go("admin");
+  $("#edCtxBack").onclick = () => (ED.popup ? edPopupFermer() : go("admin"));
   if (!$("#edCtxName").value) edNomAuto(c.fam, $("#edCtxName"));
   $("#edCtxSave").onclick = () => {
     const m = $("#edCtxMsg");
@@ -221,21 +227,10 @@ async function edOuvrirPourJeu(ctx) {
       if (loc) src = JSON.parse(loc.source);
     } catch (x) {}
   }
-  try {
-    const cur = JSON.parse(localStorage.getItem("edSchema") || "null");
-    if (
-      cur &&
-      cur.els &&
-      cur.els.length &&
-      !(ED.ctx && ED.ctx.code === ctx.code && ED.ctx.nom === ctx.nom) &&
-      !confirm("Votre brouillon actuel dans l'éditeur sera remplacé. Continuer ?")
-    )
-      return;
-    localStorage.setItem(
-      "edSchema",
-      JSON.stringify(src && src.els ? src : { els: [], opt: ED.opt })
-    );
-  } catch (e) {}
-  ED.ctx = ctx;
-  go("editeur");
+  /* pas de dessin source (schéma fait avant ou importé) : on montre l'image actuelle en repère */
+  ED.refImg =
+    src && src.els && src.els.length
+      ? ""
+      : "schemas/" + encodeURIComponent(cle) + ".webp?v=" + Date.now();
+  edPopup("ctx", src && src.els ? src : { els: [], opt: { ...ED.opt } }, ctx);
 }

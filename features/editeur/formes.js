@@ -374,9 +374,22 @@ function elSVG0(e) {
       return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx=".5" fill="${col}" fill-opacity=".9" stroke="${darken(col)}" stroke-width=".2"/>${e.lab ? `<text y=".05" text-anchor="middle" dominant-baseline="central" font-size="${1.5 * z}" font-weight="700" fill="#fff" font-family="Calibri,Carlito,Arial,sans-serif">${esc(e.lab)}</text>` : ""}</g>`;
     }
     case "shoe": {
+      /* chausson d'escalade vu de côté, pointe à droite : tige colorée, gomme (talon, semelle, bout), deux sangles velcro */
       const col = CN(e.c || "blue"),
+        dk = darken(col, 0.7),
         z = e.s || 1;
-      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${e.flip ? -z : z} ${z})"><path d="M-3.2 1.2 L2.8 1.2 Q4 1.2 3.9 .2 L3.3 -.8 Q2 -1.7 .6 -1.9 L-.8 -2.8 Q-2.6 -3 -3.2 -1.8 Z" fill="${col}" stroke="${darken(col)}" stroke-width=".2" stroke-linejoin="round"/><path d="M-3.2 1.2 L2.8 1.2" stroke="#334155" stroke-width=".55" stroke-linecap="round"/><path d="M-1.9 -1.5 L-.2 -1.3 M-2.2 -.5 L-.5 -.3" stroke="#fff" stroke-width=".18" stroke-linecap="round"/></g>`;
+      return `<g transform="translate(${e.x} ${EY(e.y)}) rotate(${e.rot || 0}) scale(${e.flip ? -z : z} ${z})" stroke-linejoin="round" stroke-linecap="round">
+<path d="M-3.4 1 Q-3.7 -1.2 -3 -2.8 L-1.5 -3.2 Q-1 -2.2 0 -2 Q1.7 -1.7 2.8 -1 Q4.5 -.2 4.3 .9 Q4.2 1.3 3.5 1.3 L-2.9 1.3 Q-3.4 1.3 -3.4 1Z" fill="${col}" stroke="${dk}" stroke-width=".2"/>
+<path d="M-3.4 .8 Q-3.7 -.7 -3.4 -1.7 L-2.7 -1.4 Q-3 -.3 -2.6 .8Z" fill="#2B3440"/>
+<path d="M2.3 -1.2 Q4 -.6 4.2 .8 L2.5 .8 Q2.6 -.2 2.3 -1.2Z" fill="#2B3440"/>
+<path d="M-3.45 .75 L4.1 .75 Q4.3 .9 4.2 1.2 Q4 1.6 3.4 1.6 L-2.9 1.6 Q-3.55 1.6 -3.45 .75Z" fill="#2B3440"/>
+<path d="M-3 1.05 L3.8 1.05" stroke="#8A97A8" stroke-width=".12"/>
+<path d="M-.9 -2.15 L1.2 .4" stroke="${dk}" stroke-width="1.05" fill="none"/><path d="M-.9 -2.15 L1.2 .4" stroke="#fff" stroke-width=".8" fill="none"/>
+<path d="M.55 -1.8 L2.35 .45" stroke="${dk}" stroke-width="1.05" fill="none"/><path d="M.55 -1.8 L2.35 .45" stroke="#fff" stroke-width=".8" fill="none"/>
+<path d="M-.5 -1.7 L.2 -.8 M.95 -1.35 L1.6 -.5" stroke="#B8C2D0" stroke-width=".14" fill="none"/>
+<path d="M-2.9 -2.8 Q-3.1 -3.9 -2.1 -3.6" stroke="${dk}" stroke-width=".3" fill="none"/>
+<path d="M-1.4 -3.15 Q-2.2 -3.3 -2.9 -2.8" stroke="${dk}" stroke-width=".18" fill="none"/>
+</g>`;
     }
     case "rope": {
       const col = CN(e.c || "amber");

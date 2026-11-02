@@ -14,6 +14,7 @@ function seanceView() {
     `<label class="sml" style="${colf(0, c)}">${l}<input type="number" min="0" max="180" ${attr} value="${val}"></label>`;
   const txa = (k, l, p) =>
     `<label class="sml">${l}<textarea rows="2" data-sm="${k}" placeholder="${esc(p)}">${esc(S[k])}</textarea></label>`;
+  const cl = (std, creps) => (isCreps() ? creps : std);
   const E = SE.ech;
   const CL = isCreps() ? crepsLignes(M) : [];
   const subHTML = (s, k) => {
@@ -27,12 +28,12 @@ function seanceView() {
         if (!v) return "";
         const mv = `<span class="noprint" style="white-space:nowrap"><button class="chip" data-sa="iup" data-id="${it.id}">↑</button> <button class="chip" data-sa="idn" data-id="${it.id}">↓</button> <button class="chip" data-sa="irm" data-id="${it.id}">✕</button></span>`;
         const vw = sv.views.find(x => x.it.id === it.id);
-        const nmf = `<label class="sml">Nom dans la fiche <span style="font-weight:400">(par défaut : ${esc(vw ? vw.def : v.titre)})</span><input data-si="nom" data-id="${it.id}" value="${esc(it.nom || "")}" placeholder="${esc(vw ? vw.def : v.titre)}"></label>`;
+        const nmf = `<label class="sml">${cl("Nom dans la fiche", "Situation : nom dans la fiche")} <span style="font-weight:400">(par défaut : ${esc(vw ? vw.def : v.titre)})</span><input data-si="nom" data-id="${it.id}" value="${esc(it.nom || "")}" placeholder="${esc(vw ? vw.def : v.titre)}"></label>`;
         if (it.t === "lib")
           return `<div class="sit"><div class="sith"><b style="color:${famOf(v.fam).d}">${esc(v.code || "★")} · ${esc(v.titre)}</b>${mv}</div>${nmf}<label class="sml" style="margin-top:8px">Critères de réussite (un par ligne)<textarea rows="2" data-si="crit" data-id="${it.id}" placeholder="Ex. Le pied est posé sans bruit">${esc(it.crit || "")}</textarea></label>${crepsItemHTML(it, CL)}</div>`;
         const f = (k2, l, p, rows) =>
           `<label class="sml" style="${rows ? "grid-column:1/-1" : ""}">${l}${rows ? `<textarea rows="${rows}" data-si="${k2}" data-id="${it.id}" placeholder="${esc(p)}">${esc(it[k2] || "")}</textarea>` : `<input data-si="${k2}" data-id="${it.id}" value="${esc(it[k2] || "")}" placeholder="${esc(p)}">`}</label>`;
-        return `<div class="sit free"><div class="sith"><b>✎ Exercice libre</b>${mv}</div><div class="smg">${f("titre", "Nom de l'exercice", "Ex. Le pied muet")}${nmf}${f("part", "Participants", "Ex. binômes")}${f("mat", "Matériel", "Aucun")}${f("desc", "Consigne / déroulé", "Qui joue, ce qu'on fait, comment on gagne…", 3)}${f("plus", "Plus difficile (+) — un par ligne", "• …", 2)}${f("moins", "Plus facile (–) — un par ligne", "• …", 2)}${f("crit", "Critères de réussite — un par ligne", "Ex. Le pied est posé sans bruit", 2)}</div><div style="margin-top:6px"><a class="chip" data-sa="tolib" data-id="${it.id}" style="cursor:pointer">＋ Ajouter cet exercice à la bibliothèque</a></div>${crepsItemHTML(it, CL)}</div>`;
+        return `<div class="sit free"><div class="sith"><b>✎ Exercice libre</b>${mv}</div><div class="smg">${f("titre", cl("Nom de l'exercice", "Situation (nom)"), "Ex. Le pied muet")}${nmf}${f("part", "Participants", "Ex. binômes")}${f("mat", "Matériel", "Aucun")}${f("desc", cl("Consigne / déroulé", "Consignes et règles du jeu"), "Qui joue, ce qu'on fait, comment on gagne…", 3)}${f("plus", cl("Plus difficile (+) — un par ligne", "Variantes : plus difficile si réussite (une par ligne)"), "• …", 2)}${f("moins", cl("Plus facile (–) — un par ligne", "Variantes : plus facile si échec (une par ligne)"), "• …", 2)}${f("crit", "Critères de réussite — un par ligne", "Ex. Le pied est posé sans bruit", 2)}</div><div style="margin-top:6px"><a class="chip" data-sa="tolib" data-id="${it.id}" style="cursor:pointer">＋ Ajouter cet exercice à la bibliothèque</a></div>${crepsItemHTML(it, CL)}</div>`;
       })
       .join("");
     return `<div class="ssub"><div class="smg" style="align-items:end"><label class="sml" style="grid-column:span 2">Titre de la sous-section<input data-ss="titre" data-sub="${s.id}" value="${esc(s.titre)}" placeholder="Ex. Poser les pieds"></label>${gsel}<div class="durs">${sv.idx.map(i => num(`data-gd="sub" data-n="1" data-sub="${s.id}" data-gi="${i}"`, "Durée" + (two ? " — " + gl(i) : "") + " (min)", s.d[i], M.G[i].c)).join("")}</div>

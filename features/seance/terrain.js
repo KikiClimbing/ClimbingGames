@@ -98,6 +98,7 @@ function terrainCartes(gi) {
         plus: x.v.plus,
         moins: x.v.moins,
         mat: x.v.noMat ? "" : x.v.mat,
+        img: crepsImgRow({ src: x.it, g: crepsJeu(x.it) }),
       })
     );
   });
@@ -151,6 +152,7 @@ function terrainOuvrir() {
   terrainDessin();
 }
 function terrainFermer() {
+  terrainImageFermer();
   clearInterval(TRTIMER);
   TRTIMER = null;
   terrainVeille(false);
@@ -214,7 +216,7 @@ function terrainDessin() {
       c.dur
         ? `<div class="trt"><div id="trT" class="${TR.restant <= 0 ? "fin" : ""}">${mmss(TR.restant)}</div><div class="trtb"><a data-tr="m1">−1</a><a data-tr="play" class="big">${TR.tourne ? "⏸" : "▶"}</a><a data-tr="p1">+1</a><a data-tr="rst">↺</a></div></div>`
         : ""
-    }${c.mat ? `<div class="trs"><b>Matériel :</b> ${esc(c.mat)}</div>` : ""}${puces(c.steps)}${c.crit && c.crit.length ? `<div class="trs"><b>✔ Critères de réussite</b>${puces(c.crit)}</div>` : ""}${c.moins ? `<div class="trs"><b>↓ Plus facile :</b> ${esc(c.moins)}</div>` : ""}${c.plus ? `<div class="trs"><b>↑ Plus difficile :</b> ${esc(c.plus)}</div>` : ""}`;
+    }${c.img ? `<div style="margin:8px 0"><a class="trbtn" data-tr="img" style="background:#2B5A9E">🖼 Voir le schéma en plein écran (paysage)</a></div>` : ""}${c.mat ? `<div class="trs"><b>Matériel :</b> ${esc(c.mat)}</div>` : ""}${puces(c.steps)}${c.crit && c.crit.length ? `<div class="trs"><b>✔ Critères de réussite</b>${puces(c.crit)}</div>` : ""}${c.moins ? `<div class="trs"><b>↓ Plus facile :</b> ${esc(c.moins)}</div>` : ""}${c.plus ? `<div class="trs"><b>↑ Plus difficile :</b> ${esc(c.plus)}</div>` : ""}`;
   }
   o.innerHTML = `<div class="trh"><a data-tr="close">✕ Quitter</a><span>${TR.k + 1} / ${n}</span></div>${groupes}<div class="trbar"><i style="width:${((TR.k + 1) / n) * 100}%;background:${c.couleur}"></i></div><div class="trc" style="border-top:6px solid ${c.couleur}"><h2>${c.code ? `<small>${esc(c.code)}</small> ` : ""}${esc(c.titre)}</h2>${c.sous ? `<div class="trsub">${esc(c.sous)}</div>` : ""}${c.dur ? `<div class="trsub">${c.dur} min prévues</div>` : ""}${corps}</div><div class="trf"><a data-tr="prev" ${TR.k === 0 ? 'class="off"' : ""}>◀ Précédent</a><a data-tr="next" ${TR.k === n - 1 ? 'class="off"' : ""}>Suivant ▶</a></div>`;
   const ta = o.querySelector(".trc");
@@ -225,6 +227,7 @@ function terrainClic(e) {
   if (!b || !TR) return;
   const a = b.dataset.tr;
   if (a === "close") terrainFermer();
+  else if (a === "img") terrainImage(TR.cartes[TR.k].img);
   else if (a === "prev") terrainCarte(TR.k - 1);
   else if (a === "next") terrainCarte(TR.k + 1);
   else if (a === "grp") {
@@ -257,3 +260,41 @@ function terrainClic(e) {
 document.addEventListener("visibilitychange", () => {
   if (TR && document.visibilityState === "visible") terrainVeille(true);
 });
+
+/* schéma en plein écran, toujours en paysage : on le tourne si le téléphone est tenu en portrait */
+function terrainImage(url) {
+  terrainImageFermer();
+  const o = document.createElement("div");
+  o.id = "trImg";
+  o.innerHTML = `<img src="${esc(url)}" alt="Schéma"><span>Touchez pour fermer</span>`;
+  o.addEventListener("click", terrainImageFermer);
+  document.body.appendChild(o);
+  const place = () => {
+    const im = o.querySelector("img"),
+      port = innerHeight > innerWidth;
+    o.classList.toggle("rot", port);
+    im.style.width = (port ? innerHeight : innerWidth) + "px";
+    im.style.height = (port ? innerWidth : innerHeight) + "px";
+  };
+  o._place = place;
+  place();
+  window.addEventListener("resize", place);
+  try {
+    /* si le navigateur le permet : vrai plein écran, écran verrouillé en paysage */
+    Promise.resolve(o.requestFullscreen && o.requestFullscreen())
+      .then(
+        () => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape")
+      )
+      .catch(() => {});
+  } catch (e) {}
+}
+function terrainImageFermer() {
+  const o = document.getElementById("trImg");
+  if (!o) return;
+  window.removeEventListener("resize", o._place);
+  o.remove();
+  try {
+    if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+    if (document.fullscreenElement) document.exitFullscreen();
+  } catch (e) {}
+}

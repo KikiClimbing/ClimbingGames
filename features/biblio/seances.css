@@ -48,7 +48,7 @@
 .sbl th:nth-child(4) {
   width: 22%;
 }
-  .sbl th:last-child {
+.sbl th:last-child {
   width: 92px;
 }
 .sbl td:first-child {
@@ -77,22 +77,55 @@
   background: #e3e8f0;
   color: #26364d;
 }
-.sbl.colo th:nth-child(1) { background: #d6e4f5; color: #2b5a9e; border-radius: 8px 0 0 8px; }
-.sbl.colo th:nth-child(2) { background: #f9dfcf; color: #a8480f; }
-.sbl.colo th:nth-child(3) { background: #d5ebdc; color: #24663e; }
-.sbl.colo th:nth-child(4) { background: #e4d9f1; color: #5f3a87; }
-.sbl.colo th:nth-child(5) { background: #d0eaea; color: #176b6b; }
-.sbl.colo th.c-mod { background: #f8efcf; color: #7a5a00; }
-.sbl.colo th.c-par { background: #f3d8e7; color: #8f2d62; }
-.sbl.colo th:last-child { background: #e3e8f0; border-radius: 0 8px 8px 0; }
+.sbl.colo th:nth-child(1) {
+  background: #d6e4f5;
+  color: #2b5a9e;
+  border-radius: 8px 0 0 8px;
+}
+.sbl.colo th:nth-child(2) {
+  background: #f9dfcf;
+  color: #a8480f;
+}
+.sbl.colo th:nth-child(3) {
+  background: #d5ebdc;
+  color: #24663e;
+}
+.sbl.colo th:nth-child(4) {
+  background: #e4d9f1;
+  color: #5f3a87;
+}
+.sbl.colo th:nth-child(5) {
+  background: #d0eaea;
+  color: #176b6b;
+}
+.sbl.colo th.c-mod {
+  background: #f8efcf;
+  color: #7a5a00;
+}
+.sbl.colo th.c-par {
+  background: #f3d8e7;
+  color: #8f2d62;
+}
+.sbl.colo th:last-child {
+  background: #e3e8f0;
+  border-radius: 0 8px 8px 0;
+}
 .sbl.colo td {
   background: #fff;
   padding: 9px 10px;
 }
-.sbl.colo tr:nth-child(even) td { background: #f4f8fc; }
-.sbl.colo tr.r:hover td { background: #e8f1fb; }
-.sbl.colo td:first-child { border-radius: 8px 0 0 8px; }
-.sbl.colo td:last-child { border-radius: 0 8px 8px 0; }
+.sbl.colo tr:nth-child(even) td {
+  background: #f4f8fc;
+}
+.sbl.colo tr.r:hover td {
+  background: #e8f1fb;
+}
+.sbl.colo td:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.sbl.colo td:last-child {
+  border-radius: 0 8px 8px 0;
+}
 .tchip {
   display: inline-block;
   max-width: 100%;
@@ -104,4 +137,40 @@
   font-size: 13px;
   font-weight: 700;
 }
-.sbl th.c-mod { width: 9%; }
+.sbl th.c-mod {
+  width: 9%;
+}
+
+/* téléphone : le nom du cycle ou de la séance reste entièrement lisible (colonne fixée à gauche), le reste défile */
+@media (max-width: 800px) {
+  .sbl {
+    table-layout: auto;
+    min-width: 900px;
+  }
+  .sbl th:nth-child(n),
+  .sbl th:last-child {
+    width: auto;
+  }
+  .sbl td:first-child,
+  .sbl th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    min-width: 170px;
+    max-width: 210px;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    box-shadow: 4px 0 6px -4px rgba(0, 0, 0, 0.25);
+  }
+  .sbl td:first-child {
+    background: #fff;
+  }
+  .sbl.colo tr:nth-child(even) td:first-child {
+    background: #f4f8fc;
+  }
+  .sbl td:nth-child(4),
+  .sbl td:nth-child(5) {
+    min-width: 150px;
+  }
+}

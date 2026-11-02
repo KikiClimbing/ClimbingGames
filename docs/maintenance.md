@@ -352,6 +352,7 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-11-01 | 56 | Retours sur un jeu en popup (`retours.js`, action `retour`, plus de Google Forms), pseudos (`compte/pseudo.js`, action `profil_pseudo`, colonne « Pseudo » de l'onglet Utilisateurs), favoris enregistrés sur le serveur (onglet « Favoris »), nombre de jeux en attente sur le bouton Administration (`admin_attente`), e-mail de contact dans `confidentialite.html`, fenêtre générale `core/modal.js`. **Script Google à redéployer.** |
 | 2026-11-01 | 57 | Recherche d'exercice en popup avec filtres et aperçu (`seance/recherche.js`), compléments CREPS dans le cadre de chaque exercice (plus en bas), schéma dessiné pour une situation (`it.sch`), éditeur de schémas en popup (`editeur/popup.js`, aussi depuis « Proposer un jeu »), jeu proposé avec ses compléments CREPS (colonnes But, Comportements attendus, Organisation, Critères de réussite, Objectif). **Script Google à redéployer.** |
 | 2026-11-02 | 58 | Administration > Retours (relire, publier, refuser, supprimer : actions `admin_retours` / `admin_retour`), mode hors connexion (`sw.js`, `core/offline.js`, page « Utiliser hors connexion »). **Script Google à redéployer.** |
+| 2026-11-02 | 59 | Mode terrain : bouton « Voir le schéma » en plein écran paysage (`terrainImage`) et page masquée pendant le mode ; **correction** des champs CREPS du formulaire (libellés et enregistrement, bug de la v57) ; libellés CREPS dans les exercices ; « Fiche habituelle » devient « Fiche simplifiée » ; chausson d'escalade redessiné (`formes.js`, case `shoe`) ; liste des séances lisible sur téléphone (colonne du nom fixée à gauche) ; schéma d'un jeu (Administration) modifiable dans une popup (`edPopup("ctx")`). Site seulement. |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
@@ -412,3 +413,11 @@ Tout est dans `features/seance/terrain.js` (chargé avant `controle.js`).
 - **Données Google** (`core/offline.js`) : la liste des séances et chaque séance ouverte sont copiées dans le cache `donnees-hors-ligne` (par compte) et relues quand le réseau manque ; effacé à la déconnexion. Bandeau « Hors connexion » en bas de page.
 - Page « Utiliser hors connexion » (`features/horsligne/`) : état, et bouton qui télécharge tous les schémas. Ne fonctionne qu'en https (GitHub Pages) ou sur localhost.
 - Pour tester : ouvrir le site, recharger une fois, couper le réseau (outils de développement > Réseau > Hors connexion), recharger.
+
+
+## Retours v59
+
+- `edPopup(back, source, ctx)` accepte aussi `"ctx"` : Administration > « Modifier le schéma » ouvre l'éditeur en popup ; sans dessin source (`schemas/<nom>.json`), l'image actuelle est montrée en repère. Le brouillon de la page « Dessiner un schéma » est mis de côté puis remis.
+- Mode terrain : `body.trOn` masque le reste de la page. Sans cela, un tableau trop large (formulaire de séance) élargit l'écran du téléphone et le bas du mode terrain sort de l'écran.
+- Éditeur sur téléphone : le dessin fonctionne au doigt (`touch-action:none`, événements pointeur), mais la zone est petite ; l'éditeur est surtout prévu pour ordinateur ou tablette.
+- Pseudos : unicité contrôlée par le script (sans tenir compte des majuscules) ; elle ne porte que sur les pseudos, pas sur les noms Google.
