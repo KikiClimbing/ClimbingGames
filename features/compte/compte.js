@@ -34,6 +34,7 @@ const compteSuffixe = () => (compteOn() && AUTH.user ? ":" + AUTH.user.email : "
 const compteMien = r =>
   !compteOn() || !AUTH.user || AUTH.user.admin || !r.owner || r.owner === AUTH.user.email;
 function compteExpiree() {
+  if (typeof offVider === "function") offVider();
   AUTH.session = "";
   AUTH.user = null;
   try {

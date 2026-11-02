@@ -30,7 +30,7 @@ Points clés :
 | Nouveaux schémas | `schemas/NOM.png` (+ `schemas/CODE.json`, dessin source, pour ceux faits depuis Administration) dans le dépôt | script Apps Script (API GitHub) | fiche d'un jeu (via « Schéma (lien) ») |
 | **Tous les jeux** (nouveaux compris) | Google Sheet, onglet des fiches (colonnes `Titre` + `Principe`) | formulaire, « Ma séance », page Administration | site (CSV publié) |
 | Séances créées avec l'outil | Google Sheet, onglet `Séances` | script (action `seance`) | site (CSV publié) + copie dans le navigateur |
-| Retours de terrain | Google Sheet, onglet des retours | formulaire « Retour terrain » | site (CSV publié) |
+| Retours de terrain | Google Sheet, onglet des retours | popup « Donner mon retour » du site (action `retour`) | site (CSV publié, lignes dont « Publié » = OUI) |
 | Séances en Word / PDF / Docs | dossier Google Drive (`LIBRARY_URL`) | éducateurs | iframe Drive |
 | Séance en cours, logo, préférences | `localStorage` du navigateur | le site | le site |
 
@@ -148,7 +148,7 @@ scripts-google/       scripts Apps Script (copies de référence)
 ```
 
 #### Favoris, duplication, filtres, contrôle (v54)
-- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Non synchronisés entre appareils.
+- **Favoris** : `favoris.js`, clé `favJeux` du navigateur suffixée par le compte (`compteSuffixe`) ; vue `fav`. Depuis la v56, synchronisés avec le serveur pour les comptes connectés (voir v56).
 - **Dupliquer** : `sbDupliquer` (séances) et `cyDupliquer` (cycles) copient dans « Créer une séance / un cycle » sans identifiant, avec « (copie) » dans le titre.
 - **Recherche dans les noms de jeux** : la colonne `Jeux` (codes et noms, 600 caractères) est écrite par `enregistrerSeance` ; les séances enregistrées avant la v54 ne sont retrouvées par nom de jeu qu'après un nouvel enregistrement.
 - **Filtres** (`filtres.js`) : la liste de suggestions `#gl` est reconstruite selon famille, objectif, intensité, durée (≤ valeur maximale lue dans « Durée »), sans matériel, sans expérience.
@@ -351,6 +351,7 @@ Copies locales (bibliothèque) : clés du navigateur suffixées par l'adresse. L
 | 2026-11-01 | 55 | Mode terrain (`seance/terrain.js`), bilan de séance (`SMETA.bilan`, repris dans le cycle), compétences travaillées par séance et par cycle (d'après `AX.COMP`). Site seulement, pas de changement du script Google. |
 | 2026-11-01 | 56 | Retours sur un jeu en popup (`retours.js`, action `retour`, plus de Google Forms), pseudos (`compte/pseudo.js`, action `profil_pseudo`, colonne « Pseudo » de l'onglet Utilisateurs), favoris enregistrés sur le serveur (onglet « Favoris »), nombre de jeux en attente sur le bouton Administration (`admin_attente`), e-mail de contact dans `confidentialite.html`, fenêtre générale `core/modal.js`. **Script Google à redéployer.** |
 | 2026-11-01 | 57 | Recherche d'exercice en popup avec filtres et aperçu (`seance/recherche.js`), compléments CREPS dans le cadre de chaque exercice (plus en bas), schéma dessiné pour une situation (`it.sch`), éditeur de schémas en popup (`editeur/popup.js`, aussi depuis « Proposer un jeu »), jeu proposé avec ses compléments CREPS (colonnes But, Comportements attendus, Organisation, Critères de réussite, Objectif). **Script Google à redéployer.** |
+| 2026-11-02 | 58 | Administration > Retours (relire, publier, refuser, supprimer : actions `admin_retours` / `admin_retour`), mode hors connexion (`sw.js`, `core/offline.js`, page « Utiliser hors connexion »). **Script Google à redéployer.** |
 | 2026-10-31 | 48 | Administration : une couleur par onglet (`ADM_COULEURS` dans `comptes.js`, classe `.abtn.coul`) |
 | 2026-10-31 | 41 | Page `confidentialite.html` (règles de confidentialité exigées par Google pour publier l'écran de consentement) + lien en bas du menu ; **y renseigner l'adresse e-mail de contact** |
 | 2026-10-31 | 40 | Comptes Google (connexion, séances et cycles privés ou partagés par personne, vues administrateur), champ « Remplace le jeu » dans le formulaire et bandeau dans Administration ; **script Apps Script à redéployer** et configuration Google Cloud (voir § Comptes) |
@@ -401,3 +402,13 @@ Tout est dans `features/seance/terrain.js` (chargé avant `controle.js`).
 - **Compléments CREPS** : `crepsChampsHTML(r)` (`seance/creps.js`) est affiché dans le cadre de chaque exercice (`crepsItemHTML`) et de l'échauffement (`crepsEchHTML`), seulement en modèle CREPS. Mêmes champs `cp_*` qu'avant, rien n'est perdu dans les séances existantes. Un jeu proposé depuis un exercice libre envoie aussi Objectif, But, Comportements attendus, Organisation et Critères de réussite ; le script ajoute les colonnes manquantes de l'onglet des fiches, et la fiche du jeu les affiche dans l'onglet « Pratique ». Les valeurs de la fiche du jeu servent de texte par défaut dans la fiche CREPS.
 - **Éditeur en popup** : `edPopup("proposer")` ou `edPopup("item:<id>")`. Pour un exercice, le dessin est gardé dans `it.sch = {els, opt}` (quelques Ko dans les données de la séance, pas d'envoi sur GitHub) et rendu en SVG par `edSvgUrl()`. Le brouillon de la page « Dessiner un schéma » est mis de côté pendant le dessin puis remis. Le schéma dessiné remplace celui du jeu dans la fiche CREPS (écran, impression, Word).
 - `core/modal.js` : options `{fond:false, fin:fn}`.
+
+
+## Administration des retours et mode hors connexion (v58)
+
+- **Retours** : onglet « Retours » d'Administration (colonnes de l'onglet du tableur retrouvées par leur nom, donc compatible avec l'ancien formulaire Google). Boutons Publier (écrit OUI dans « Publié »), Refuser (REFUSÉ), Retirer (vide la cellule), supprimer la ligne. Le code du jeu est revérifié côté script avant d'agir, pour ne pas toucher une autre ligne si la feuille a changé.
+- **Service worker `sw.js`** (à la racine, à côté de `index.html`) : à l'installation il lit `index.html` et met en cache tous les fichiers « ?v= » ; `index.html` est pris sur le réseau d'abord (copie en secours) ; les fichiers versionnés viennent du cache ; les images de `schemas/` du cache puis sont mises à jour en arrière-plan ; la feuille publiée Google (CSV) est gardée en secours. Aucune requête POST n'est interceptée.
+- **⚠ À chaque version** : changer `VERSION` en haut de `sw.js` (même numéro que « ?v= » de `index.html`), sinon les anciens fichiers restent en cache et le renouvellement du cache n'a pas lieu.
+- **Données Google** (`core/offline.js`) : la liste des séances et chaque séance ouverte sont copiées dans le cache `donnees-hors-ligne` (par compte) et relues quand le réseau manque ; effacé à la déconnexion. Bandeau « Hors connexion » en bas de page.
+- Page « Utiliser hors connexion » (`features/horsligne/`) : état, et bouton qui télécharge tous les schémas. Ne fonctionne qu'en https (GitHub Pages) ou sur localhost.
+- Pour tester : ouvrir le site, recharger une fois, couper le réseau (outils de développement > Réseau > Hors connexion), recharger.

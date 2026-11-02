@@ -355,3 +355,5 @@ h2.pt {
 #mpop{z-index:200}
 #mpop label.sml{display:block;margin:8px 0}
 #mpop input,#mpop textarea,#mpop select{width:100%;box-sizing:border-box}
+
+#hors{position:fixed;left:0;right:0;bottom:0;z-index:300;background:#26364D;color:#fff;font-size:14px;text-align:center;padding:8px 12px}

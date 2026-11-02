@@ -264,7 +264,7 @@ function admView() {
     })
     .join("");
   const tb = admOnglet;
-  const onglets = `<div class="tools atabs">${tb("jeux", "Gérer les jeux")}${tb("schemas", "Schémas")}${tb("doc", "Documentation")}${admOngletsComptes()}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>`;
+  const onglets = `<div class="tools atabs">${tb("jeux", "Gérer les jeux")}${tb("schemas", "Schémas")}${tb("retours", "Retours")}${tb("doc", "Documentation")}${admOngletsComptes()}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>`;
   if (ADM_TABS_COMPTES.includes(ADM.tab)) return head + onglets + admComptesHTML();
   if (ADM.tab === "doc") return head + onglets + docHTML();
   if (ADM.tab === "schemas") return head + onglets + msg + schemasHTML();

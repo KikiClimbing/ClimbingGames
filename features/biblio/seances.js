@@ -27,8 +27,10 @@ async function loadSeances() {
     if (!AUTH.session) return;
     try {
       SEANCES = (await comptePost("seances_liste")).seances.filter(x => x.id);
+      offPut("seances" + compteSuffixe(), SEANCES);
     } catch (e) {
-      SEANCES = [];
+      /* hors connexion : dernière liste connue */
+      SEANCES = (!navigator.onLine && (await offGet("seances" + compteSuffixe()))) || [];
     }
     return;
   }
@@ -110,10 +112,16 @@ function sbCharger(id) {
       .then(j => {
         SB_DATA[id] = j.data;
         delete SB_EN_COURS[id];
+        offPut("seance:" + id + compteSuffixe(), j.data);
         return j.data;
       })
-      .catch(e => {
+      .catch(async e => {
         delete SB_EN_COURS[id];
+        const c = !navigator.onLine && (await offGet("seance:" + id + compteSuffixe()));
+        if (c) {
+          SB_DATA[id] = c;
+          return c;
+        }
         throw e;
       });
   return SB_EN_COURS[id];

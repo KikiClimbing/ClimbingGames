@@ -66,6 +66,8 @@ function doPost(e) {
       if (action === "admin_reglages") return adminReglages(d);
       if (action === "admin_liste") return adminListe(d.tous);
       if (action === "admin_attente") return adminAttente();
+      if (action === "admin_retours") return adminRetours();
+      if (action === "admin_retour") return adminRetour(d);
       if (action === "admin_enregistrer") return adminEnregistrer(d);
       if (action === "admin_refuser") return adminRefuser(d);
       if (action === "admin_schema") return adminSchema(d);
@@ -1110,4 +1112,70 @@ function adminAttente() {
       if (String(r[t] || "").trim() && !estPublie(pub) && !/^refus/i.test(pub)) k++;
     });
   return rep({ ok: true, n: k });
+}
+
+/* ---------- retours de terrain : relire, publier, refuser, supprimer (Administration > Retours) ---------- */
+// colonne de l'onglet dont l'en-tête est l'un de ces noms (les formulaires Google ont leurs propres intitulés)
+function colRetour(head, noms) {
+  for (let i = 0; i < noms.length; i++) if (head.indexOf(noms[i]) >= 0) return head.indexOf(noms[i]);
+  return -1;
+}
+function adminRetours() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Retours");
+  if (!sh || sh.getLastRow() < 2) return rep({ ok: true, retours: [] });
+  const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  const c = {
+    date: colRetour(head, ["Horodateur"]),
+    code: colRetour(head, ["Code du jeu", "Code"]),
+    auteur: colRetour(head, ["Auteur"]),
+    pub: colRetour(head, ["Public"]),
+    note: colRetour(head, ["Note", "Ça a marché ?"]),
+    bien: colRetour(head, ["Ce qui a bien marché"]),
+    chg: colRetour(head, ["À changer", "Ce qu'il faut changer"]),
+    publie: colRetour(head, ["Publié"]),
+  };
+  const v = sh.getRange(2, 1, sh.getLastRow() - 1, head.length).getDisplayValues();
+  const g = (r, k) => (c[k] >= 0 ? String(r[c[k]] || "") : "");
+  const L = v
+    .map((r, i) => ({
+      ligne: i + 2,
+      date: g(r, "date"),
+      code: g(r, "code"),
+      auteur: g(r, "auteur"),
+      public: g(r, "pub"),
+      note: g(r, "note"),
+      bien: g(r, "bien"),
+      changer: g(r, "chg"),
+      publie: /^refus/i.test(g(r, "publie")) ? "refus" : estPublie(g(r, "publie")) ? "oui" : "",
+    }))
+    .filter(x => x.code || x.bien || x.changer);
+  return rep({ ok: true, retours: L });
+}
+// { ligne, code, op : "publier" | "refuser" | "attente" | "supprimer" } ; le code sert à vérifier qu'on vise la bonne ligne
+function adminRetour(d) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Retours");
+    const l = +d.ligne;
+    if (!sh || !l || l < 2 || l > sh.getLastRow()) return rep({ ok: false, error: "ligne introuvable : actualisez" });
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    const ic = colRetour(head, ["Code du jeu", "Code"]);
+    if (ic >= 0 && String(sh.getRange(l, ic + 1).getValue()).trim() !== String(d.code || "").trim())
+      return rep({ ok: false, error: "la feuille a changé : actualisez la liste" });
+    if (d.op === "supprimer") {
+      sh.deleteRow(l);
+      return rep({ ok: true });
+    }
+    let ip = head.indexOf("Publié");
+    if (ip < 0) {
+      sh.getRange(1, head.length + 1).setValue("Publié");
+      ip = head.length;
+    }
+    const val = d.op === "publier" ? "OUI" : d.op === "refuser" ? "REFUSÉ" : "";
+    sh.getRange(l, ip + 1).setValue(val);
+    return rep({ ok: true });
+  } finally {
+    lock.releaseLock();
+  }
 }

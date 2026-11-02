@@ -1,6 +1,6 @@
 /* Administration des comptes : utilisateurs, équipes, séances, cycles, réglages (e-mails).
    Onglets ajoutés à la page Administration quand les comptes Google sont activés. */
-const ADM_TABS_COMPTES = ["users", "equipes", "seances", "cycles", "reglages"];
+const ADM_TABS_COMPTES = ["users", "equipes", "seances", "cycles", "reglages", "retours"];
 const ADC = { users: null, equipes: null, seances: null, reglages: null, q: "", msg: "", tri: {} };
 const admcDate = t => {
   const d = new Date(t);
@@ -19,6 +19,7 @@ const ADM_COULEURS = {
   seances: ["#1F8A8A", "#DDF1F1"],
   cycles: ["#B03A7A", "#F8E2EE"],
   reglages: ["#9A7400", "#F8EFCF"],
+  retours: ["#C0392B", "#FBE3E0"],
 };
 function admOnglet(t, l) {
   const [c, bg] = ADM_COULEURS[t] || ["#3A8FB0", "#E3F1F6"];
@@ -44,6 +45,7 @@ async function admcCharger() {
     else if (t === "equipes") ADC.equipes = (await comptePost("equipes_liste")).equipes;
     else if (t === "seances" || t === "cycles")
       ADC.seances = (await admPost("admin_seances")).seances;
+    else if (t === "retours") ADC.retours = (await admPost("admin_retours")).retours;
     else if (t === "reglages") ADC.reglages = await admPost("admin_reglages", {});
     ADC.msg = "";
   } catch (e) {
@@ -160,6 +162,27 @@ function admComptesHTML() {
       .join("");
     return `${msg}${search("Rechercher (titre, propriétaire)…")}<p class="count">${L.length} ${cy ? "cycle" : "séance"}${L.length > 1 ? "s" : ""}${L.length > 300 ? " (300 premiers affichés : affinez la recherche)" : ""} · cliquez sur un titre pour l'aperçu</p><div style="overflow-x:auto"><table class="adt"><thead><tr>${admTh("titre", "TITRE")}${admTh("date", "DATE")}${admTh("partage", "PARTAGÉ")}${admTh("proprietaire", "PROPRIÉTAIRE")}<th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
+  if (t === "retours") {
+    if (!ADC.retours) return msg;
+    const f = ADC.rtFiltre || "attente";
+    const nbAtt = ADC.retours.filter(x => !x.publie).length;
+    const L = admTri(
+      ADC.retours.filter(
+        x =>
+          (f === "tous" || (f === "attente" ? !x.publie : x.publie === "oui")) &&
+          (!q || norm([x.code, x.auteur, x.public, x.bien, x.changer].join(" ")).includes(q))
+      ),
+      { date: x => x.date, code: x => x.code, auteur: x => x.auteur, note: x => +x.note || 0 }
+    );
+    const jeu = c => (DATA.find(g => g.Code === c) || {}).Titre || "";
+    const bt = (op, l, c, txt, v) =>
+      `<a class="abtn ${v}" data-admc="rt" data-op="${op}" data-l="${l}" data-code="${esc(c)}">${txt}</a>`;
+    const rows = L.map(
+      x =>
+        `<tr><td>${esc(x.date)}</td><td><b>${esc(x.code)}</b><br><span style="color:#6B7280;font-size:12px">${esc(jeu(x.code))}</span></td><td>${esc(x.auteur)}${x.public ? `<br><span style="color:#6B7280;font-size:12px">${esc(x.public)}</span>` : ""}</td><td>${esc(x.note)}</td><td style="white-space:normal;min-width:260px">${x.bien ? "👍 " + esc(x.bien) + "<br>" : ""}${x.changer ? "✎ " + esc(x.changer) : ""}</td><td>${x.publie === "oui" ? "✓ publié" : x.publie === "refus" ? "refusé" : "en attente"}</td><td style="white-space:nowrap">${x.publie === "oui" ? bt("attente", x.ligne, x.code, "Retirer", "sm") : bt("publier", x.ligne, x.code, "Publier", "sm ok")}${x.publie === "refus" ? "" : " " + bt("refuser", x.ligne, x.code, "Refuser", "sm")} ${bt("supprimer", x.ligne, x.code, "🗑", "sm no")}</td></tr>`
+    ).join("");
+    return `${msg}${search("Rechercher (code, auteur, texte)…")}<div class="tools"><div class="seg"><button data-admc="rtf" data-f="attente" class="${f === "attente" ? "on" : ""}">En attente (${nbAtt})</button><button data-admc="rtf" data-f="oui" class="${f === "oui" ? "on" : ""}">Publiés</button><button data-admc="rtf" data-f="tous" class="${f === "tous" ? "on" : ""}">Tous</button></div></div><p class="count">${L.length} retour${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="adt"><thead><tr>${admTh("date", "DATE")}${admTh("code", "JEU")}${admTh("auteur", "AUTEUR")}${admTh("note", "NOTE")}<th>RETOUR</th><th>ÉTAT</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun retour.</div>'}<p style="color:#6B7280;font-size:14px">Un retour publié apparaît sur la fiche du jeu après la mise à jour du CSV publié de l'onglet « Retours » (quelques minutes).</p>`;
+  }
   if (!ADC.reglages) return msg;
   const r = ADC.reglages;
   return `${msg}<div class="box" style="max-width:640px"><b>E-mails d'invitation</b><p style="margin:6px 0">Quand quelqu'un est ajouté à une équipe, il reçoit un e-mail envoyé depuis votre compte Google (adresse de réponse : celle de la personne qui l'a ajouté).</p><p style="margin:6px 0">État : <b style="color:${r.emails ? "#2E7D4F" : "#B2263A"}">${r.emails ? "envoi activé" : "envoi désactivé"}</b>${r.quotaMails !== null && r.quotaMails !== undefined ? ` · il reste ${r.quotaMails} e-mails aujourd'hui` : ""}</p>${admcBtn("emails", `data-v="${r.emails ? "0" : "1"}"`, r.emails ? "Désactiver l'envoi d'e-mails" : "Activer l'envoi d'e-mails", r.emails ? "no" : "ok")}<p style="color:#6B7280;font-size:13px;margin-bottom:0">Limites : 20 invitations par enregistrement et 50 par jour et par personne (hors administrateur), puis le quota de votre compte Google (environ 100 par jour pour un compte gratuit).</p></div>`;
@@ -253,6 +276,16 @@ registerClick(e => {
   } else if (a === "sdel") {
     if (confirm("Supprimer définitivement cet élément ?"))
       fait(() => comptePost("seance_suppr", { id }), "Supprimé.");
+  } else if (a === "rtf") {
+    ADC.rtFiltre = b.dataset.f;
+    render();
+  } else if (a === "rt") {
+    const op = b.dataset.op;
+    if (op === "supprimer" && !confirm("Supprimer définitivement ce retour ?")) return true;
+    fait(
+      () => admPost("admin_retour", { ligne: +b.dataset.l, code: b.dataset.code, op }),
+      op === "publier" ? "✓ Retour publié." : op === "supprimer" ? "Retour supprimé." : "✓ Fait."
+    );
   } else if (a === "emails")
     fait(() => admPost("admin_reglages", { emails: b.dataset.v === "1" }), "✓ Réglage enregistré.");
   return true;
