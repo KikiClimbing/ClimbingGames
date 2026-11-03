@@ -2,6 +2,7 @@
 const errBox = m =>
   `<div class="box" style="border:2px solid #E0485A"><b>Erreur dans cette page :</b> ${esc(m)}</div>`;
 function render() {
+  if (typeof SEPOP !== "undefined" && SEPOP) return sepopRedraw();
   const v = VIEW;
   const d = VIEWS.find(x => x.match(v)) || VIEWS.find(x => x.fallback);
   let h = "";

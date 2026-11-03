@@ -73,6 +73,8 @@ function doPost(e) {
       if (action === "admin_schema") return adminSchema(d);
       if (action === "admin_schemas") return adminSchemasListe();
       if (action === "admin_schema_fichier") return adminSchemaFichier(d);
+      if (action === "admin_schema_suppr") return adminSchemaSuppr(d);
+      if (action === "admin_son") return adminSon(d);
       return rep({ ok: false, error: "action inconnue" });
     }
     if (action === "auth") return connexionGoogle(d);
@@ -111,6 +113,7 @@ function doPost(e) {
     if (action === "schema") return envoyerSchema(d);
     if (action === "schemas_liste") return adminSchemasListe();
     if (action === "retour") return ajouterRetour(d.retour || {});
+    if (action === "reglages") return rep({ ok: true, son: sonChoisi() });
     return ajouterJeu(d.jeu || {});
   } catch (err) {
     return rep({ ok: false, error: String(err) });
@@ -607,6 +610,59 @@ function githubEcrire(chemin, base64, message) {
   });
   const c = r.getResponseCode();
   return c === 200 || c === 201 ? null : "GitHub a refusé (" + c + ") : " + r.getContentText().slice(0, 160);
+}
+// supprime un fichier du dépôt (rien à faire s'il n'existe pas) ; renvoie null si OK, sinon le message d'erreur
+function githubSupprimer(chemin, message) {
+  if (!GITHUB_JETON) return "GITHUB_JETON absent dans le script";
+  const api = "https://api.github.com/repos/" + GITHUB_DEPOT + "/contents/" + chemin;
+  const entetes = {
+    Authorization: "Bearer " + GITHUB_JETON,
+    Accept: "application/vnd.github+json",
+    "User-Agent": "site-jeux-escalade",
+  };
+  const ex = UrlFetchApp.fetch(api + "?ref=" + GITHUB_BRANCHE, { headers: entetes, muteHttpExceptions: true });
+  if (ex.getResponseCode() === 404) return null;
+  if (ex.getResponseCode() !== 200) return "GitHub a répondu " + ex.getResponseCode();
+  const r = UrlFetchApp.fetch(api, {
+    method: "delete",
+    headers: entetes,
+    contentType: "application/json",
+    payload: JSON.stringify({ message: message, sha: JSON.parse(ex.getContentText()).sha, branch: GITHUB_BRANCHE }),
+    muteHttpExceptions: true,
+  });
+  return r.getResponseCode() === 200 ? null : "GitHub a refusé (" + r.getResponseCode() + ") : " + r.getContentText().slice(0, 160);
+}
+// Administration > Schémas : supprime une image (et son dessin source). Les schémas utilisés par un jeu sont refusés côté site.
+function adminSchemaSuppr(d) {
+  const nom = String(d.nom || "");
+  if (!/^[\w\-]+\.(png|webp|jpe?g|svg)$/i.test(nom)) return rep({ ok: false, error: "nom de fichier invalide" });
+  let err = githubSupprimer("schemas/" + nom, "Suppression du schéma " + nom);
+  if (!err) err = githubSupprimer("schemas/" + nom.replace(/\.\w+$/, "") + ".json", "Suppression de la source du schéma " + nom);
+  return err ? rep({ ok: false, error: err }) : rep({ ok: true });
+}
+/* ---------- son du mode terrain ---------- */
+// « preset:bip » (bip, cloche, gong, sifflet, alarme) ou « sons/fichier.mp3 » (fichier téléversé dans le dépôt)
+function sonChoisi() {
+  return PropertiesService.getScriptProperties().getProperty("SON") || "preset:bip";
+}
+function sonValide(v) {
+  return /^preset:(bip|cloche|gong|sifflet|alarme)$/.test(v) || /^sons\/[\w\-]+\.(mp3|ogg|wav|m4a)$/i.test(v);
+}
+// op « lire » · « choisir » (son) · « envoyer » (nom + data base64 : téléverse le fichier puis le choisit)
+function adminSon(d) {
+  const pr = PropertiesService.getScriptProperties();
+  if (d.op === "choisir") {
+    if (!sonValide(String(d.son))) return rep({ ok: false, error: "son invalide" });
+    pr.setProperty("SON", String(d.son));
+  } else if (d.op === "envoyer") {
+    const m = /^([\w\-]{1,40})\.(mp3|ogg|wav|m4a)$/i.exec(String(d.nom || ""));
+    if (!m) return rep({ ok: false, error: "nom de fichier invalide (mp3, ogg, wav ou m4a)" });
+    if (!d.data || d.data.length > 600000) return rep({ ok: false, error: "fichier trop lourd (400 Ko maximum)" });
+    const err = githubEcrire("sons/" + d.nom, d.data, "Son du mode terrain " + d.nom);
+    if (err) return rep({ ok: false, error: err });
+    pr.setProperty("SON", "sons/" + d.nom);
+  }
+  return rep({ ok: true, son: sonChoisi() });
 }
 function nomFichier(n, defaut) {
   return (

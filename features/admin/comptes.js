@@ -46,7 +46,14 @@ async function admcCharger() {
     else if (t === "seances" || t === "cycles")
       ADC.seances = (await admPost("admin_seances")).seances;
     else if (t === "retours") ADC.retours = (await admPost("admin_retours")).retours;
-    else if (t === "reglages") ADC.reglages = await admPost("admin_reglages", {});
+    else if (t === "reglages") {
+      ADC.reglages = await admPost("admin_reglages", {});
+      try {
+        ADC.son = (await admPost("admin_son", { op: "lire" })).son;
+      } catch (e) {
+        ADC.son = null; /* script pas encore mis à jour */
+      }
+    }
     ADC.msg = "";
   } catch (e) {
     ADC.msg = "Échec : " + e.message;
@@ -185,10 +192,58 @@ function admComptesHTML() {
   }
   if (!ADC.reglages) return msg;
   const r = ADC.reglages;
-  return `${msg}<div class="box" style="max-width:640px"><b>E-mails d'invitation</b><p style="margin:6px 0">Quand quelqu'un est ajouté à une équipe, il reçoit un e-mail envoyé depuis votre compte Google (adresse de réponse : celle de la personne qui l'a ajouté).</p><p style="margin:6px 0">État : <b style="color:${r.emails ? "#2E7D4F" : "#B2263A"}">${r.emails ? "envoi activé" : "envoi désactivé"}</b>${r.quotaMails !== null && r.quotaMails !== undefined ? ` · il reste ${r.quotaMails} e-mails aujourd'hui` : ""}</p>${admcBtn("emails", `data-v="${r.emails ? "0" : "1"}"`, r.emails ? "Désactiver l'envoi d'e-mails" : "Activer l'envoi d'e-mails", r.emails ? "no" : "ok")}<p style="color:#6B7280;font-size:13px;margin-bottom:0">Limites : 20 invitations par enregistrement et 50 par jour et par personne (hors administrateur), puis le quota de votre compte Google (environ 100 par jour pour un compte gratuit).</p></div>`;
+  return `${msg}<div class="box" style="max-width:640px"><b>E-mails d'invitation</b><p style="margin:6px 0">Quand quelqu'un est ajouté à une équipe, il reçoit un e-mail envoyé depuis votre compte Google (adresse de réponse : celle de la personne qui l'a ajouté).</p><p style="margin:6px 0">État : <b style="color:${r.emails ? "#2E7D4F" : "#B2263A"}">${r.emails ? "envoi activé" : "envoi désactivé"}</b>${r.quotaMails !== null && r.quotaMails !== undefined ? ` · il reste ${r.quotaMails} e-mails aujourd'hui` : ""}</p>${admcBtn("emails", `data-v="${r.emails ? "0" : "1"}"`, r.emails ? "Désactiver l'envoi d'e-mails" : "Activer l'envoi d'e-mails", r.emails ? "no" : "ok")}<p style="color:#6B7280;font-size:13px;margin-bottom:0">Limites : 20 invitations par enregistrement et 50 par jour et par personne (hors administrateur), puis le quota de votre compte Google (environ 100 par jour pour un compte gratuit).</p></div>${admSonHTML()}`;
+}
+/* son de fin de minuterie du mode terrain */
+function admSonHTML() {
+  const cur = ADC.son;
+  if (cur === null || cur === undefined)
+    return `<div class="box" style="max-width:640px"><b>Son du mode terrain</b><p style="margin:6px 0;color:#6B7280">Indisponible : mettez à jour le script Google (serveur_site.gs) puis redéployez-le.</p></div>`;
+  const opts = Object.entries(SONS)
+    .map(
+      ([k, t]) =>
+        `<option value="preset:${k}" ${cur === "preset:" + k ? "selected" : ""}>${esc(t)}</option>`
+    )
+    .join("");
+  const fich = /^sons\//.test(cur)
+    ? `<option value="${esc(cur)}" selected>Fichier : ${esc(cur.slice(5))}</option>`
+    : "";
+  return `<div class="box" style="max-width:640px"><b>Son du mode terrain</b><p style="margin:6px 0">Joué quand la minuterie d'un exercice arrive à zéro. Choisissez un son prêt à l'emploi ou téléversez votre fichier (mp3, ogg, wav ou m4a, 400 Ko maximum).</p><div class="tools"><select id="admSon">${opts}${fich}</select>${admcBtn("sontest", "", "▶ Tester", "ok")}${admcBtn("sonsave", "", "Enregistrer ce choix", "ok")}</div><label class="chip" style="cursor:pointer;display:inline-block">⬆ Téléverser un fichier son<input type="file" id="admSonFic" accept="audio/mpeg,audio/ogg,audio/wav,audio/mp4,audio/x-m4a,.mp3,.ogg,.wav,.m4a" hidden></label><p style="color:#6B7280;font-size:13px;margin-bottom:0">Le fichier est ajouté au dépôt GitHub (dossier <i>sons/</i>) et devient le son choisi. Les téléphones le mémorisent à la prochaine ouverture du mode terrain.</p></div>`;
 }
 /* appelé par la page Administration après chaque affichage */
 function admComptesBind() {
+  const sf = $("#admSonFic");
+  if (sf)
+    sf.addEventListener("change", () => {
+      const f = sf.files[0];
+      if (!f) return;
+      const m = /\.(mp3|ogg|wav|m4a)$/i.exec(f.name);
+      if (!m) return toast("Format non pris en charge : mp3, ogg, wav ou m4a.");
+      if (f.size > 400000) return toast("Fichier trop lourd (400 Ko maximum).");
+      const nom =
+        f.name
+          .replace(/\.\w+$/, "")
+          .replace(/[^\w-]+/g, "-")
+          .slice(0, 40) || "son";
+      const r = new FileReader();
+      r.onload = async () => {
+        try {
+          toast("Envoi du son en cours…");
+          const j = await admPost("admin_son", {
+            op: "envoyer",
+            nom: nom + "." + m[1].toLowerCase(),
+            data: String(r.result).split(",")[1],
+          });
+          ADC.son = j.son;
+          sonMemoriser(j.son);
+          toast("✓ Son téléversé et choisi.");
+          render();
+        } catch (e) {
+          toast("Échec : " + e.message);
+        }
+      };
+      r.readAsDataURL(f);
+    });
   const q = $("#admcq");
   if (q)
     q.addEventListener("input", () => {
@@ -286,7 +341,13 @@ registerClick(e => {
       () => admPost("admin_retour", { ligne: +b.dataset.l, code: b.dataset.code, op }),
       op === "publier" ? "✓ Retour publié." : op === "supprimer" ? "Retour supprimé." : "✓ Fait."
     );
-  } else if (a === "emails")
+  } else if (a === "sontest") sonJouer($("#admSon").value);
+  else if (a === "sonsave")
+    fait(
+      () => admPost("admin_son", { op: "choisir", son: $("#admSon").value }),
+      "✓ Son enregistré."
+    );
+  else if (a === "emails")
     fait(() => admPost("admin_reglages", { emails: b.dataset.v === "1" }), "✓ Réglage enregistré.");
   return true;
 });

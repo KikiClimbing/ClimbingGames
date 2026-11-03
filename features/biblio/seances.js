@@ -147,34 +147,40 @@ function sbJeuxTexte() {
   }
 }
 const nbExercices = () => SE.subs.reduce((a, s) => a + s.items.length, 0);
-/* enregistre la séance en cours dans la base (nouvel enregistrement, ou mise à jour si déjà enregistrée) */
-async function enregistrerSeance() {
+/* enregistre une séance dans la base (nouvel enregistrement, ou mise à jour si déjà enregistrée).
+   Sans paramètre : la séance en cours (« Créer une séance » ou fenêtre de modification) ;
+   sinon (meta, se) : une autre séance, par exemple celle du mode terrain. */
+async function enregistrerSeance(meta0, se0) {
   if (compteRequis()) return;
-  seDefaults();
-  if (!SE.id) SE.id = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  const meta = { ...SMETA };
-  let data = JSON.stringify({ meta, se: SE });
-  if (data.length > 45000) {
-    delete meta.logo;
-    data = JSON.stringify({ meta, se: SE });
-  }
-  if (data.length > 45000) {
+  const rec = withSeance(meta0 || SMETA, se0 || SE, () => {
+    seDefaults();
+    if (!SE.id) SE.id = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const meta = { ...SMETA };
+    let data = JSON.stringify({ meta, se: SE });
+    if (data.length > 45000) {
+      delete meta.logo;
+      data = JSON.stringify({ meta, se: SE });
+    }
+    if (data.length > 45000) return null;
+    return {
+      id: SE.id,
+      titre: SMETA.titre || "Séance sans titre",
+      objectif: SMETA.objectif || "",
+      jeux: sbJeuxTexte(),
+      theme: SMETA.theme || "",
+      educ: SMETA.educ || "",
+      dates: SMETA.dates || "",
+      nb: nbExercices(),
+      ts: new Date().toISOString(),
+      data,
+    };
+  });
+  if (!rec) {
     toast("Séance trop volumineuse pour être enregistrée.");
     return;
   }
-  const rec = {
-    id: SE.id,
-    titre: SMETA.titre || "Séance sans titre",
-    objectif: SMETA.objectif || "",
-    jeux: sbJeuxTexte(),
-    theme: SMETA.theme || "",
-    educ: SMETA.educ || "",
-    dates: SMETA.dates || "",
-    nb: nbExercices(),
-    ts: new Date().toISOString(),
-    data,
-  };
-  seSave();
+  if (!meta0) seSave();
+  if (SEPOP && !meta0) SEPOP.dirty = false;
   delete SB_DATA[rec.id];
   sbMemo(
     LS_DEL,
@@ -199,21 +205,6 @@ async function enregistrerSeance() {
   } catch (e) {
     toast("Échec de l'enregistrement (" + e.message + "). La séance reste dans ce navigateur.");
   }
-}
-/* reprend une séance de la bibliothèque comme point de départ d'une nouvelle séance (copie) */
-function sbAdopter(d, id) {
-  SMETA = JSON.parse(JSON.stringify(d.meta));
-  SE = JSON.parse(JSON.stringify(d.se));
-  if (id) SE.id = id;
-  else delete SE.id;
-  let mx = 0;
-  SE.subs.forEach(s => {
-    mx = Math.max(mx, s.id || 0);
-    s.items.forEach(i => (mx = Math.max(mx, i.id || 0)));
-  });
-  SEUID = mx + 1;
-  saveMeta();
-  seSave();
 }
 /* ---------- liste ---------- */
 function seancesListeHTML() {
@@ -336,25 +327,14 @@ registerView({
   match: v => v.startsWith("sb/"),
   html: v => seanceFicheView(decodeURIComponent(v.slice(3))),
 });
-/* duplique une séance dans « Créer une séance » (nouvelle séance, titre « … (copie) ») */
+/* duplique une séance : copie « … (copie) » ouverte dans une fenêtre de modification */
 async function sbDupliquer(id) {
   try {
     await sbCharger(id);
     const rec = sbTous().find(r => r.id === id),
       d = rec && sbParse(rec);
     if (!d) throw new Error("illisible");
-    if (
-      selCount() > 0 &&
-      !confirm(
-        "Remplacer le contenu actuel de « Créer une séance » par une copie de cette séance ?"
-      )
-    )
-      return;
-    sbAdopter(d, "");
-    SMETA.titre = (SMETA.titre || "Séance") + " (copie)";
-    saveMeta();
-    go("seance");
-    toast("Copie prête : modifiez-la puis enregistrez-la.");
+    sepopOuvrir(d, "", true);
   } catch (e) {
     toast("Copie impossible : " + e.message);
   }
@@ -377,20 +357,11 @@ registerClick(e => {
   else if (k === "word") seanceWord(SBCUR);
   else if (k === "del") {
     sbSupprimer(SBID).then(ok => ok && go("biblio"));
-  } else if (k === "copy" || k === "edit" || k === "terrain") {
-    const txt =
-      k === "terrain"
-        ? "Ouvrir cette séance en mode terrain ? Elle sera chargée dans « Créer une séance » (le contenu actuel sera remplacé), et le bilan pourra être enregistré dans la séance."
-        : k === "edit"
-          ? "Ouvrir cette séance dans « Créer une séance » pour la modifier ? Le contenu actuel de « Créer une séance » sera remplacé. Enregistrez ensuite pour mettre à jour la séance de la bibliothèque."
-          : "Remplacer le contenu de « Créer une séance » par une copie de cette séance ?";
-    if (!confirm(txt)) return true;
-    sbAdopter(
-      SBCUR,
-      k === "edit" || (k === "terrain" && compteMien(sbAll().find(x => x.id === SBID))) ? SBID : ""
-    );
-    go("seance");
-    if (k === "terrain") terrainOuvrir();
+  } else if (k === "edit") sepopOuvrir(SBCUR, SBID);
+  else if (k === "copy") sepopOuvrir(SBCUR, "", true);
+  else if (k === "terrain") {
+    const rec = sbAll().find(x => x.id === SBID);
+    terrainOuvrir(sepopCopie(SBCUR.meta), sepopCopie(SBCUR.se), SBID, !!rec && compteMien(rec));
   }
   return true;
 });

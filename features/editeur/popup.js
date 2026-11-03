@@ -1,7 +1,7 @@
 /* Éditeur de schémas en fenêtre (popup) : on garde la page en dessous, donc rien n'est perdu.
    - edPopup("proposer")   : depuis « Proposer un jeu » ; le lien du schéma envoyé est ajouté à la proposition ;
    - edPopup("item:<id>")  : « Dessiner un schéma pour cette situation » d'un exercice de la séance : le dessin est gardé dans
-                             l'exercice (it.sch = { els, opt }) et affiché dans la fiche CREPS. Le brouillon de l'éditeur
+                             l'exercice (it.sch = { els, opt }) et affiché dans la fiche complète. Le brouillon de l'éditeur
                              (page « Dessiner un schéma ») est mis de côté puis remis à la fermeture. */
 function edPopup(back, srcCtx, ctx) {
   ED.ctx = back === "ctx" ? ctx : null;

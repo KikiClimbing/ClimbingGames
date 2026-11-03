@@ -118,7 +118,7 @@ async function edNomAuto(fam, nm) {
 function edCtxHTML() {
   const c = ED.ctx;
   if (!c && /^item:/.test(ED.back || ""))
-    return `<div class="box" style="margin:0 0 12px;border-left:6px solid #8A55B5"><b>Schéma de cette situation</b> <span style="color:#6B7280;font-size:13px">— il s'affichera dans la fiche CREPS à côté de la situation.</span><div class="tools" style="margin-top:8px"><button class="chip" id="edItemOk" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Valider ce schéma</button><button class="chip" id="edItemNo">Annuler</button></div></div>`;
+    return `<div class="box" style="margin:0 0 12px;border-left:6px solid #8A55B5"><b>Schéma de cette situation</b> <span style="color:#6B7280;font-size:13px">— il s'affichera dans la fiche complète à côté de la situation.</span><div class="tools" style="margin-top:8px"><button class="chip" id="edItemOk" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Valider ce schéma</button><button class="chip" id="edItemNo">Annuler</button></div></div>`;
   if (!c && ED.back === "proposer")
     return `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma du jeu que vous proposez</b><div class="tools" style="margin-top:8px"><button class="chip" id="edBackForm" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">← Retour au formulaire</button></div><p class="hint" style="margin:6px 0 0">Dessinez, donnez un nom au fichier puis cliquez sur « Envoyer » : le lien sera ajouté automatiquement à votre proposition.</p></div>`;
   if (!c) return "";
@@ -231,6 +231,9 @@ async function edOuvrirPourJeu(ctx) {
   ED.refImg =
     src && src.els && src.els.length
       ? ""
-      : "schemas/" + encodeURIComponent(cle) + ".webp?v=" + Date.now();
+      : "schemas/" +
+        (ctx.img ? encodeURIComponent(ctx.img) : encodeURIComponent(cle) + ".webp") +
+        "?v=" +
+        Date.now();
   edPopup("ctx", src && src.els ? src : { els: [], opt: { ...ED.opt } }, ctx);
 }

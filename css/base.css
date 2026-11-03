@@ -318,14 +318,17 @@ h2.pt {
 .aide .tip{display:none;position:absolute;left:0;top:26px;z-index:60;width:min(340px,80vw);background:#26364D;color:#fff;font:400 13.5px/1.45 system-ui,sans-serif;text-align:left;padding:10px 12px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.25);letter-spacing:0;text-transform:none}
 .aide:hover .tip,.aide:focus .tip,.aide.open .tip{display:block}
 /* séance ouverte en fenêtre */
-#pop,#apop,#mpop{position:fixed;inset:0;z-index:100;background:rgba(20,28,45,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
-#pop .popbox,#apop .popbox,#mpop .popbox{background:#F4F7FB;border-radius:12px;width:min(1200px,100%);padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
-#pop .poptools,#apop .poptools,#mpop .poptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0;background:#F4F7FB;padding:4px 0;z-index:2}
-#pop .chip,#apop .chip,#mpop .chip{cursor:pointer}
+#pop,#apop,#mpop,#epop{position:fixed;inset:0;z-index:100;background:rgba(20,28,45,.55);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+#pop .popbox,#apop .popbox,#mpop .popbox,#epop .popbox{background:#F4F7FB;border-radius:12px;width:min(1200px,100%);padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#pop .poptools,#apop .poptools,#mpop .poptools,#epop .poptools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;position:sticky;top:0;background:#F4F7FB;padding:4px 0;z-index:2}
+#pop .chip,#apop .chip,#mpop .chip,#epop .chip{cursor:pointer}
 @media print{
-  body.pp > *:not(#pop){display:none !important}
+  body.pp > *:not(#pop):not(#epop){display:none !important}
+  body.pp #epop{position:static;background:none;padding:0;display:block;overflow:visible}
+  body.pp #epop .popbox{box-shadow:none;padding:0;background:none;width:auto;max-width:none !important}
+  body.pp #epop .poptools{display:none}
   body.pp #pop{position:static;background:none;padding:0;display:block;overflow:visible}
-  body.pp #pop .popbox,#apop .popbox,#mpop .popbox{box-shadow:none;padding:0;background:none;width:auto;page:seance}
+  body.pp #pop .popbox,#apop .popbox,#mpop .popbox,#epop .popbox{box-shadow:none;padding:0;background:none;width:auto;page:seance}
   body.pp #pop .poptools,#apop .poptools{display:none}
 }
 
@@ -353,6 +356,7 @@ h2.pt {
 .abtn.coul.on{background:var(--c);color:#fff;box-shadow:none}
 
 #mpop{z-index:200}
+#epop{z-index:150}
 #mpop label.sml{display:block;margin:8px 0}
 #mpop input,#mpop textarea,#mpop select{width:100%;box-sizing:border-box}
 

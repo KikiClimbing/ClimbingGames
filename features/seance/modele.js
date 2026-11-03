@@ -66,6 +66,10 @@ function seLoad() {
   });
 }
 const seSave = () => {
+  if (SEPOP) {
+    SEPOP.dirty = true;
+    return;
+  }
   try {
     localStorage.setItem("maSeance2", JSON.stringify(SE));
   } catch (e) {}

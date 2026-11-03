@@ -169,7 +169,7 @@ function schemasHTML() {
     libres = tous.filter(s => !s.qui.length);
   const L = ADM.sf === "libres" ? libres : tous;
   const carte = s =>
-    `<div class="box" style="margin:0;padding:8px"><img loading="lazy" src="${esc(s.url)}" alt="" style="width:100%;aspect-ratio:3/1.1;object-fit:contain;background:#fff;border:1px solid #E3E8F2;border-radius:6px"><div style="font-size:13px;font-weight:700;margin-top:6px;word-break:break-all">${esc(s.nom)}</div><div style="font-size:12px;color:${s.qui.length ? "#2E7D4F" : "#B2543A"}">${s.qui.length ? "● utilisé : " + esc(s.qui.join(", ")) : "● non associé à un jeu"}</div>${s.source ? `<a class="chip" data-adm="schedit" data-n="${esc(s.nom)}" style="cursor:pointer;margin-top:6px;display:inline-block">✏ Modifier</a>` : `<div style="font-size:11px;color:#6B7280;margin-top:4px">pas de dessin source</div>`}</div>`;
+    `<div class="box" style="margin:0;padding:8px"><img loading="lazy" src="${esc(s.url)}" alt="" style="width:100%;aspect-ratio:3/1.1;object-fit:contain;background:#fff;border:1px solid #E3E8F2;border-radius:6px"><div style="font-size:13px;font-weight:700;margin-top:6px;word-break:break-all">${esc(s.nom)}</div><div style="font-size:12px;color:${s.qui.length ? "#2E7D4F" : "#B2543A"}">${s.qui.length ? "● utilisé : " + esc(s.qui.join(", ")) : "● non associé à un jeu"}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><a class="chip" data-adm="schedit" data-n="${esc(s.nom)}" style="cursor:pointer" title="${s.source ? "Modifier le dessin" : "Pas de dessin source : l'image sert de modèle pour redessiner"}">${s.source ? "✏ Modifier" : "✏ Redessiner"}</a>${s.qui.length ? "" : `<a class="chip" data-adm="schdel" data-n="${esc(s.nom)}" style="cursor:pointer;color:#B2263A;border-color:#E8B4BC">🗑 Supprimer</a>`}</div></div>`;
   return `<div class="tools"><div class="seg"><button data-adm="sf" data-m="libres" class="${ADM.sf === "libres" ? "on" : ""}">Non associés (${libres.length})</button><button data-adm="sf" data-m="tous" class="${ADM.sf === "tous" ? "on" : ""}">Tous (${tous.length})</button></div><a class="chip" data-adm="schreload" style="cursor:pointer">↻ Actualiser</a></div>
   <p style="color:#6B7280;font-size:14px">Les schémas envoyés depuis « Dessiner un schéma » arrivent ici. Pour en associer un à un jeu : onglet « Gérer les jeux », ouvrez le jeu puis « Choisir un schéma existant ». « Utilisé » compare avec les jeux publiés et les jeux chargés dans l'onglet « Gérer les jeux ».</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px">${L.map(carte).join("") || '<div class="empty">Aucun schéma.</div>'}</div>`;
@@ -361,7 +361,20 @@ registerClick(e => {
     });
   } else if (a === "schedit") {
     const base = b.dataset.n.replace(/\.\w+$/, "");
-    edOuvrirPourJeu({ code: base, nom: base, titre: "", fichier: true });
+    edOuvrirPourJeu({ code: base, nom: base, titre: "", fichier: true, img: b.dataset.n });
+  } else if (a === "schdel") {
+    const nom = b.dataset.n,
+      s = admSchemasTries().find(x => x.nom === nom);
+    if (!s || s.qui.length)
+      return toast("Ce schéma est utilisé par un jeu : il ne peut pas être supprimé.");
+    if (!confirm("Supprimer définitivement le schéma « " + nom + " » du dépôt ?")) return true;
+    admPost("admin_schema_suppr", { nom })
+      .then(() => {
+        toast("✓ Schéma supprimé.");
+        ADM.schemas = null;
+        render();
+      })
+      .catch(err => toast("Échec : " + err.message));
   } else if (a === "sf") {
     ADM.sf = b.dataset.m;
     render();

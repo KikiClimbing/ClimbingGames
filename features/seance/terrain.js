@@ -63,11 +63,15 @@ function compHTML(codes, quoi) {
 }
 
 /* ---------- mode terrain ---------- */
-let TR = null; /* {cartes, gi, k, restant, tourne, fin} */
+let TR = null; /* {meta, se, cur, mien, id, cartes, gi, k, restant, tourne, fin} */
 let TRTIMER = null,
   TRWAKE = null;
 
+const terrainModele = () => withSeance(TR.meta, TR.se, () => seModel());
 function terrainCartes(gi) {
+  return withSeance(TR.meta, TR.se, () => terrainCartes0(gi));
+}
+function terrainCartes0(gi) {
   const M = seModel(),
     g = M.G[gi],
     c = [];
@@ -122,19 +126,7 @@ async function terrainVeille(on) {
   } catch (e) {}
 }
 function terrainBip() {
-  try {
-    const a = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.25, 0.5].forEach(t => {
-      const o = a.createOscillator(),
-        g = a.createGain();
-      o.frequency.value = 880;
-      o.connect(g);
-      g.connect(a.destination);
-      g.gain.value = 0.25;
-      o.start(a.currentTime + t);
-      o.stop(a.currentTime + t + 0.15);
-    });
-  } catch (e) {}
+  sonJouer(sonCourant());
   try {
     navigator.vibrate && navigator.vibrate([300, 100, 300]);
   } catch (e) {}
@@ -143,10 +135,28 @@ const mmss = s => {
   const a = Math.abs(s);
   return (s < 0 ? "−" : "") + Math.floor(a / 60) + ":" + String(a % 60).padStart(2, "0");
 };
-function terrainOuvrir() {
-  seDefaults();
-  TR = { gi: 0, k: 0, cartes: terrainCartes(0), restant: 0, tourne: false, fin: false };
+/* sans paramètre : la séance de « Créer une séance » (ou de la fenêtre de modification) ;
+   sinon une copie d'une séance de la bibliothèque (meta, se), sans rien changer ailleurs */
+function terrainOuvrir(meta, se, id, mien) {
+  const cur = !meta;
+  TR = {
+    meta: meta || SMETA,
+    se: se || SE,
+    cur,
+    mien: cur || !!mien,
+    id: id || "",
+    gi: 0,
+    k: 0,
+    cartes: [],
+    restant: 0,
+    tourne: false,
+    fin: false,
+  };
+  withSeance(TR.meta, TR.se, () => seDefaults());
+  if (id) TR.se.id = id;
+  TR.cartes = terrainCartes(0);
   TR.restant = TR.cartes[0].dur * 60;
+  sonPrecharger();
   document.body.classList.add("trOn");
   terrainVeille(true);
   terrainDessin();
@@ -194,12 +204,12 @@ function terrainDessin() {
     o.addEventListener("input", e => {
       const i = e.target.closest("[data-bl]");
       if (!i) return;
-      SMETA.bilan = SMETA.bilan || {};
-      SMETA.bilan[i.dataset.bl] = i.value;
-      saveMeta();
+      TR.meta.bilan = TR.meta.bilan || {};
+      TR.meta.bilan[i.dataset.bl] = i.value;
+      if (TR.cur) saveMeta();
     });
   }
-  const M = seModel(),
+  const M = terrainModele(),
     c = TR.cartes[TR.k],
     n = TR.cartes.length;
   const groupes =
@@ -209,14 +219,14 @@ function terrainDessin() {
   const puces = a => (a.length ? `<ul>${a.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : "");
   let corps = "";
   if (c.type === "bilan") {
-    const b = SMETA.bilan || {};
-    corps = `<div class="trb">${BILAN_CH.map(([k, t, ph]) => `<label>${t}<textarea rows="3" data-bl="${k}" placeholder="${esc(ph)}">${esc(b[k] || "")}</textarea></label>`).join("")}<a class="trbtn" data-tr="save" style="background:#2E7D4F">☁ Enregistrer le bilan dans la séance</a><div id="trMsg"></div></div>`;
+    const b = TR.meta.bilan || {};
+    corps = `<div class="trb">${BILAN_CH.map(([k, t, ph]) => `<label>${t}<textarea rows="3" data-bl="${k}" placeholder="${esc(ph)}">${esc(b[k] || "")}</textarea></label>`).join("")}${TR.mien ? '<a class="trbtn" data-tr="save" style="background:#2E7D4F">☁ Enregistrer le bilan dans la séance</a>' : '<div class="trs">Cette séance appartient à un autre auteur : le bilan ne peut pas y être enregistré.</div>'}<div id="trMsg"></div></div>`;
   } else {
     corps = `${
       c.dur
         ? `<div class="trt"><div id="trT" class="${TR.restant <= 0 ? "fin" : ""}">${mmss(TR.restant)}</div><div class="trtb"><a data-tr="m1">−1</a><a data-tr="play" class="big">${TR.tourne ? "⏸" : "▶"}</a><a data-tr="p1">+1</a><a data-tr="rst">↺</a></div></div>`
         : ""
-    }${c.img ? `<div style="margin:8px 0"><a class="trbtn" data-tr="img" style="background:#2B5A9E">🖼 Voir le schéma en plein écran (paysage)</a></div>` : ""}${c.mat ? `<div class="trs"><b>Matériel :</b> ${esc(c.mat)}</div>` : ""}${puces(c.steps)}${c.crit && c.crit.length ? `<div class="trs"><b>✔ Critères de réussite</b>${puces(c.crit)}</div>` : ""}${c.moins ? `<div class="trs"><b>↓ Plus facile :</b> ${esc(c.moins)}</div>` : ""}${c.plus ? `<div class="trs"><b>↑ Plus difficile :</b> ${esc(c.plus)}</div>` : ""}`;
+    }${c.img ? `<div style="margin:8px 0"><a class="trbtn" data-tr="img" style="background:#2B5A9E">🖼 Voir le schéma en grand</a></div>` : ""}${c.mat ? `<div class="trs"><b>Matériel :</b> ${esc(c.mat)}</div>` : ""}${puces(c.steps)}${c.crit && c.crit.length ? `<div class="trs"><b>✔ Critères de réussite</b>${puces(c.crit)}</div>` : ""}${c.moins ? `<div class="trs"><b>↓ Plus facile :</b> ${esc(c.moins)}</div>` : ""}${c.plus ? `<div class="trs"><b>↑ Plus difficile :</b> ${esc(c.plus)}</div>` : ""}`;
   }
   o.innerHTML = `<div class="trh"><a data-tr="close">✕ Quitter</a><span>${TR.k + 1} / ${n}</span></div>${groupes}<div class="trbar"><i style="width:${((TR.k + 1) / n) * 100}%;background:${c.couleur}"></i></div><div class="trc" style="border-top:6px solid ${c.couleur}"><h2>${c.code ? `<small>${esc(c.code)}</small> ` : ""}${esc(c.titre)}</h2>${c.sous ? `<div class="trsub">${esc(c.sous)}</div>` : ""}${c.dur ? `<div class="trsub">${c.dur} min prévues</div>` : ""}${corps}</div><div class="trf"><a data-tr="prev" ${TR.k === 0 ? 'class="off"' : ""}>◀ Précédent</a><a data-tr="next" ${TR.k === n - 1 ? 'class="off"' : ""}>Suivant ▶</a></div>`;
   const ta = o.querySelector(".trc");
@@ -236,6 +246,7 @@ function terrainClic(e) {
     terrainCarte(0);
   } else if (a === "play") {
     TR.tourne = !TR.tourne;
+    if (TR.tourne) sonDeverrouiller();
     clearInterval(TRTIMER);
     TRTIMER = TR.tourne ? setInterval(terrainTick, 1000) : null;
     terrainDessin();
@@ -251,7 +262,9 @@ function terrainClic(e) {
   else if (a === "save") {
     const m = $("#trMsg");
     if (m) m.textContent = "Enregistrement…";
-    enregistrerSeance().then(() => {
+    (TR.cur ? enregistrerSeance() : enregistrerSeance(TR.meta, TR.se)).then(() => {
+      if (TR && TR.id && typeof SBCUR !== "undefined" && SBCUR && SBID === TR.id)
+        SBCUR.meta.bilan = JSON.parse(JSON.stringify(TR.meta.bilan || {}));
       const m2 = $("#trMsg");
       if (m2) m2.textContent = "Terminé : voir le message de confirmation du site.";
     });
@@ -261,7 +274,7 @@ document.addEventListener("visibilitychange", () => {
   if (TR && document.visibilityState === "visible") terrainVeille(true);
 });
 
-/* schéma en plein écran, toujours en paysage : on le tourne si le téléphone est tenu en portrait */
+/* schéma en grand : il occupe tout l'écran et s'adapte quand on tourne le téléphone (portrait ou paysage) */
 function terrainImage(url) {
   terrainImageFermer();
   const o = document.createElement("div");
@@ -269,32 +282,156 @@ function terrainImage(url) {
   o.innerHTML = `<img src="${esc(url)}" alt="Schéma"><span>Touchez pour fermer</span>`;
   o.addEventListener("click", terrainImageFermer);
   document.body.appendChild(o);
-  const place = () => {
-    const im = o.querySelector("img"),
-      port = innerHeight > innerWidth;
-    o.classList.toggle("rot", port);
-    im.style.width = (port ? innerHeight : innerWidth) + "px";
-    im.style.height = (port ? innerWidth : innerHeight) + "px";
-  };
-  o._place = place;
-  place();
-  window.addEventListener("resize", place);
-  try {
-    /* si le navigateur le permet : vrai plein écran, écran verrouillé en paysage */
-    Promise.resolve(o.requestFullscreen && o.requestFullscreen())
-      .then(
-        () => screen.orientation && screen.orientation.lock && screen.orientation.lock("landscape")
-      )
-      .catch(() => {});
-  } catch (e) {}
 }
 function terrainImageFermer() {
   const o = document.getElementById("trImg");
-  if (!o) return;
-  window.removeEventListener("resize", o._place);
-  o.remove();
+  if (o) o.remove();
+}
+
+/* ---------- son de fin de minuterie ----------
+   Réglé par l'administrateur (Administration > Réglages) : « preset:xxx » (sons générés) ou « sons/fichier.mp3 ».
+   Mémorisé dans le navigateur (localStorage « trSon ») pour fonctionner sans connexion. */
+const SONS = {
+  bip: "Bip bip bip",
+  cloche: "Cloche",
+  gong: "Gong",
+  sifflet: "Sifflet",
+  alarme: "Alarme",
+};
+let TRCTX = null,
+  TRAUD = null,
+  TRAUDURL = "";
+const sonCourant = () => {
   try {
-    if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
-    if (document.fullscreenElement) document.exitFullscreen();
+    return localStorage.getItem("trSon") || "preset:bip";
+  } catch (e) {
+    return "preset:bip";
+  }
+};
+function sonMemoriser(v) {
+  try {
+    localStorage.setItem("trSon", v);
+  } catch (e) {}
+}
+/* au lancement du mode terrain : récupère le son choisi et précharge le fichier (pour qu'il marche hors connexion) */
+function sonPrecharger() {
+  if (CONFIG.GAME_ADD_URL)
+    fetch(CONFIG.GAME_ADD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "reglages", key: CONFIG.GAME_ADD_KEY || "" }),
+    })
+      .then(r => r.json())
+      .then(j => {
+        if (j && j.ok && j.son) {
+          sonMemoriser(j.son);
+          sonFichier(j.son);
+        }
+      })
+      .catch(() => {});
+  sonFichier(sonCourant());
+}
+function sonFichier(spec) {
+  if (!/^sons\//.test(spec)) return;
+  try {
+    fetch(spec).catch(() => {});
+  } catch (e) {}
+}
+function sonCtx() {
+  if (!TRCTX) {
+    try {
+      TRCTX = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {}
+  }
+  return TRCTX;
+}
+/* à appeler dans un clic : les navigateurs n'autorisent le son qu'après un geste de la personne */
+function sonDeverrouiller() {
+  const c = sonCtx();
+  try {
+    if (c && c.state === "suspended") c.resume();
+  } catch (e) {}
+  const spec = sonCourant();
+  if (/^sons\//.test(spec)) {
+    try {
+      if (!TRAUD || TRAUDURL !== spec) {
+        TRAUD = new Audio(spec);
+        TRAUDURL = spec;
+      }
+      TRAUD.muted = true;
+      TRAUD.play()
+        .then(() => {
+          TRAUD.pause();
+          TRAUD.currentTime = 0;
+          TRAUD.muted = false;
+        })
+        .catch(() => {
+          TRAUD.muted = false;
+        });
+    } catch (e) {}
+  }
+}
+function sonJouer(spec) {
+  spec = spec || "preset:bip";
+  if (/^sons\//.test(spec)) {
+    try {
+      if (!TRAUD || TRAUDURL !== spec) {
+        TRAUD = new Audio(spec);
+        TRAUDURL = spec;
+      }
+      TRAUD.muted = false;
+      TRAUD.currentTime = 0;
+      TRAUD.play().catch(() => sonPreset("bip"));
+    } catch (e) {
+      sonPreset("bip");
+    }
+  } else sonPreset(spec.replace(/^preset:/, ""));
+}
+function sonPreset(nom) {
+  const a = sonCtx();
+  if (!a) return;
+  try {
+    if (a.state === "suspended") a.resume();
+    const t0 = a.currentTime + 0.02;
+    /* une note : fréquence f, début t, durée d, forme, volume v, enveloppe (percussive : décroissance) */
+    const note = (f, t, d, type, v, perc) => {
+      const o = a.createOscillator(),
+        g = a.createGain();
+      o.type = type;
+      o.frequency.value = f;
+      o.connect(g);
+      g.connect(a.destination);
+      g.gain.setValueAtTime(v, t0 + t);
+      if (perc) g.gain.exponentialRampToValueAtTime(0.0008, t0 + t + d);
+      else g.gain.setValueAtTime(0.0001, t0 + t + d);
+      o.start(t0 + t);
+      o.stop(t0 + t + d + 0.02);
+      return o;
+    };
+    if (nom === "cloche") {
+      [1, 2.76, 5.4].forEach((m, i) =>
+        note(660 * m, 0, 2.2 / (i + 1), "sine", 0.3 / (i + 1), true)
+      );
+    } else if (nom === "gong") {
+      [1, 1.5, 2.02, 2.76].forEach((m, i) =>
+        note(110 * m, 0, 3.2 - i * 0.5, "sine", 0.35 / (i + 1), true)
+      );
+    } else if (nom === "sifflet") {
+      [0, 0.7].forEach(t => {
+        const o = note(2600, t, 0.5, "sine", 0.25, false),
+          l = a.createOscillator(),
+          lg = a.createGain();
+        l.frequency.value = 38;
+        lg.gain.value = 120;
+        l.connect(lg);
+        lg.connect(o.frequency);
+        l.start(t0 + t);
+        l.stop(t0 + t + 0.52);
+      });
+    } else if (nom === "alarme") {
+      for (let i = 0; i < 6; i++) note(i % 2 ? 620 : 880, i * 0.22, 0.2, "square", 0.12, false);
+    } else {
+      [0, 0.25, 0.5].forEach(t => note(880, t, 0.15, "sine", 0.25, false));
+    }
   } catch (e) {}
 }

@@ -32,7 +32,7 @@ function seToLib(id) {
     "Plus facile": puces(it.moins),
     "Plus difficile": puces(it.plus),
     Auteur: auteur,
-    /* compléments de la fiche CREPS, s'ils sont renseignés */
+    /* compléments de la fiche complète, s'ils sont renseignés */
     Objectif: it.cp_obj || "",
     But: it.cp_but || "",
     "Comportements attendus": it.cp_comp || "",
@@ -71,14 +71,14 @@ function seToLib(id) {
 function seanceBind() {
   if (typeof glBind === "function") glBind();
   const upd = () => {
-    const s = $("#sheet");
+    const s = (SEPOP ? $("#epop") : document).querySelector("#sheet");
     if (s) s.innerHTML = sheetHTML();
     const c = $("#seControle");
     if (c) c.innerHTML = seControleInner();
   };
   bilanBind(upd);
   const tb = $("#sTerrain");
-  if (tb) tb.addEventListener("click", terrainOuvrir);
+  if (tb) tb.addEventListener("click", () => terrainOuvrir());
   const sub = id => SE.subs.find(x => x.id === +id);
   document.querySelectorAll("[data-sm]").forEach(i =>
     i.addEventListener("input", e => {
@@ -259,7 +259,7 @@ function seanceBind() {
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-sa]");
-  if (!b || VIEW !== "seance") return;
+  if (!b || (VIEW !== "seance" && !SEPOP)) return;
   const a = b.dataset.sa,
     id = +b.dataset.id,
     sid = +b.dataset.sub;
