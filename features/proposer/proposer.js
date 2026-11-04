@@ -22,6 +22,18 @@ const PROP_CHAMPS = [
   { k: "Espace", aide: "Ex. : pan de mur, traversée basse." },
   { k: "Durée", req: 1, aide: "Ex. : 10 min." },
   { k: "Objectif", aide: "Ce que le jeu fait travailler, en quelques mots." },
+  { k: "But", t: "area", aide: "Ce que les pratiquants doivent réussir." },
+  {
+    k: "Comportements attendus",
+    t: "area",
+    aide: "Critères techniques / tactiques de réalisation.",
+  },
+  { k: "Organisation", t: "area", aide: "Matériel, espace, durée, disposition du groupe." },
+  {
+    k: "Critères de réussite",
+    t: "area",
+    aide: "Un critère observable par ligne (la puce « • » est ajoutée toute seule).",
+  },
   {
     k: "Plus facile",
     req: 1,
@@ -131,13 +143,14 @@ function propView() {
       "ORGANISATION",
       ["Participants", "Matériel", "Espace", "Durée", "Effectif court", "Intensité"],
     ],
-    ["OBJECTIFS", ["Objectif", "Objectifs (tags)", "Format anniversaire"]],
+    ["OBJECTIFS", ["Objectifs (tags)", "Format anniversaire"]],
   ];
   const par = k => PROP_CHAMPS.find(f => f.k === k);
   const groupe = ([t, ks]) =>
     `<div class="pgrp" style="${theme}"><h3>${t}</h3><div class="smg">${ks.map(k => champ(par(k))).join("")}</div></div>`;
   const ta = k =>
     `<textarea rows="4" data-pf="${k}" style="width:100%;padding:8px;border:1px solid #d5dae5;border-radius:6px;font:inherit;background:#fff">${esc(v[k] || "")}</textarea>`;
+  const complet = `<div class="pgrp" style="${theme}"><h3>FICHE COMPLÈTE</h3><div style="border:1px dashed #8A55B5;border-radius:8px;padding:8px 10px;background:#FAF7FD"><b style="color:#8A55B5;font-size:13px">Autres champs de la fiche complète</b> <span style="font-size:12px;color:#6B7280">— tous facultatifs : ils servent à remplir la fiche complète des séances. Laissez vide ce que vous ne savez pas.</span><div class="smg" style="margin-top:6px">${["Objectif", "But", "Comportements attendus", "Organisation", "Critères de réussite"].map(k => champ(par(k))).join("")}</div></div></div>`;
   const variantes = `<div class="pgrp" style="${theme}"><h3>VARIANTES</h3><div class="pvar"><div class="pfac"><h4>− PLUS FACILE <span style="color:#B2263A">*</span></h4>${ta("Plus facile")}</div><div class="pdif"><h4>+ PLUS DIFFICILE <span style="color:#B2263A">*</span></h4>${ta("Plus difficile")}</div></div><p style="margin:6px 0 0;color:#6B7280;font-size:13px">2 à 3 idées par colonne, une par ligne : la puce « • » est ajoutée toute seule.</p></div>`;
   const fin = `<div class="pgrp" style="${theme}"><h3>CONSEIL ET COMPLÉMENTS</h3><div class="smg">${["Conseil", "Voir aussi", "Compléments", "Auteur"].map(k => champ(par(k))).join("")}</div></div>`;
   const lien = v["Schéma (lien)"] || "";
@@ -152,11 +165,11 @@ function propView() {
   const msg = PROP.msg ? `<p style="font-weight:700;color:#B2263A">${esc(PROP.msg)}</p>` : "";
   return (
     head +
-    `<div class="box">${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${fin}<div class="pgrp" style="${theme}"><h3>SCHÉMA</h3>
+    `<div class="box">${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${complet}${fin}<div class="pgrp" style="${theme}"><h3>SCHÉMA</h3>
     <div class="sml" style="grid-column:1/-1">Schéma <span style="font-weight:400;color:#6B7280"> — facultatif : dessinez-le, ou choisissez-en un déjà envoyé</span>
       <div class="tools" style="margin:6px 0"><a class="btn" data-pr="draw" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner un schéma</a><a class="btn" data-pr="pick" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>${lien ? `<a class="chip" data-pr="nolink" style="cursor:pointer">Retirer</a>` : ""}</div>
       <input data-pf="Schéma (lien)" value="${esc(lien)}" placeholder="ou collez ici le lien d'une image">${prev}</div></div>${choix}
-    ${msg}<div class="tools" style="margin-top:14px"><a class="btn" data-pr="send" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;display:inline-block">${PROP.busy ? "Envoi…" : "Envoyer ma proposition"}</a><span style="color:#6B7280;font-size:14px">Votre brouillon est gardé dans ce navigateur.</span></div></div>`
+    ${msg}<div class="tools" style="margin-top:14px"><a class="btn" data-pr="send" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer;display:inline-block">${PROP.busy ? "Envoi…" : "Envoyer ma proposition"}</a></div></div>`
   );
 }
 async function propEnvoyer() {
@@ -187,7 +200,7 @@ async function propEnvoyer() {
     propSave();
     PROP.ok = true;
   } catch (e) {
-    PROP.msg = "Échec de l'envoi (" + e.message + "). Votre brouillon est conservé.";
+    PROP.msg = "Échec de l'envoi (" + e.message + "). Vous pouvez réessayer.";
   }
   PROP.busy = false;
   render();

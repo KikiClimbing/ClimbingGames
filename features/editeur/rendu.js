@@ -66,7 +66,12 @@ function edHandles(e) {
     figFix(e);
     h.push(
       ...e.hands.map((p, i) => ({ k: "h" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s })),
-      ...e.feet.map((p, i) => ({ k: "f" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s }))
+      ...e.feet.map((p, i) => ({ k: "f" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s })),
+      {
+        k: "p",
+        x: e.x + (e.pel ? e.pel[0] : 0) * e.s,
+        y: e.y + (FIG[e.t].hip + (e.pel ? e.pel[1] : 0)) * e.s,
+      }
     );
   }
   if (isLine(e)) {
@@ -97,9 +102,9 @@ function edRender(panel) {
       const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       c.setAttribute("cx", h.x);
       c.setAttribute("cy", EY(h.y));
-      c.setAttribute("r", 1.25);
-      c.setAttribute("fill", h.k[0] === "f" ? "#FFF3D6" : "#fff");
-      c.setAttribute("stroke", h.k[0] === "f" ? "#E0A030" : "#2F6FDB");
+      c.setAttribute("r", h.k === "p" ? 0.62 : 1.25); /* bassin : point 2 fois plus petit */
+      c.setAttribute("fill", h.k[0] === "f" ? "#FFF3D6" : h.k === "p" ? "#DDF1E4" : "#fff");
+      c.setAttribute("stroke", h.k[0] === "f" ? "#E0A030" : h.k === "p" ? "#2E7D4F" : "#2F6FDB");
       c.setAttribute("stroke-width", ".35");
       c.setAttribute("data-h", h.k);
       c.style.cursor = "crosshair";

@@ -59,7 +59,14 @@ function edInit() {
     } else {
       const e = d.e,
         h = d.h;
-      if (h[0] === "a") {
+      if (h === "p") {
+        /* bassin : déplacement limité (transfert de poids) */
+        const cl = (v, m) => Math.max(-m, Math.min(m, v));
+        e.pel = [
+          +cl((p[0] - e.x) / e.s, 2.2).toFixed(2),
+          +cl((p[1] - e.y) / e.s - FIG[e.t].hip, 1.6).toFixed(2),
+        ];
+      } else if (h[0] === "a") {
         if (h === "a1") {
           e.x1 = p[0];
           e.y1 = p[1];

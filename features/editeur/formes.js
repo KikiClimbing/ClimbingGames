@@ -95,11 +95,14 @@ function figSVG(e, type) {
     lw = 0.42 * Math.max(s, 0.75),
     ang = ((e.lean || 0) * Math.PI) / 180,
     rot = l => [Math.sin(ang) * l, Math.cos(ang) * l];
-  const hip = [x, y + G.hip * s],
+  /* bassin : déplaçable un peu (e.pel, en unités de taille) ; épaules et tête restent à leur place d'origine */
+  const hip0 = [x, y + G.hip * s],
+    pel = e.pel || [0, 0],
+    hip = [hip0[0] + pel[0] * s, hip0[1] + pel[1] * s],
     tr = rot(G.tor * s),
-    sh = [hip[0] + tr[0], hip[1] + tr[1]],
+    sh = [hip0[0] + tr[0], hip0[1] + tr[1]],
     hr = rot(G.head * s),
-    hd = [hip[0] + hr[0], hip[1] + hr[1]];
+    hd = [hip0[0] + hr[0], hip0[1] + hr[1]];
   let o = "";
   e.feet.forEach(([fx, fy]) => {
     const f = [x + fx * s, y + fy * s];

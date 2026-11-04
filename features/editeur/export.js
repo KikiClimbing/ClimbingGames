@@ -127,7 +127,7 @@ function edCtxHTML() {
     : "";
   return (
     ref +
-    `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? esc(c.nom) : "du jeu " + esc(c.code) + " · " + esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer dans le jeu</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><label style="display:flex;gap:6px;align-items:center;font-size:14px">Nom du fichier<input id="edCtxName" value="${esc(c.nom || "")}" placeholder="ex. D12" style="padding:6px;border:1px solid #D5DAE5;border-radius:6px;width:160px"></label><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé (changez le nom pour en créer un nouveau)." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement. Un schéma peut servir à plusieurs jeux : gardez le nom pour modifier le fichier existant, changez-le pour en créer un nouveau."}</p></div>`
+    `<div class="box" style="margin:0 0 12px;border-left:6px solid #2E7D4F"><b>Schéma ${c.fichier ? esc(c.nom) : "du jeu " + esc(c.code) + " · " + esc(c.titre)}</b><div class="tools" style="margin-top:8px"><button class="chip" id="edCtxSave" style="background:#2E7D4F;color:#fff;border-color:#2E7D4F">✓ Enregistrer</button><button class="chip" id="edCtxBack">← Retour à l'administration</button><label style="display:flex;gap:6px;align-items:center;font-size:14px">Nom du fichier<input id="edCtxName" value="${esc(c.nom || "")}" placeholder="ex. D12" style="padding:6px;border:1px solid #D5DAE5;border-radius:6px;width:160px"></label><span id="edCtxMsg" style="font-weight:700"></span></div><p class="hint" style="margin:6px 0 0">L'image est envoyée dans le dépôt (dossier schemas/) avec son dessin source : vous pourrez la rouvrir et la modifier plus tard. ${c.fichier ? "Le fichier existant est remplacé (changez le nom pour en créer un nouveau)." : "Le champ « Schéma (lien) » du jeu est rempli automatiquement. Un schéma peut servir à plusieurs jeux : gardez le nom pour modifier le fichier existant, changez-le pour en créer un nouveau."}</p></div>`
   );
 }
 function edCtxBind() {
@@ -136,6 +136,9 @@ function edCtxBind() {
   if (fm) {
     fm.style.display = c ? "none" : "";
     $("#edName").style.display = c ? "none" : "";
+    /* depuis l'administration : un seul bouton « Enregistrer », pas de boîte « Envoyer dans le site » */
+    const bx = $("#edSendBox");
+    if (bx && c) bx.style.display = "none";
     if (!c) {
       fm.innerHTML =
         `<option value="">Catégorie…</option>` +

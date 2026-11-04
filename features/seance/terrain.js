@@ -76,12 +76,24 @@ function terrainCartes0(gi) {
     g = M.G[gi],
     c = [];
   if (+g.acc)
-    c.push({ type: "info", titre: "Accueil", dur: +g.acc, couleur: "#6EA8DC", steps: [] });
+    c.push({
+      type: "info",
+      titre: "Accueil",
+      sec: "ACCUEIL",
+      bg: "#FDF3D3",
+      fg: "#8A6D12",
+      dur: +g.acc,
+      couleur: "#E3C463",
+      steps: [],
+    });
   if (M.ech.on) {
     const E = M.ech;
     c.push({
       type: "info",
       titre: E.nom || "Échauffement",
+      sec: "ÉCHAUFFEMENT",
+      bg: "#E6F2E6",
+      fg: "#2E6F3E",
       dur: +E.d[gi] || 0,
       couleur: "#7FCB8F",
       steps: lines(E.per ? E.gtxt[gi] : E.txt),
@@ -94,6 +106,9 @@ function terrainCartes0(gi) {
         type: "jeu",
         titre: x.name,
         sous: s.titre && !x.same ? s.titre : "",
+        sec: "CORPS DE SÉANCE",
+        bg: "#E3EEF8",
+        fg: "#2B5A9E",
         code: x.v.code,
         dur: +s.d[gi] || 0,
         couleur: g.c,
@@ -109,11 +124,23 @@ function terrainCartes0(gi) {
   c.push({
     type: "info",
     titre: "Retour au calme",
+    sec: "RETOUR AU CALME",
+    bg: "#ECE7F8",
+    fg: "#5B4BA8",
     dur: 0,
     couleur: "#9B8AD8",
     steps: lines(g.rc),
   });
-  c.push({ type: "bilan", titre: "Bilan de la séance", dur: 0, couleur: "#E8A33D", steps: [] });
+  c.push({
+    type: "bilan",
+    titre: "Bilan de la séance",
+    sec: "BILAN",
+    bg: "#FFF6E5",
+    fg: "#8A4B00",
+    dur: 0,
+    couleur: "#E8A33D",
+    steps: [],
+  });
   return c;
 }
 async function terrainVeille(on) {
@@ -125,11 +152,50 @@ async function terrainVeille(on) {
     }
   } catch (e) {}
 }
+/* fin du chrono : le son tourne en boucle jusqu'à ce qu'on touche « Arrêter le son » */
+let TRBOUCLE = null;
+const SON_PERIODE = { bip: 1300, cloche: 3000, gong: 3800, sifflet: 1800, alarme: 1700 };
 function terrainBip() {
-  sonJouer(sonCourant());
+  sonStop();
+  const spec = sonCourant(),
+    fichier = /^sons\//.test(spec);
+  const vib = () => {
+    try {
+      navigator.vibrate && navigator.vibrate([300, 100, 300]);
+    } catch (e) {}
+  };
+  sonJouer(spec, fichier);
+  vib();
+  if (!fichier)
+    TRBOUCLE = setInterval(
+      () => {
+        sonJouer(spec);
+        vib();
+      },
+      SON_PERIODE[spec.replace(/^preset:/, "")] || 1500
+    );
+  else TRBOUCLE = true;
+  if (!$("#trStop")) {
+    const b = document.createElement("a");
+    b.id = "trStop";
+    b.textContent = "🔔 Arrêter le son";
+    b.addEventListener("click", sonStop);
+    document.body.appendChild(b);
+  }
+}
+function sonStop() {
+  if (TRBOUCLE && TRBOUCLE !== true) clearInterval(TRBOUCLE);
+  TRBOUCLE = null;
   try {
-    navigator.vibrate && navigator.vibrate([300, 100, 300]);
+    if (TRAUD) {
+      TRAUD.loop = false;
+      TRAUD.pause();
+      TRAUD.currentTime = 0;
+    }
+    navigator.vibrate && navigator.vibrate(0);
   } catch (e) {}
+  const b = document.getElementById("trStop");
+  if (b) b.remove();
 }
 const mmss = s => {
   const a = Math.abs(s);
@@ -162,6 +228,7 @@ function terrainOuvrir(meta, se, id, mien) {
   terrainDessin();
 }
 function terrainFermer() {
+  sonStop();
   terrainImageFermer();
   clearInterval(TRTIMER);
   TRTIMER = null;
@@ -226,9 +293,9 @@ function terrainDessin() {
       c.dur
         ? `<div class="trt"><div id="trT" class="${TR.restant <= 0 ? "fin" : ""}">${mmss(TR.restant)}</div><div class="trtb"><a data-tr="m1">−1</a><a data-tr="play" class="big">${TR.tourne ? "⏸" : "▶"}</a><a data-tr="p1">+1</a><a data-tr="rst">↺</a></div></div>`
         : ""
-    }${c.img ? `<div style="margin:8px 0"><a class="trbtn" data-tr="img" style="background:#2B5A9E">🖼 Voir le schéma en grand</a></div>` : ""}${c.mat ? `<div class="trs"><b>Matériel :</b> ${esc(c.mat)}</div>` : ""}${puces(c.steps)}${c.crit && c.crit.length ? `<div class="trs"><b>✔ Critères de réussite</b>${puces(c.crit)}</div>` : ""}${c.moins ? `<div class="trs"><b>↓ Plus facile :</b> ${esc(c.moins)}</div>` : ""}${c.plus ? `<div class="trs"><b>↑ Plus difficile :</b> ${esc(c.plus)}</div>` : ""}`;
+    }${c.img ? `<div style="margin:8px 0"><a class="trbtn" data-tr="img" style="background:#2B5A9E">🖼 Voir le schéma en grand</a></div>` : ""}${c.mat ? `<div class="trs"><b>Matériel :</b> ${esc(c.mat)}</div>` : ""}${puces(c.steps)}${c.crit && c.crit.length ? `<div class="trs"><b>✔ Critères de réussite</b>${puces(c.crit)}</div>` : ""}${c.moins ? `<div class="trs trv" style="background:#F1F8F2;color:#1F4F2E"><b style="color:#2E6F3E">↓ Plus facile :</b> ${esc(c.moins)}</div>` : ""}${c.plus ? `<div class="trs trv" style="background:#FDF3F2;color:#5A2A1E"><b style="color:#C2571A">↑ Plus difficile :</b> ${esc(c.plus)}</div>` : ""}`;
   }
-  o.innerHTML = `<div class="trh"><a data-tr="close">✕ Quitter</a><span>${TR.k + 1} / ${n}</span></div>${groupes}<div class="trbar"><i style="width:${((TR.k + 1) / n) * 100}%;background:${c.couleur}"></i></div><div class="trc" style="border-top:6px solid ${c.couleur}"><h2>${c.code ? `<small>${esc(c.code)}</small> ` : ""}${esc(c.titre)}</h2>${c.sous ? `<div class="trsub">${esc(c.sous)}</div>` : ""}${c.dur ? `<div class="trsub">${c.dur} min prévues</div>` : ""}${corps}</div><div class="trf"><a data-tr="prev" ${TR.k === 0 ? 'class="off"' : ""}>◀ Précédent</a><a data-tr="next" ${TR.k === n - 1 ? 'class="off"' : ""}>Suivant ▶</a></div>`;
+  o.innerHTML = `<div class="trh"><a data-tr="close">✕ Quitter</a><span>${TR.k + 1} / ${n}</span></div>${groupes}<div class="trbar"><i style="width:${((TR.k + 1) / n) * 100}%;background:${c.couleur}"></i></div><div class="trc" style="border-top:6px solid ${c.couleur}"><div class="trtit" style="background:${c.bg};color:${c.fg}"><div class="trsec">${esc(c.sec)}</div><h2>${c.code ? `<small>${esc(c.code)}</small> ` : ""}${esc(c.titre)}</h2></div>${c.sous ? `<div class="trsub">${esc(c.sous)}</div>` : ""}${c.dur ? `<div class="trsub">${c.dur} min prévues</div>` : ""}${corps}</div><div class="trf"><a data-tr="prev" ${TR.k === 0 ? 'class="off"' : ""}>◀ Précédent</a><a data-tr="next" ${TR.k === n - 1 ? 'class="off"' : ""}>Suivant ▶</a></div>`;
   const ta = o.querySelector(".trc");
   if (ta) ta.scrollTop = 0;
 }
@@ -236,6 +303,7 @@ function terrainClic(e) {
   const b = e.target.closest("[data-tr]");
   if (!b || !TR) return;
   const a = b.dataset.tr;
+  sonStop();
   if (a === "close") terrainFermer();
   else if (a === "img") terrainImage(TR.cartes[TR.k].img);
   else if (a === "prev") terrainCarte(TR.k - 1);
@@ -371,7 +439,7 @@ function sonDeverrouiller() {
     } catch (e) {}
   }
 }
-function sonJouer(spec) {
+function sonJouer(spec, boucle) {
   spec = spec || "preset:bip";
   if (/^sons\//.test(spec)) {
     try {
@@ -380,6 +448,7 @@ function sonJouer(spec) {
         TRAUDURL = spec;
       }
       TRAUD.muted = false;
+      TRAUD.loop = !!boucle;
       TRAUD.currentTime = 0;
       TRAUD.play().catch(() => sonPreset("bip"));
     } catch (e) {

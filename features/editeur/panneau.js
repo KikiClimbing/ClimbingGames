@@ -350,6 +350,7 @@ function edPanel() {
       const k = ev.target.value,
         d = FIG.stand;
       e.pose = k;
+      delete e.pel;
       e.hands = JSON.parse(JSON.stringify(POSES[k].h || d.hands));
       e.feet = JSON.parse(JSON.stringify(POSES[k].f || d.feet));
       edRender(true);

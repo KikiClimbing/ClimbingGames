@@ -187,6 +187,26 @@ body.trOn {
   padding: 2px 8px;
   vertical-align: middle;
 }
+.trtit {
+  margin: -16px -18px 12px;
+  padding: 10px 18px 12px;
+}
+.trtit h2 {
+  margin: 0;
+}
+.trtit h2 small {
+  background: rgba(0, 0, 0, 0.12);
+  color: inherit;
+}
+.trsec {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  opacity: 0.8;
+}
+.trs.trv b {
+  font-weight: 800;
+}
 .trsub {
   color: #a9b6cc;
   font-size: 15px;
@@ -278,23 +298,113 @@ body.trOn {
 }
 
 /* recherche d'exercices (popup) */
-.rx{display:grid;grid-template-columns:minmax(300px,2fr) 3fr;gap:14px;min-height:60vh}
-.rxl{max-height:72vh;overflow:auto}
-.rxr{max-height:72vh;overflow:auto;background:#fff;border-radius:10px;padding:12px}
-.rxi{display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
-.rxi:hover{background:#EEF3FA}.rxi.on{background:#E3EEF8;border-color:#2B5A9E}
-.rxc{min-width:34px;text-align:center;color:#fff;font-weight:700;border-radius:6px;padding:2px 4px;font-size:13px}
-.rxt{flex:1}.rxd{color:#2E7D4F;font-weight:700}
-@media(max-width:800px){.rx{grid-template-columns:1fr}}
+.rx {
+  display: grid;
+  grid-template-columns: minmax(300px, 2fr) 3fr;
+  gap: 14px;
+  min-height: 60vh;
+}
+.rxl {
+  max-height: 72vh;
+  overflow: auto;
+}
+.rxr {
+  max-height: 72vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+}
+.rxi {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.rxi:hover {
+  background: #eef3fa;
+}
+.rxi.on {
+  background: #e3eef8;
+  border-color: #2b5a9e;
+}
+.rxc {
+  min-width: 34px;
+  text-align: center;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 2px 4px;
+  font-size: 13px;
+}
+.rxt {
+  flex: 1;
+}
+.rxd {
+  color: #2e7d4f;
+  font-weight: 700;
+}
+@media (max-width: 800px) {
+  .rx {
+    grid-template-columns: 1fr;
+  }
+}
 
-#trImg{position:fixed;inset:0;z-index:10000;background:#fff;overflow:hidden}
-#trImg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff}
-#trImg span{position:absolute;bottom:6px;left:0;right:0;text-align:center;color:#6B7280;font-size:12px;pointer-events:none}
+#trImg {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #fff;
+  overflow: hidden;
+}
+#trImg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #fff;
+}
+#trImg span {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 12px;
+  pointer-events: none;
+}
 /* mode terrain : le reste de la page est masqué (sinon un tableau trop large élargit l'écran du téléphone) */
-body.trOn > *:not(#terrain):not(#trImg):not(#hors) {
+body.trOn > *:not(#terrain):not(#trImg):not(#hors):not(#trStop) {
   display: none !important;
 }
 #terrain {
   height: 100vh;
   height: 100dvh;
+}
+
+#trStop {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 10001;
+  background: #e0485a;
+  color: #fff;
+  font-weight: 800;
+  font-size: 20px;
+  padding: 16px 28px;
+  border-radius: 40px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  animation: trPulse 1s infinite;
+}
+@keyframes trPulse {
+  50% {
+    transform: translateX(-50%) scale(1.07);
+  }
 }
