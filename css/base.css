@@ -361,3 +361,9 @@ h2.pt {
 #mpop input,#mpop textarea,#mpop select{width:100%;box-sizing:border-box}
 
 #hors{position:fixed;left:0;right:0;bottom:0;z-index:300;background:#26364D;color:#fff;font-size:14px;text-align:center;padding:8px 12px}
+
+/* sélecteur de discipline */
+.discsw{display:flex;gap:4px;margin:0 0 10px;padding:3px;background:#E9EEF6;border-radius:10px}
+.discsw button{flex:1;border:0;background:transparent;padding:7px 6px;border-radius:8px;font:inherit;font-size:13px;font-weight:700;color:#4A5873;cursor:pointer}
+.discsw button.on{background:#fff;color:#26364D;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.discsw button:focus-visible{outline:2px solid #2B5A9E;outline-offset:1px}

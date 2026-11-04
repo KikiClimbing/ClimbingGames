@@ -171,6 +171,8 @@ registerNav({
   secOrder: 40,
   order: 0,
   html: () =>
-    GUIDES.map(([k, l, i]) => navBtn("g/" + k, l, `<span class="ic">${i}</span>`)).join(""),
+    DISC === "prepa"
+      ? ""
+      : GUIDES.map(([k, l, i]) => navBtn("g/" + k, l, `<span class="ic">${i}</span>`)).join(""),
 });
 registerView({ match: v => v.startsWith("g/"), html: v => guideView(v.slice(2)) });

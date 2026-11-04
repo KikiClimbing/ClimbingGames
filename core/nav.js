@@ -23,6 +23,7 @@ registerClick(e => {
   }
 });
 function buildNav() {
+  if (typeof majTitreDisc === "function") majTitreDisc();
   const items = NAVITEMS.slice().sort(
     (a, b) => a.secOrder - b.secOrder || (a.order || 0) - (b.order || 0)
   );
@@ -38,5 +39,5 @@ function buildNav() {
     last = it.sec;
     h += b;
   });
-  $("#navbox").innerHTML = h;
+  $("#navbox").innerHTML = DISC === "prepa" ? h.replace(">LES JEUX<", ">LES EXERCICES<") : h;
 }

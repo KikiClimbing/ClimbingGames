@@ -7,7 +7,7 @@ async function loadSheet() {
     const rows = parseCSV(await r.text())
       .filter(pubOK)
       .filter(g => g.Titre);
-    if (rows.length) DATA = rows;
+    if (rows.length) DATA = avecPrepa(rows);
   } catch (e) {
     const w = $("#warn");
     if (w) {

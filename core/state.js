@@ -1,5 +1,5 @@
 /* État global de l'application */
-let DATA = EMBED.slice(),
+let DATA = avecPrepa(EMBED.slice()),
   S = {
     q: "",
     int: null,

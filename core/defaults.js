@@ -23,4 +23,47 @@ const FAMS = {
   Défis: { k: "D", l: "#FDEBE3", m: "#F7CDBB", d: "#B2543A", a: "#EE9F83" },
   Animation: { k: "G", l: "#EFE9FA", m: "#D5C9F0", d: "#5F46A8", a: "#A894E6" },
 };
+/* Prépa physique : trois familles (la couleur et la lettre du code, comme pour les jeux d'escalade) */
+Object.assign(FAMS, {
+  Renforcement: { k: "R", l: "#E0F1F1", m: "#B6DFDF", d: "#1F7A7A", a: "#6BBFBF" },
+  Mobilité: { k: "M", l: "#F8E2EE", m: "#EDBAD6", d: "#9C3269", a: "#DE8DB8" },
+  Cardio: { k: "K", l: "#FDF3D3", m: "#F3DF9E", d: "#8A6D12", a: "#E3C463" },
+});
 const OBJS = ["Échauffement", "Équilibre", "Coopération", "Vitesse", "Observation"];
+/* zones travaillées (prépa physique) : sert d'« objectifs » des exercices */
+const MUSCLES = [
+  "Épaules",
+  "Dos",
+  "Avant-bras",
+  "Doigts et poignets",
+  "Tronc",
+  "Jambes",
+  "Hanches et bassin",
+  "Corps entier",
+];
+/* Disciplines : chaque famille appartient à une discipline ; le sélecteur du menu choisit celle qu'on voit */
+const DISCIPLINES = {
+  escalade: {
+    nom: "Escalade",
+    titre: "Jeux d'escalade",
+    fams: ["Exploration", "Coopération", "Défis", "Animation"],
+  },
+  prepa: {
+    nom: "Prépa physique",
+    titre: "Prépa physique",
+    fams: ["Renforcement", "Mobilité", "Cardio"],
+  },
+};
+let DISC = (() => {
+  try {
+    const d = localStorage.getItem("discipline");
+    return DISCIPLINES[d] ? d : "escalade";
+  } catch (e) {
+    return "escalade";
+  }
+})();
+const discDeFamille = f =>
+  Object.keys(DISCIPLINES).find(d => DISCIPLINES[d].fams.includes(f)) || "escalade";
+const discDe = g => discDeFamille(g.Famille);
+const famsDisc = (d = DISC) => DISCIPLINES[d].fams;
+const objsDisc = (d = DISC) => (d === "prepa" ? MUSCLES : OBJS);

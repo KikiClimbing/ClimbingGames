@@ -1,7 +1,7 @@
 /* Proposer un jeu : formulaire dans le site (remplace le formulaire Google ; le jeu arrive « en attente » dans la feuille) */
 const PROP_CHAMPS = [
   { k: "Titre", req: 1, aide: "Nom courant du jeu. Si deux noms existent : « Nom 1 / Nom 2 »." },
-  { k: "Famille", req: 1, t: "select", opts: () => Object.keys(FAMS) },
+  { k: "Famille", req: 1, t: "select", opts: () => famsDisc() },
   {
     k: "Remplace le jeu",
     t: "select",
@@ -50,7 +50,14 @@ const PROP_CHAMPS = [
   { k: "Voir aussi", aide: "Codes de jeux proches, séparés par des virgules (ex. E4, D11)." },
   { k: "Effectif court", aide: "Pour la vignette. Ex. : 2 équipes égales." },
   { k: "Intensité", t: "select", opts: () => ["Calme", "Modérée", "Intense"], vide: 1 },
-  { k: "Objectifs (tags)", t: "tags", opts: () => OBJS },
+  { k: "Objectifs (tags)", t: "tags", opts: () => objsDisc() },
+  { k: "Dosage", aide: "Ex. : 3 séries de 15 répétitions, repos 45 s." },
+  {
+    k: "Muscles ciblés",
+    t: "area",
+    rows: 2,
+    aide: "Muscles travaillés, avec leur rôle en quelques mots.",
+  },
   {
     k: "Format anniversaire",
     lab: LBL_SANS_EXP,
@@ -99,7 +106,9 @@ async function propSchemas() {
 function propView() {
   const head = gsec(
     "Proposer un jeu",
-    "Remplissez la fiche : elle sera relue puis publiée sur le site."
+    DISC === "prepa"
+      ? "Remplissez la fiche de l'exercice : elle sera relue puis publiée sur le site."
+      : "Remplissez la fiche : elle sera relue puis publiée sur le site."
   );
   if (!CONFIG.GAME_ADD_URL)
     return (
@@ -115,7 +124,7 @@ function propView() {
   if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.nom;
   const champ = f => {
     const val = v[f.k] || "";
-    const lab = `${esc(f.lab || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
+    const lab = `${esc((DISC === "prepa" && f.k === "Objectifs (tags)" ? "Zone travaillée" : f.lab) || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
     if (f.t === "select")
       return `<label class="sml">${lab}<select data-pf="${esc(f.k)}">${f.vide ? '<option value=""></option>' : ""}${f
         .opts()
@@ -135,15 +144,23 @@ function propView() {
       return `<label class="sml" style="grid-column:1/-1">${lab}<textarea rows="${f.rows || 3}" data-pf="${esc(f.k)}">${esc(val)}</textarea></label>`;
     return `<label class="sml">${lab}<input data-pf="${esc(f.k)}" value="${esc(val)}"></label>`;
   };
-  const F = FAMS[v.Famille] || FAMS[Object.keys(FAMS)[0]];
+  const F = FAMS[v.Famille] || FAMS[famsDisc()[0]];
   const theme = `--l:${F.l};--m:${F.m};--d:${F.d};--a:${F.a}`;
+  const prepa = DISC === "prepa";
   const GROUPES = [
     ["L'ESSENTIEL", ["Titre", "Famille", "Remplace le jeu", "Résumé", "Principe"]],
     [
       "ORGANISATION",
-      ["Participants", "Matériel", "Espace", "Durée", "Effectif court", "Intensité"],
+      prepa
+        ? ["Participants", "Matériel", "Espace", "Durée", "Dosage", "Intensité"]
+        : ["Participants", "Matériel", "Espace", "Durée", "Effectif court", "Intensité"],
     ],
-    ["OBJECTIFS", ["Objectifs (tags)", "Format anniversaire"]],
+    [
+      "OBJECTIFS",
+      prepa
+        ? ["Objectif", "Objectifs (tags)", "Muscles ciblés"]
+        : ["Objectifs (tags)", "Format anniversaire"],
+    ],
   ];
   const par = k => PROP_CHAMPS.find(f => f.k === k);
   const groupe = ([t, ks]) =>
@@ -165,7 +182,7 @@ function propView() {
   const msg = PROP.msg ? `<p style="font-weight:700;color:#B2263A">${esc(PROP.msg)}</p>` : "";
   return (
     head +
-    `<div class="box">${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${complet}${fin}<div class="pgrp" style="${theme}"><h3>SCHÉMA</h3>
+    `<div class="box">${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${prepa ? "" : complet}${fin}<div class="pgrp" style="${theme}"><h3>SCHÉMA</h3>
     <div class="sml" style="grid-column:1/-1">Schéma <span style="font-weight:400;color:#6B7280"> — facultatif : dessinez-le, ou choisissez-en un déjà envoyé</span>
       <div class="tools" style="margin:6px 0"><a class="btn" data-pr="draw" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner un schéma</a><a class="btn" data-pr="pick" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>${lien ? `<a class="chip" data-pr="nolink" style="cursor:pointer">Retirer</a>` : ""}</div>
       <input data-pf="Schéma (lien)" value="${esc(lien)}" placeholder="ou collez ici le lien d'une image">${prev}</div></div>${choix}

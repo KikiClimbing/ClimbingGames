@@ -18,10 +18,15 @@ function viewTitle(v) {
       "Les jeux que vous avez marqués d'une étoile (enregistrés dans ce navigateur, pour votre compte).",
     ];
   if (v === "all")
-    return [
-      "Tous les jeux",
-      "Le catalogue complet. Utilisez la recherche et les filtres pour trouver le jeu qu'il vous faut.",
-    ];
+    return DISC === "prepa"
+      ? [
+          "Tous les exercices",
+          "Renforcement, mobilité et cardio : des exercices à faire les jours sans escalade ou en complément des séances.",
+        ]
+      : [
+          "Tous les jeux",
+          "Le catalogue complet. Utilisez la recherche et les filtres pour trouver le jeu qu'il vous faut.",
+        ];
   if (v.startsWith("fam/")) {
     const n = decodeURIComponent(v.slice(4));
     return [n, AX.FAMDESC[n] || ""];
@@ -40,7 +45,8 @@ function viewTitle(v) {
   return ["", ""];
 }
 function filterGames(v) {
-  let L = DATA.slice();
+  /* la discipline choisie (menu) limite les listes générales ; une famille ou les favoris montrent tout */
+  let L = DATA.filter(g => v.startsWith("fam/") || v === "fav" || discDe(g) === DISC);
   if (v.startsWith("fam/")) L = L.filter(g => g.Famille === decodeURIComponent(v.slice(4)));
   else if (v.startsWith("obj/")) {
     const o = decodeURIComponent(v.slice(4));
@@ -113,13 +119,14 @@ registerNav({
   order: 0,
   html: () => {
     const cnt = f => DATA.filter(g => g.Famille === f).length;
+    const prepa = DISC === "prepa";
     return (
       navBtn(
         "all",
-        `Tous les jeux<span class="n">${DATA.length}</span>`,
+        `${prepa ? "Tous les exercices" : "Tous les jeux"}<span class="n">${DATA.filter(g => discDe(g) === DISC).length}</span>`,
         '<span class="ic">▦</span>'
       ) +
-      Object.keys(FAMS)
+      famsDisc()
         .map(n =>
           navBtn(
             "fam/" + n,
@@ -136,9 +143,11 @@ registerNav({
   secOrder: 20,
   order: 0,
   html: () =>
-    navBtn("anniv", LBL_SANS_EXP, '<span class="ic">★</span>') +
+    (DISC === "prepa" ? "" : navBtn("anniv", LBL_SANS_EXP, '<span class="ic">★</span>')) +
     navBtn("nomat", "Sans matériel", '<span class="ic">○</span>') +
-    OBJS.map(o => navBtn("obj/" + o, o, '<span class="ic">›</span>')).join(""),
+    objsDisc()
+      .map(o => navBtn("obj/" + o, o, '<span class="ic">›</span>'))
+      .join(""),
 });
 registerView({
   fallback: true,
