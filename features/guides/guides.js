@@ -3,6 +3,7 @@ const GUIDES = [
   ["secu", "Règles de sécurité", "⚠"],
   ["materiel", "Matériel à préparer", "☑"],
   ["seances", "Séances types", "◷"],
+  ["initiation", "Initiation au bloc", "▲"],
   ["cycle", "Progression sur un cycle", "↗"],
   ["comp", "Compétences travaillées", "◎"],
   ["equipes", "Former les équipes", "⚑"],
@@ -109,6 +110,7 @@ function guideView(k) {
       `</div><div class="box" style="margin-top:16px"><b>Avant chaque jeu</b><ul><li>Annoncer la zone de jeu et ses limites.</li><li>Rappeler le signal d'arrêt.</li><li>Vérifier tapis, sols et zones de réception.</li><li>Faire une démonstration courte avant de lancer.</li></ul></div>`
     );
   if (k === "materiel") return materielView();
+  if (k === "initiation") return iniView();
   if (k === "seances")
     return (
       gsec(

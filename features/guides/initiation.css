@@ -1,0 +1,219 @@
+/* Guide « Initiation à l'escalade de bloc » : pastel, lisible, imprimable */
+.ini {
+  max-width: 880px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #2b2f36;
+}
+.ini p {
+  margin: 0 0 12px;
+}
+.ini h3 {
+  margin: 22px 0 8px;
+  font-size: 18px;
+  color: #26364d;
+}
+.ini ul,
+.ini ol {
+  padding-left: 24px;
+  margin: 0 0 12px;
+}
+.ini li {
+  margin-bottom: 5px;
+}
+.ini-intro {
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+.ini-h {
+  margin: 28px 0 8px;
+  font-size: 22px;
+  color: #26364d;
+}
+.ini-som {
+  background: #f4f7fb;
+  border: 1px solid #e3e8f2;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin: 14px 0;
+}
+.ini-som ol {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+.ini-som a {
+  color: #26364d;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.ini-som span {
+  color: #6b7280;
+  font-size: 14px;
+}
+.ini-sec {
+  margin: 26px 0;
+  background: #fff;
+  border: 1px solid #e3e8f2;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 0 0 6px;
+}
+.ini-sec > :not(header) {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.ini-sec ul,
+.ini-sec ol {
+  margin-left: 20px;
+}
+.ini-sec header {
+  background: var(--bg);
+  color: var(--fg);
+  padding: 14px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px 16px;
+  margin-bottom: 12px;
+}
+.ini-sec h2 {
+  margin: 0;
+  font-size: 22px;
+  color: var(--fg);
+}
+.ini-n {
+  display: inline-block;
+  min-width: 32px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 18px;
+  margin-right: 6px;
+}
+.ini-min {
+  font-weight: 800;
+  font-size: 14px;
+}
+.ini-obj {
+  color: #4a5262;
+}
+.ini-tw {
+  overflow-x: auto;
+  margin: 8px 20px 14px;
+}
+.ini table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 15px;
+}
+.ini th,
+.ini td {
+  border: 1px solid #e3e8f2;
+  padding: 7px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+.ini thead th {
+  background: #e3eef8;
+  color: #1f3f6b;
+}
+.ini tbody th {
+  background: #f4f7fb;
+}
+.ini tbody tr:nth-child(even) td {
+  background: #fafbfd;
+}
+.ini-call {
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  border-left: 6px solid;
+}
+.ini-call.vig {
+  background: #fdf3f2;
+  border-color: #c2571a;
+  color: #5a2a1e;
+}
+.ini-call.ped {
+  background: #fff6e5;
+  border-color: #e8a33d;
+  color: #5a4210;
+}
+.ini-fig {
+  margin: 14px auto;
+  text-align: center;
+}
+.ini-fig svg {
+  width: 100%;
+  max-width: 470px;
+  height: auto;
+  background: #fff;
+}
+.ini-fig figcaption {
+  font-size: 14px;
+  color: #6b7280;
+}
+.ini a:focus-visible,
+.ini-sec:focus-visible,
+a[data-ini]:focus-visible {
+  outline: 3px solid #2f6fdb;
+  outline-offset: 2px;
+}
+.ini-sec:focus {
+  outline: none;
+}
+@media (max-width: 600px) {
+  .ini {
+    font-size: 16px;
+  }
+  .ini-sec > :not(header) {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+  .ini-tw {
+    margin: 8px 14px 14px;
+  }
+}
+@media print {
+  body.pg main {
+    display: block !important;
+    margin: 0;
+    padding: 0;
+  }
+  body.pg .noprint {
+    display: none !important;
+  }
+  body.pg .ini {
+    max-width: none;
+    font-size: 12.5px;
+  }
+  body.pg .ini,
+  body.pg .ini-sec header,
+  body.pg .ini-call,
+  body.pg .ini thead th,
+  body.pg .ini-n {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body.pg .ini-sec {
+    border: 0;
+    margin: 14px 0;
+  }
+  body.pg .ini h2,
+  body.pg .ini h3 {
+    break-after: avoid;
+  }
+  body.pg .ini-fig,
+  body.pg .ini-call,
+  body.pg .ini table,
+  body.pg .ini-sec header {
+    break-inside: avoid;
+  }
+}

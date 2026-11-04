@@ -10,7 +10,7 @@ function sepopOuvrir(d, id, copie) {
   SE = sepopCopie(d.se);
   if (id) SE.id = id;
   else delete SE.id;
-  if (copie) SMETA.titre = (SMETA.titre || "Séance") + " (copie)";
+  if (copie === true) SMETA.titre = (SMETA.titre || "Séance") + " (copie)";
   let mx = 0;
   SE.subs.forEach(s => {
     mx = Math.max(mx, s.id || 0);
@@ -20,12 +20,21 @@ function sepopOuvrir(d, id, copie) {
   seDefaults();
   SEPOP.dirty = !!copie;
   document.body.classList.add("pp");
-  modal(copie ? "Nouvelle séance (copie)" : "Modifier la séance", seanceView(), 1100, {
-    id: "epop",
-    fond: false,
-    avant: () => !SEPOP || !SEPOP.dirty || confirm("Fermer sans enregistrer vos modifications ?"),
-    fin: sepopFin,
-  });
+  modal(
+    copie
+      ? copie === true
+        ? "Nouvelle séance (copie)"
+        : "Adapter cette séance"
+      : "Modifier la séance",
+    seanceView(),
+    1100,
+    {
+      id: "epop",
+      fond: false,
+      avant: () => !SEPOP || !SEPOP.dirty || confirm("Fermer sans enregistrer vos modifications ?"),
+      fin: sepopFin,
+    }
+  );
   seanceBind();
 }
 function sepopRedraw() {
