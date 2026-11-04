@@ -1,6 +1,14 @@
 /* Administration des comptes : utilisateurs, équipes, séances, cycles, réglages (e-mails).
    Onglets ajoutés à la page Administration quand les comptes Google sont activés. */
-const ADM_TABS_COMPTES = ["users", "equipes", "seances", "cycles", "reglages", "retours"];
+const ADM_TABS_COMPTES = [
+  "users",
+  "equipes",
+  "seances",
+  "cycles",
+  "activite",
+  "reglages",
+  "retours",
+];
 const ADC = { users: null, equipes: null, seances: null, reglages: null, q: "", msg: "", tri: {} };
 const admcDate = t => {
   const d = new Date(t);
@@ -20,6 +28,7 @@ const ADM_COULEURS = {
   cycles: ["#B03A7A", "#F8E2EE"],
   reglages: ["#9A7400", "#F8EFCF"],
   retours: ["#C0392B", "#FBE3E0"],
+  activite: ["#4F6BC2", "#E4E9F8"],
 };
 function admOnglet(t, l) {
   const [c, bg] = ADM_COULEURS[t] || ["#3A8FB0", "#E3F1F6"];
@@ -32,6 +41,7 @@ function admOngletsComptes() {
     ["equipes", "Équipes"],
     ["seances", "Séances"],
     ["cycles", "Cycles"],
+    ["activite", "Activité"],
     ["reglages", "Réglages"],
   ]
     .map(([t, l]) => admOnglet(t, l))
@@ -46,6 +56,7 @@ async function admcCharger() {
     else if (t === "seances" || t === "cycles")
       ADC.seances = (await admPost("admin_seances")).seances;
     else if (t === "retours") ADC.retours = (await admPost("admin_retours")).retours;
+    else if (t === "activite") ADC.activite = await admPost("admin_journal");
     else if (t === "reglages") {
       ADC.reglages = await admPost("admin_reglages", {});
       try {
@@ -169,6 +180,10 @@ function admComptesHTML() {
       .join("");
     return `${msg}${search("Rechercher (titre, propriétaire)…")}<p class="count">${L.length} ${cy ? "cycle" : "séance"}${L.length > 1 ? "s" : ""}${L.length > 300 ? " (300 premiers affichés : affinez la recherche)" : ""} · cliquez sur un titre pour l'aperçu</p><div style="overflow-x:auto"><table class="adt"><thead><tr>${admTh("titre", "TITRE")}${admTh("date", "DATE")}${admTh("partage", "PARTAGÉ")}${admTh("proprietaire", "PROPRIÉTAIRE")}<th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
+  if (t === "activite") {
+    if (!ADC.activite) return msg;
+    return msg + admActiviteHTML(q);
+  }
   if (t === "retours") {
     if (!ADC.retours) return msg;
     const f = ADC.rtFiltre || "attente";
@@ -193,6 +208,76 @@ function admComptesHTML() {
   if (!ADC.reglages) return msg;
   const r = ADC.reglages;
   return `${msg}<div class="box" style="max-width:640px"><b>E-mails d'invitation</b><p style="margin:6px 0">Quand quelqu'un est ajouté à une équipe, il reçoit un e-mail envoyé depuis votre compte Google (adresse de réponse : celle de la personne qui l'a ajouté).</p><p style="margin:6px 0">État : <b style="color:${r.emails ? "#2E7D4F" : "#B2263A"}">${r.emails ? "envoi activé" : "envoi désactivé"}</b>${r.quotaMails !== null && r.quotaMails !== undefined ? ` · il reste ${r.quotaMails} e-mails aujourd'hui` : ""}</p>${admcBtn("emails", `data-v="${r.emails ? "0" : "1"}"`, r.emails ? "Désactiver l'envoi d'e-mails" : "Activer l'envoi d'e-mails", r.emails ? "no" : "ok")}<p style="color:#6B7280;font-size:13px;margin-bottom:0">Limites : 20 invitations par enregistrement et 50 par jour et par personne (hors administrateur), puis le quota de votre compte Google (environ 100 par jour pour un compte gratuit).</p></div>${admSonHTML()}`;
+}
+/* ---------- activité : connexions et actions des 30 derniers jours ---------- */
+const ACT_GROUPES = [
+  ["tous", "Tout", () => true],
+  ["connexion", "Connexions", a => a === "connexion"],
+  ["seances", "Séances et cycles", a => /^seance/.test(a)],
+  ["equipes", "Équipes et profil", a => /^(equipe|profil)/.test(a)],
+  ["jeux", "Jeux et retours", a => /proposé|retour envoyé|schéma envoyé/.test(a)],
+  ["admin", "Administration", a => /^admin/.test(a)],
+];
+const ACT_LIBELLES = {
+  connexion: "Connexion",
+  seance: "Séance ou cycle enregistré",
+  seance_suppr: "Séance ou cycle supprimé",
+  seance_partage: "Partage modifié",
+  equipe_enregistrer: "Équipe enregistrée",
+  equipe_suppr: "Équipe supprimée",
+  equipe_quitter: "Équipe quittée",
+  profil_pseudo: "Pseudo modifié",
+};
+const actLib = a => ACT_LIBELLES[a] || a.replace(/^admin : /, "Admin : ").replace(/_/g, " ");
+function admActiviteHTML(q) {
+  const A = ADC.activite,
+    L0 = A.lignes || [];
+  const g = ACT_GROUPES.find(x => x[0] === (ADC.actF || "tous")) || ACT_GROUPES[0];
+  const jour = t => String(t).slice(0, 10);
+  const auj = new Date();
+  const jours = [...Array(7)].map((_, i) => {
+    const d = new Date(auj - (6 - i) * 86400000);
+    return d.toISOString().slice(0, 10);
+  });
+  const conn = L0.filter(x => x.action === "connexion");
+  const parJour = jours.map(j => conn.filter(x => jour(x.t) === j).length);
+  const max = Math.max(1, ...parJour);
+  const actifs = new Set(L0.filter(x => x.email).map(x => x.email)).size;
+  const actifs7 = new Set(
+    L0.filter(x => x.email && x.t >= new Date(auj - 7 * 86400000).toISOString()).map(x => x.email)
+  ).size;
+  const barres = jours
+    .map(
+      (j, i) =>
+        `<div style="flex:1;text-align:center;font-size:11px;color:#6B7280"><div style="height:60px;display:flex;align-items:flex-end"><div title="${parJour[i]} connexion(s)" style="width:100%;background:#9FB1E8;border-radius:4px 4px 0 0;height:${Math.max(parJour[i] ? 6 : 0, (parJour[i] / max) * 60)}px"></div></div>${new Date(j).toLocaleDateString("fr-FR", { weekday: "short" })}<br><b style="color:#26364D">${parJour[i]}</b></div>`
+    )
+    .join("");
+  const L = admTri(
+    L0.filter(
+      x =>
+        g[2](x.action) &&
+        (!q || norm([x.email, x.nom, x.action, actLib(x.action), x.detail].join(" ")).includes(q))
+    ),
+    {
+      t: x => x.t,
+      who: x => x.nom || x.email,
+      action: x => actLib(x.action),
+      detail: x => x.detail,
+    }
+  );
+  const rows = L.slice(0, 500)
+    .map(
+      x =>
+        `<tr><td style="white-space:nowrap">${new Date(x.t).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</td><td><b>${esc(x.nom || "—")}</b><div style="font-size:12px;color:#6B7280">${esc(x.email)}</div></td><td>${esc(actLib(x.action))}</td><td>${esc(x.detail)}</td></tr>`
+    )
+    .join("");
+  return `<div class="box" style="max-width:760px"><b>Utilisation du site</b> <span style="color:#6B7280;font-size:13px">— les ${A.jours || 30} derniers jours (le journal est effacé automatiquement au-delà)</span>
+  <div style="display:flex;gap:18px;flex-wrap:wrap;margin:10px 0"><div><div style="font-size:26px;font-weight:800;color:#4F6BC2">${actifs}</div><div style="font-size:13px;color:#6B7280">personnes actives</div></div><div><div style="font-size:26px;font-weight:800;color:#4F6BC2">${actifs7}</div><div style="font-size:13px;color:#6B7280">dont sur 7 jours</div></div><div><div style="font-size:26px;font-weight:800;color:#4F6BC2">${conn.length}</div><div style="font-size:13px;color:#6B7280">connexions</div></div><div><div style="font-size:26px;font-weight:800;color:#4F6BC2">${L0.length - conn.length}</div><div style="font-size:13px;color:#6B7280">actions</div></div></div>
+  <div style="font-size:13px;color:#6B7280;margin-bottom:4px">Connexions par jour (7 derniers jours)</div><div style="display:flex;gap:6px;align-items:flex-end">${barres}</div></div>
+  <div class="tools"><input class="search" id="admcq" type="search" placeholder="Rechercher une personne, une action…" value="${esc(ADC.q)}" style="max-width:340px"><a class="abtn sm" data-admc="reload">↻ Actualiser</a></div>
+  <div class="tools"><div class="seg">${ACT_GROUPES.map(([k, l]) => `<button data-admc="actf" data-f="${k}" class="${g[0] === k ? "on" : ""}">${l}</button>`).join("")}</div></div>
+  <p class="count">${L.length} ligne${L.length > 1 ? "s" : ""}${L.length > 500 ? " (500 premières affichées : affinez la recherche)" : ""}</p>
+  ${L.length ? `<div style="overflow-x:auto"><table class="adt"><thead><tr>${admTh("t", "DATE")}${admTh("who", "PERSONNE")}${admTh("action", "ACTION")}${admTh("detail", "DÉTAIL")}</tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune activité enregistrée pour ce filtre.</div>'}`;
 }
 /* son de fin de minuterie du mode terrain */
 function admSonHTML() {
@@ -331,6 +416,9 @@ registerClick(e => {
   } else if (a === "sdel") {
     if (confirm("Supprimer définitivement cet élément ?"))
       fait(() => comptePost("seance_suppr", { id }), "Supprimé.");
+  } else if (a === "actf") {
+    ADC.actF = b.dataset.f;
+    render();
   } else if (a === "rtf") {
     ADC.rtFiltre = b.dataset.f;
     render();

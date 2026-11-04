@@ -58,6 +58,13 @@ function doPost(e) {
             ? "réservé à l'administrateur : connectez-vous avec un compte administrateur"
             : "mot de passe administrateur incorrect",
         });
+      if (action === "admin_journal") return adminJournal();
+      if (
+        ["admin_enregistrer", "admin_refuser", "admin_schema", "admin_schema_fichier", "admin_schema_suppr", "admin_utilisateur", "admin_equipe", "admin_seance_proprio", "admin_retour"].indexOf(action) >= 0 ||
+        (action === "admin_son" && (d.op === "choisir" || d.op === "envoyer")) ||
+        (action === "admin_reglages" && typeof d.emails === "boolean")
+      )
+        journaliser(su ? su.email : "administrateur", su ? su.nom : "", action.replace("admin_", "admin : "), detailAdmin(action, d));
       if (action === "admin_utilisateurs") return adminUtilisateurs();
       if (action === "admin_utilisateur") return adminUtilisateur(d);
       if (action === "admin_equipe") return adminEquipe(d, su);
@@ -89,6 +96,8 @@ function doPost(e) {
         u = { email: c, nom: c, admin: false };
       } else if (!u.admin && estBloque(u.email))
         return rep({ ok: false, error: "ce compte est désactivé par l'administrateur" });
+      if (!d.comme && ["seance", "seance_suppr", "seance_partage", "equipe_enregistrer", "equipe_suppr", "equipe_quitter", "profil_pseudo"].indexOf(action) >= 0)
+        journaliser(u.email, u.nom, action, action === "seance" ? String((d.seance || {}).titre || "").slice(0, 60) : action === "equipe_enregistrer" ? String((d.equipe || {}).nom || "").slice(0, 60) : "");
       if (action === "seances_liste") return listeSeances(u);
       if (action === "seance") return enregistrerSeance(d.seance || {}, u);
       if (action === "seance_suppr") return supprimerSeance(d.id, u);
@@ -108,6 +117,8 @@ function doPost(e) {
         ok: false,
         error: "mot de passe du site incorrect (GAME_ADD_KEY de config.js ≠ CLE_SITE du script)",
       });
+    if (["jeu", "schema", "retour"].indexOf(action) >= 0 || !d.action)
+      journaliser("", "(sans compte)", action === "schema" ? "schéma envoyé" : action === "retour" ? "retour envoyé" : "jeu proposé", String((d.jeu || d.retour || {}).Titre || (d.retour || {}).code || "").slice(0, 60));
     if (action === "seance") return enregistrerSeance(d.seance || {}, null);
     if (action === "seance_suppr") return supprimerSeance(d.id, null);
     if (action === "schema") return envoyerSchema(d);
@@ -273,11 +284,65 @@ function connexionGoogle(d) {
   const fiche = utilisateursLus().find(x => x.email === email);
   const pseudo = (fiche && fiche.pseudo) || "";
   if (pseudo) nom = pseudo;
+  journaliser(email, nom, "connexion", "");
   return rep({
     ok: true,
     session: creerSession(email, nom),
     user: { email: email, nom: nom, pseudo: pseudo, admin: emailsAdmin().indexOf(email) >= 0 },
   });
+}
+
+/* ---------- journal d'activité (conservé 30 jours) ---------- */
+const JOURNAL_JOURS = 30;
+function feuilleJournal() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Journal");
+  if (!sh) {
+    sh = ss.insertSheet("Journal");
+    sh.appendRow(["Date", "Adresse", "Nom", "Action", "Détail"]);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+// supprime les lignes de plus de 30 jours (les lignes sont dans l'ordre chronologique) ; au plus une fois par jour
+function journalPurger(force) {
+  const pr = PropertiesService.getScriptProperties();
+  const jour = new Date().toISOString().slice(0, 10);
+  if (!force && pr.getProperty("JOURNAL_PURGE") === jour) return;
+  const sh = feuilleJournal();
+  const n = sh.getLastRow() - 1;
+  if (n > 0) {
+    const limite = new Date(Date.now() - JOURNAL_JOURS * 86400000).toISOString();
+    const dates = sh.getRange(2, 1, n, 1).getValues();
+    let k = 0;
+    while (k < n && String(dates[k][0]) < limite) k++;
+    if (k > 0) sh.deleteRows(2, k);
+  }
+  pr.setProperty("JOURNAL_PURGE", jour);
+}
+// ne doit jamais empêcher l'action principale : toute erreur est ignorée
+function journaliser(email, nom, action, detail) {
+  try {
+    journalPurger(false);
+    feuilleJournal().appendRow([new Date().toISOString(), String(email || ""), String(nom || ""), String(action || ""), String(detail || "")]);
+  } catch (e) {}
+}
+function detailAdmin(action, d) {
+  if (action === "admin_utilisateur") return String(d.email || "") + " · " + String(d.op || "");
+  if (action === "admin_retour") return String(d.code || "") + " · " + String(d.op || "");
+  if (action === "admin_schema_suppr") return String(d.nom || "");
+  if (action === "admin_schema" || action === "admin_schema_fichier") return String(d.code || "");
+  if (action === "admin_son") return String(d.son || d.nom || "");
+  if (action === "admin_equipe") return String(d.nom || d.id || "");
+  return String(d.titreAvant || d.titre || d.id || "").slice(0, 60);
+}
+function adminJournal() {
+  journalPurger(true);
+  const sh = feuilleJournal();
+  const n = sh.getLastRow() - 1;
+  const v = n > 0 ? sh.getRange(2, 1, n, 5).getValues() : [];
+  const lignes = v.slice(-3000).reverse().map(r => ({ t: String(r[0]), email: String(r[1]), nom: String(r[2]), action: String(r[3]), detail: String(r[4]) }));
+  return rep({ ok: true, jours: JOURNAL_JOURS, lignes: lignes });
 }
 
 /* ---------- séances et cycles ---------- */
