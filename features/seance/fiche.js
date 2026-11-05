@@ -9,7 +9,12 @@ function itemView(it) {
       code: g.Code || "",
       url: gameUrl(key(g)),
       desc: g["Principe"] || g["Résumé"] || "",
-      meta: [g["Participants"], g["Espace"], g["Matériel"] && "Matériel : " + g["Matériel"]]
+      meta: [
+        g["Participants"],
+        g["Espace"],
+        g["Matériel"] && "Matériel : " + g["Matériel"],
+        g["Dosage"] && "Dosage : " + g["Dosage"],
+      ]
         .filter(Boolean)
         .join(" · "),
       plus: g["Plus difficile"],

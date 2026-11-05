@@ -238,5 +238,13 @@ async function edOuvrirPourJeu(ctx) {
         (ctx.img ? encodeURIComponent(ctx.img) : encodeURIComponent(cle) + ".webp") +
         "?v=" +
         Date.now();
-  edPopup("ctx", src && src.els ? src : { els: [], opt: { ...ED.opt } }, ctx);
+  const o0 = { ...ED.opt };
+  if (typeof discDeFamille === "function" && discDeFamille(ctx.fam) === "prepa") {
+    o0.mode = "sol";
+    o0.vue = "";
+  } else if (o0.mode === "sol") {
+    o0.mode = "face";
+    o0.vue = "VUE DE FACE";
+  }
+  edPopup("ctx", src && src.els ? src : { els: [], opt: o0 }, ctx);
 }

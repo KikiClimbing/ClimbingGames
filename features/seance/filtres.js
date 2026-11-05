@@ -8,6 +8,7 @@ const glDuree = g => {
 function glListe() {
   return DATA.filter(
     g =>
+      discDe(g) === DISC &&
       (!GLF.fam || g.Famille === GLF.fam) &&
       (!GLF.obj ||
         (g["Objectifs (tags)"] || "")
@@ -34,11 +35,11 @@ function glFiltresHTML() {
   return `<div class="tools noprint" style="margin:8px 0;flex-wrap:wrap"><b style="font-size:13px">Filtrer la recherche d'exercices :</b>${sel(
     "fam",
     "Toutes familles",
-    Object.keys(FAMS).map(f => [f, f])
+    famsDisc().map(f => [f, f])
   )}${sel(
     "obj",
     "Tous objectifs",
-    OBJS.map(o => [o, o])
+    objsDisc().map(o => [o, o])
   )}${sel(
     "int",
     "Toute intensité",

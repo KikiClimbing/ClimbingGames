@@ -107,6 +107,7 @@ const EDP = {
   text: () => ({ t: "text", x: 50, y: 28, s: "Mon texte", c: "ink", fs: 1.9 }),
 };
 function edPaletteHTML() {
+  if (ED.opt.mode === "sol") return edPaletteSol();
   const sec = (t, b) =>
     `<div class="psec"><div class="ptitle">${t}</div><div class="pbtns">${b}</div></div>`;
   const pb = (k, a, label, extra = "") =>

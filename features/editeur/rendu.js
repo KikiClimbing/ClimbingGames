@@ -19,7 +19,7 @@ function edMur() {
 function edLayer(e) {
   const ord = ["hold", "tape", "hoopfloor", "hoopflat", "ring", "hoopside"];
   const i = ord.indexOf(e.t === "phold" ? "hold" : e.t);
-  if (["zone", "zonecircle", "mat", "bench", "chalk"].includes(e.t)) return -1;
+  if (["zone", "zonecircle", "mat", "bench", "chalk", "wallv", "chair", "pullbar"].includes(e.t)) return -1;
   return i >= 0
     ? i
     : ["arrow", "text", "line", "rope", "elastic", "rotarrow", "cross", "check", "num"].includes(
@@ -38,6 +38,9 @@ function edSVGInner(withSel) {
       o += `<rect x="2" y="${EY(W.gy)}" width="96" height="3.7" rx=".8" fill="#DDE5F0"/>`;
     if (ED.opt.mur)
       o += `<polygon points="${[P(0, 0), P(W.L, 0), P(W.L, -3), P(0, -3)].map(q => q.map(v => +v.toFixed(2)).join(",")).join(" ")}" fill="#EEF2F8" stroke="#A8B4C6" stroke-width=".35" stroke-linejoin="round"/>`;
+  } else if (ED.opt.mode === "sol") {
+    if (ED.opt.mur !== false)
+      o += `<rect x="0" y="${EY(6)}" width="100" height="6" fill="#E9EEF6"/><line x1="0" y1="${EY(6)}" x2="100" y2="${EY(6)}" stroke="#A8B4C6" stroke-width=".35"/>`;
   } else if (ED.opt.mode === "dessus") {
     if (ED.opt.mur)
       o += `<rect x="${M.x}" y="${EY(M.y + M.h)}" width="${M.w}" height="${M.h}" rx="1.4" fill="#F4F7FB" stroke="#A8B4C6" stroke-width=".35" stroke-dasharray="1.2 .8"/>`;
@@ -62,7 +65,12 @@ function edSVGInner(withSel) {
 }
 function edHandles(e) {
   const h = [];
-  if (["climber", "stand", "sit", "pclimber"].includes(e.t)) {
+  if (e.t === "gym") {
+    const g = gymGeo(e);
+    e.hands.forEach((p, i) => h.push({ k: "h" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s }));
+    e.feet.forEach((p, i) => h.push({ k: "f" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s }));
+    h.push({ k: "p", x: g.hip[0], y: g.hip[1] }, { k: "t", x: g.sh[0], y: g.sh[1] });
+  } else if (["climber", "stand", "sit", "pclimber"].includes(e.t)) {
     figFix(e);
     h.push(
       ...e.hands.map((p, i) => ({ k: "h" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s })),

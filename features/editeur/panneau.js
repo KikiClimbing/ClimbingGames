@@ -22,14 +22,17 @@ function edPanel() {
     const M = edMur(),
       top = ED.opt.mode === "dessus",
       pro = ED.opt.mode === "profil",
+      sol = ED.opt.mode === "sol",
       W = edWall();
     const rg = (l, k, mn, mx, v) =>
       `<label class="fl2">${l}<input type="range" min="${mn}" max="${mx}" step="1" value="${v}" data-or="${k}"></label>`;
     p.innerHTML = `<h4>Réglages du schéma</h4>
-   <label class="fl2">Type de vue<select id="oMode"><option value="face" ${!top ? "selected" : ""}>Vue de face (mur)</option><option value="dessus" ${top ? "selected" : ""}>Vue de dessus (aire de jeu)</option><option value="profil" ${pro ? "selected" : ""}>Vue de profil (mur incliné)</option></select></label>
-   <label class="fl"><input type="checkbox" id="oMur" ${ED.opt.mur ? "checked" : ""}> ${top ? "Afficher l'aire de jeu" : "Afficher le mur"}</label>${top ? "" : `<label class="fl"><input type="checkbox" id="oTapis" ${ED.opt.tapis ? "checked" : ""}> Afficher le tapis</label>`}
+   <label class="fl2">Type de vue<select id="oMode"><option value="face" ${!top && !pro && !sol ? "selected" : ""}>Vue de face (mur)</option><option value="dessus" ${top ? "selected" : ""}>Vue de dessus (aire de jeu)</option><option value="profil" ${pro ? "selected" : ""}>Vue de profil (mur incliné)</option><option value="sol" ${sol ? "selected" : ""}>Prépa physique (au sol)</option></select></label>
+   <label class="fl"><input type="checkbox" id="oMur" ${ED.opt.mur ? "checked" : ""}> ${top ? "Afficher l'aire de jeu" : sol ? "Afficher le sol" : "Afficher le mur"}</label>${top || sol ? "" : `<label class="fl"><input type="checkbox" id="oTapis" ${ED.opt.tapis ? "checked" : ""}> Afficher le tapis</label>`}
    ${
-     pro
+     sol
+       ? ""
+       : pro
        ? rg("Inclinaison du mur (° vers le grimpeur)", "incl", -20, 60, ED.opt.incl ?? 15) +
          rg("Longueur du mur", "murH", 8, 32, W.L) +
          rg("Position horizontale du pied du mur", "murX", 5, 90, W.gx)
@@ -53,7 +56,10 @@ function edPanel() {
       ED.opt.mode = ev.target.value;
       ["murX", "murY", "murW", "murH"].forEach(k => delete ED.opt[k]);
       ED.opt.vue =
-        { dessus: "VUE DE DESSUS", profil: "VUE DE PROFIL" }[ev.target.value] || "VUE DE FACE";
+        { dessus: "VUE DE DESSUS", profil: "VUE DE PROFIL", sol: "" }[ev.target.value] ??
+        "VUE DE FACE";
+      const pl = $("#edpal");
+      if (pl) pl.innerHTML = edPaletteHTML();
       edRender(true);
     };
     $("#oMur").onchange = ev => {
@@ -127,7 +133,7 @@ function edPanel() {
     target: "Cible",
     card: "Carte",
     volume: "Volume",
-  }[e.t];
+  }[e.t] || GYMNOMS[e.t];
   let h = `<h4>${T}</h4>`;
   if (e.t === "hold")
     h += `<div class="sws">${sw(
@@ -298,8 +304,10 @@ function edPanel() {
     h += `<label class="fl2">Étiquette sur la ligne<input data-lab value="${esc(e.lab || "")}" placeholder="Ex. : 30 s, aller, retour"></label>`;
   if (["rope", "line", "elastic"].includes(e.t))
     h += `<label class="fl"><input type="checkbox" data-ck="dash" ${e.dash ? "checked" : ""}> Pointillés</label><label class="fl2">Courbure<input type="range" min="-0.6" max="0.6" step="0.05" value="${e.bend || 0}" data-rg="bend"></label><p class="hint">Glissez les deux points pour régler les extrémités.</p>`;
+  h += gymPanelHTML(e);
   h += `<div class="rowb"><button class="chip" data-op="dup">Dupliquer</button><button class="chip" data-op="front">Devant</button><button class="chip" data-op="back">Derrière</button><button class="chip" data-op="del" style="color:#B2263A">Supprimer</button></div>`;
   p.innerHTML = h;
+  gymPanelBind(p, e);
   const sk = p.querySelector("#edSnapCk");
   if (sk)
     sk.onchange = ev => {

@@ -299,6 +299,17 @@ function elSVG0(e) {
     case "stand":
     case "sit":
       return climberSVG(e);
+    case "gym":
+      return gymSVG(e);
+    case "dumbbell":
+    case "bottle":
+    case "pullbar":
+    case "chair":
+    case "stick":
+    case "towel":
+    case "anchor":
+    case "wallv":
+      return gymObjSVG(e);
     case "hoopflat":
     case "hoopfloor":
     case "hoopside":

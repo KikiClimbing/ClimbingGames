@@ -13,13 +13,13 @@ const seNew = () => ({
 });
 function seLoad() {
   try {
-    SE = JSON.parse(localStorage.getItem("maSeance2") || "null");
+    SE = JSON.parse(localStorage.getItem(seKey()) || "null");
   } catch (e) {
     SE = null;
   }
   if (!SE || !Array.isArray(SE.subs)) {
     SE = seNew();
-    if (SEL && SEL.length) {
+    if (SEL && SEL.length && DISC !== "prepa") {
       const one = (a, f) => a.reduce((t, x) => t + (+x[f] || 0), 0);
       const g = s => DATA.find(x => key(x) === s.k);
       const ech = SEL.filter(s => s.ph === "ech" && g(s)),
@@ -71,7 +71,7 @@ const seSave = () => {
     return;
   }
   try {
-    localStorage.setItem("maSeance2", JSON.stringify(SE));
+    localStorage.setItem(seKey(), JSON.stringify(SE));
   } catch (e) {}
 };
 const selCount = () => (SE ? SE.subs.reduce((a, s) => a + s.items.length, 0) : 0);
@@ -149,8 +149,9 @@ function seDefaults() {
       acc: acc === undefined ? 5 : acc,
       rc: rc || "",
     });
-    S.groups = [g(S.g1 === undefined ? "Enfants (8–10 ans)" : S.g1, S.acc1, S.rc1)];
-    if (S.deux !== false)
+    const prepa = DISC === "prepa";
+    S.groups = [g(S.g1 === undefined ? (prepa ? "Groupe" : "Enfants (8–10 ans)") : S.g1, S.acc1, S.rc1)];
+    if (S.deux !== false && !prepa)
       S.groups.push(g(S.g2 === undefined ? "Ados (11–14 ans)" : S.g2, S.acc2, S.rc2));
     ["g1", "g2", "acc1", "acc2", "rc1", "rc2", "deux"].forEach(k => delete S[k]);
   }
@@ -211,3 +212,13 @@ const lines = t =>
     .map(l => l.replace(/^\s*[•\-–]\s*/, "").trim())
     .filter(Boolean);
 const capf = t => t.charAt(0).toUpperCase() + t.slice(1);
+
+/* changement de discipline : on recharge le brouillon de séance de la discipline choisie */
+function seSwitch() {
+  SMETA = { titre: "", public: "" };
+  try {
+    SMETA = Object.assign(SMETA, JSON.parse(localStorage.getItem(seMetaKey()) || "{}"));
+  } catch (e) {}
+  SE = null;
+  seLoad();
+}

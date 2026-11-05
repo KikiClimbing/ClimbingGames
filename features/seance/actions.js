@@ -216,7 +216,7 @@ function seanceBind() {
         seSave();
         SMETA = {};
         try {
-          localStorage.removeItem("maSeanceMeta");
+          localStorage.removeItem(seMetaKey());
         } catch (e) {}
         buildNav();
         render();

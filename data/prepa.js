@@ -8,6 +8,8 @@ Object.assign(AX.FAMDESC, {
   Cardio:
     "Course ou vélo à intensité modérée pour garder une base cardiovasculaire sans fatiguer avant la prochaine séance de grimpe.",
 });
+/* Schémas dessinés avec l'éditeur « Prépa physique » (sol). Affichés directement, sans fichier image. */
+const PREPA_SCH = {"R1":{"els":[{"t":"gym","x":27,"y":6,"c":"blue","s":1.1,"pose":"coude90_face","hip":[0,9.2],"lean":0,"sw":2.4,"hw":1.3,"hands":[[-0.6,11.5],[-3.6,8.2]],"feet":[[1.8,0],[-1.8,0]],"kp":[[1,0],[-1,0]],"ep":[[1,-1],[-1,0]],"id":1},{"t":"anchor","x":6,"y":18.65,"s":1,"c":"grey","rot":0,"id":3},{"t":"elastic","x1":7.5,"y1":18.65,"x2":26.34,"y2":18.65,"c":"red","bend":0,"id":5},{"t":"towel","x":29.53,"y":17.66,"s":1,"c":"grey","rot":0,"id":7},{"t":"gym","x":73,"y":6,"c":"blue","s":1.1,"pose":"coude90_ext","hip":[0,9.2],"lean":0,"sw":2.4,"hw":1.3,"hands":[[6.1,11.5],[-3.6,8.2]],"feet":[[1.8,0],[-1.8,0]],"kp":[[1,0],[-1,0]],"ep":[[1,-1],[-1,0]],"id":2},{"t":"anchor","x":52,"y":18.65,"s":1,"c":"grey","rot":0,"id":4},{"t":"elastic","x1":53.5,"y1":18.65,"x2":79.71,"y2":18.65,"c":"red","bend":0,"id":6},{"t":"towel","x":75.53,"y":17.66,"s":1,"c":"grey","rot":0,"id":8},{"t":"arrow","x1":76.4,"y1":21.049999999999997,"x2":81.8,"y2":21.049999999999997,"c":"red","dash":false,"bend":-0.3,"id":9},{"t":"text","x":27,"y":32.5,"s":"1 · DÉPART","c":"ink","fs":2.1,"id":10},{"t":"text","x":73,"y":32.5,"s":"2 · FIN","c":"ink","fs":2.1,"id":11},{"t":"text","x":27,"y":29.8,"s":"avant-bras vers le ventre","c":"grey","fs":1.4,"id":12},{"t":"text","x":73,"y":29.8,"s":"avant-bras ouvert vers l'extérieur","c":"grey","fs":1.4,"id":13}],"opt":{"face":true,"mur":true,"tapis":true,"legende":"Coude plié à 90° et collé au flanc : seul l'avant-bras tourne (serviette roulée : elle ne doit pas tomber)","vue":"","mode":"sol"}},"R2":{"els":[{"t":"gym","x":22,"y":6,"c":"blue","s":1.1,"pose":"bras_devant","hip":[0,9.2],"lean":0,"sw":0,"hw":0,"hands":[[6.4,14.6],[6.2,14.1]],"feet":[[0.3,0],[-0.3,0]],"kp":[[1,0],[1,0]],"ep":[[0,-1],[0,-1]],"id":1},{"t":"anchor","x":46,"y":22.060000000000002,"s":1,"c":"grey","rot":180,"id":3},{"t":"elastic","x1":44.5,"y1":22.060000000000002,"x2":29.04,"y2":22.06,"c":"red","bend":0,"id":5},{"t":"gym","x":68,"y":6,"c":"blue","s":1.1,"pose":"bras_devant","hip":[0,9.2],"lean":0,"sw":0,"hw":0,"hands":[[2.2,12.6],[1.8,12.2]],"feet":[[0.3,0],[-0.3,0]],"kp":[[1,0],[1,0]],"ep":[[-1,-0.4],[-1,-0.4]],"id":2},{"t":"anchor","x":92,"y":22.060000000000002,"s":1,"c":"grey","rot":180,"id":4},{"t":"elastic","x1":90.5,"y1":22.060000000000002,"x2":70.42,"y2":19.86,"c":"red","bend":0,"id":6},{"t":"arrow","x1":78,"y1":24.04,"x2":71.4,"y2":24.04,"c":"red","dash":false,"bend":0,"id":7},{"t":"text","x":22,"y":32.5,"s":"1 · DÉPART","c":"ink","fs":2.1,"id":8},{"t":"text","x":68,"y":32.5,"s":"2 · TIRER","c":"ink","fs":2.1,"id":9},{"t":"text","x":22,"y":29.8,"s":"bras tendus, élastique légèrement tendu","c":"grey","fs":1.4,"id":10},{"t":"text","x":68,"y":29.8,"s":"coudes derrière le buste","c":"grey","fs":1.4,"id":11}],"opt":{"face":true,"mur":true,"tapis":true,"legende":"Les coudes passent derrière le buste ; épaules basses, loin des oreilles","vue":"","mode":"sol"}}};
 const PREPA_EMBED = [
   {
     Code: "R1",
@@ -67,4 +69,12 @@ const PREPA_EMBED = [
   },
 ];
 /* ajoute les fiches intégrées qui ne sont pas déjà dans la liste donnée (même code) */
+/* le schéma est fabriqué à la demande (l'éditeur est chargé après ce fichier) */
+PREPA_EMBED.forEach(g => {
+  if (PREPA_SCH[g.Code])
+    Object.defineProperty(g, "Schéma (lien)", {
+      enumerable: true,
+      get: () => (typeof edSvgUrl === "function" ? edSvgUrl(PREPA_SCH[g.Code]) : ""),
+    });
+});
 const avecPrepa = L => L.concat(PREPA_EMBED.filter(p => !L.some(g => g.Code === p.Code)));

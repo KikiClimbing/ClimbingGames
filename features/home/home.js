@@ -78,6 +78,9 @@ function setDisc(d) {
     localStorage.setItem("discipline", d);
   } catch (e) {}
   S.q = "";
+  GLF.fam = "";
+  GLF.obj = "";
+  if (typeof seSwitch === "function") seSwitch();
   buildNav();
   const v = VIEW;
   const fam = v.startsWith("fam/") ? decodeURIComponent(v.slice(4)) : "";

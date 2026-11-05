@@ -1,6 +1,18 @@
 /* Éditeur de schémas — souris, clavier, semis de prises */
 function edInit() {
   edLoad();
+  /* discipline : un nouveau dessin démarre au sol en Prépa physique, sur le mur en escalade */
+  if (!ED.els.length && !ED.ctx && !/^item:/.test(ED.back || "")) {
+    if (typeof DISC !== "undefined" && DISC === "prepa" && ED.opt.mode !== "sol") {
+      ED.opt.mode = "sol";
+      ED.opt.vue = "";
+    } else if (DISC !== "prepa" && ED.opt.mode === "sol") {
+      ED.opt.mode = "face";
+      ED.opt.vue = "VUE DE FACE";
+    }
+  }
+  const pl0 = $("#edpal");
+  if (pl0) pl0.innerHTML = edPaletteHTML();
   edRender(true);
   const svg = $("#edsvg");
   const pt = ev => {
@@ -59,7 +71,13 @@ function edInit() {
     } else {
       const e = d.e,
         h = d.h;
-      if (h === "p") {
+      if (e.t === "gym" && h === "p") {
+        e.hip = [+((p[0] - e.x) / e.s).toFixed(2), +((p[1] - e.y) / e.s).toFixed(2)];
+      } else if (e.t === "gym" && h === "t") {
+        const hx = e.x + e.hip[0] * e.s,
+          hy = e.y + e.hip[1] * e.s;
+        e.lean = Math.round((Math.atan2(p[0] - hx, p[1] - hy) * 180) / Math.PI);
+      } else if (h === "p") {
         /* bassin : déplacement limité (transfert de poids) */
         const cl = (v, m) => Math.max(-m, Math.min(m, v));
         e.pel = [

@@ -10,9 +10,12 @@ const saveSel = () => {
     localStorage.setItem("maSeance", JSON.stringify(SEL));
   } catch (e) {}
 };
+/* le brouillon de séance est séparé par discipline (escalade / prépa physique) */
+const seKey = () => "maSeance2" + (DISC === "prepa" ? "_prepa" : "");
+const seMetaKey = () => "maSeanceMeta" + (DISC === "prepa" ? "_prepa" : "");
 let SMETA = { titre: "", public: "" };
 try {
-  SMETA = Object.assign(SMETA, JSON.parse(localStorage.getItem("maSeanceMeta") || "{}"));
+  SMETA = Object.assign(SMETA, JSON.parse(localStorage.getItem(seMetaKey()) || "{}"));
 } catch (e) {}
 /* fenêtre de modification d'une séance de la bibliothèque (SMETA/SE sont alors une copie) */
 let SEPOP = null;
@@ -22,6 +25,6 @@ const saveMeta = () => {
     return;
   }
   try {
-    localStorage.setItem("maSeanceMeta", JSON.stringify(SMETA));
+    localStorage.setItem(seMetaKey(), JSON.stringify(SMETA));
   } catch (e) {}
 };

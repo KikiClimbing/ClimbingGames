@@ -155,7 +155,7 @@ async function enregistrerSeance(meta0, se0) {
   const rec = withSeance(meta0 || SMETA, se0 || SE, () => {
     seDefaults();
     if (!SE.id) SE.id = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    const meta = { ...SMETA };
+    const meta = { ...SMETA, disc: SMETA.disc || DISC };
     let data = JSON.stringify({ meta, se: SE });
     if (data.length > 45000) {
       delete meta.logo;
@@ -218,6 +218,7 @@ function seancesListeHTML() {
         m = (d && d.meta) || {};
       return {
         id: r.id,
+        disc: m.disc || "escalade",
         titre: m.titre || r.titre || "Séance sans titre",
         educ: m.educ || r.educ || "",
         dates: m.dates || r.dates || "",
@@ -229,6 +230,7 @@ function seancesListeHTML() {
         par: compteMien(r) ? "" : r.ownerNom || r.owner,
       };
     })
+    .filter(r => r.disc === DISC)
     .filter(
       r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj, r.jeux].join(" ")).includes(q)
     );
