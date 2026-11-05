@@ -424,6 +424,7 @@ function gymPose(e, k) {
   e.kp = cp(P.kp);
   e.ep = cp(P.ep);
   if (e.hq === undefined) delete e.hq;
+  delete e.hdo;
   return e;
 }
 /* retourne le personnage (miroir gauche/droite) */
@@ -463,7 +464,10 @@ function gymGeo(e) {
     L = rad(e.lean || 0),
     sh = [hip[0] + Math.sin(L) * GYM.TOR * s, hip[1] + Math.cos(L) * GYM.TOR * s],
     Q = rad(e.hq ?? e.lean ?? 0),
-    hd = [sh[0] + Math.sin(Q) * GYM.NECK * s, sh[1] + Math.cos(Q) * GYM.NECK * s];
+    hd = [
+      sh[0] + Math.sin(Q) * GYM.NECK * s + (e.hdo ? e.hdo[0] * s : 0),
+      sh[1] + Math.cos(Q) * GYM.NECK * s + (e.hdo ? e.hdo[1] * s : 0),
+    ];
   const sw = (e.sw || 0) * s,
     hw = (e.hw || 0) * s;
   const arms = [0, 1].map(i => {
@@ -507,7 +511,7 @@ function gymSVG(e) {
   return o + leg(0) + arm(0) + headSVG(g.hd[0], g.hd[1], GYM.HEAD * s, col);
 }
 /* ---- objets ---- */
-function gymObjSVG(e) {
+var gymObjSVG = function(e) {
   const s = e.s || 1,
     c = CN(e.c || "grey"),
     tf = `transform="translate(${e.x} ${EY(e.y)}) rotate(${-(e.rot || 0)}) scale(${s})"`;

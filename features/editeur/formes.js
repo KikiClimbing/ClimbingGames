@@ -309,6 +309,12 @@ function elSVG0(e) {
     case "towel":
     case "anchor":
     case "wallv":
+    case "box":
+    case "table":
+    case "bowl":
+    case "roller":
+    case "wallbg":
+    case "bike":
       return gymObjSVG(e);
     case "hoopflat":
     case "hoopfloor":

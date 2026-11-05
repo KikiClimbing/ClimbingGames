@@ -13,7 +13,7 @@ function itemView(it) {
         g["Participants"],
         g["Espace"],
         g["Matériel"] && "Matériel : " + g["Matériel"],
-        g["Dosage"] && "Dosage : " + g["Dosage"],
+        (it.dos || g["Dosage"]) && "Dosage : " + (it.dos || g["Dosage"]),
       ]
         .filter(Boolean)
         .join(" · "),
@@ -23,6 +23,7 @@ function itemView(it) {
       mat: g["Matériel"],
       noMat: noMat(g),
       resume: g["Résumé"] || "",
+      dos: it.dos || g["Dosage"] || "",
       fam: g,
     };
   }
@@ -30,7 +31,8 @@ function itemView(it) {
     titre: it.titre || "[Nom du jeu]",
     code: "",
     desc: it.desc || "",
-    meta: [it.part, it.mat && "Matériel : " + it.mat].filter(Boolean).join(" · "),
+    meta: [it.part, it.mat && "Matériel : " + it.mat, it.dos && "Dosage : " + it.dos].filter(Boolean).join(" · "),
+    dos: it.dos || "",
     plus: it.plus,
     moins: it.moins,
     crit: it.crit,

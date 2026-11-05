@@ -72,7 +72,9 @@ function filterGames(v) {
 function parCode(a, b) {
   const p = g => {
     const m = String(g.Code || "").match(/^([A-Za-zÀ-ÿ]*)(\d*)/);
-    return [m[1].toUpperCase() || "\uffff", +m[2] || 0];
+    const l = m[1].toUpperCase() || "\uffff";
+    /* Prépa physique : renforcement, mobilité, puis cardio */
+    return [DISC === "prepa" && "RMK".includes(l) ? "RMK".indexOf(l) + "" : l, +m[2] || 0];
   };
   const x = p(a),
     y = p(b);
