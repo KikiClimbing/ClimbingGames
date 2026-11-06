@@ -518,6 +518,28 @@ Object.assign(GYMPOSES, {
       [-1, 0],
     ],
   }),
+  lotus: V("face", {
+    l: "Assis en tailleur / lotus (genoux réglables)",
+    g: "Assis",
+    hip: [0, 1.2],
+    lean: 0,
+    hands: [
+      [4.4, 1.3],
+      [-4.4, 1.3],
+    ],
+    feet: [
+      [-1.6, 1.5],
+      [1.6, 1.5],
+    ],
+    kt: [
+      [4.3, 0.7],
+      [-4.3, 0.7],
+    ],
+    ep: [
+      [1, 0.3],
+      [-1, 0.3],
+    ],
+  }),
   papillon: V("face", {
     l: "Assis, plantes des pieds jointes (papillon)",
     g: "Assis",

@@ -68,10 +68,10 @@ function edHandles(e) {
   if (e.t === "gym") {
     const g = gymGeo(e);
     e.hands.forEach((p, i) => h.push({ k: "h" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s }));
-    e.feet.forEach((p, i) => h.push({ k: "f" + i, x: e.x + p[0] * e.s, y: e.y + p[1] * e.s }));
+    g.legs.forEach((L, i) => h.push({ k: "f" + i, x: L.f[0], y: L.f[1] }));
     h.push({ k: "p", x: g.hip[0], y: g.hip[1] }, { k: "t", x: g.sh[0], y: g.sh[1] });
     h.push({ k: "c", x: (g.hip[0] + g.sh[0]) / 2 + (g.sp[0] - (g.hip[0] + g.sh[0]) / 2), y: g.sp[1] });
-    g.legs.forEach((L, i) => h.push({ k: "o" + i, x: L.t[0], y: L.t[1] }));
+    g.legs.forEach((L, i) => h.push({ k: "o" + i, x: L.t[0], y: L.t[1] }, { k: "k" + i, x: L.m[0], y: L.m[1] }));
   } else if (e.t === "main") {
     h.push(...mainHandles(e));
   } else if (["climber", "stand", "sit", "pclimber"].includes(e.t)) {
@@ -115,8 +115,8 @@ function edRender(panel) {
       c.setAttribute("cx", h.x);
       c.setAttribute("cy", EY(h.y));
       c.setAttribute("r", 0.62); /* bassin : point 2 fois plus petit */
-      c.setAttribute("fill", h.k[0] === "f" || h.k[0] === "o" ? "#FFF3D6" : h.k === "p" ? "#DDF1E4" : h.k === "c" ? "#EADCF8" : "#fff");
-      c.setAttribute("stroke", h.k[0] === "f" || h.k[0] === "o" ? "#E0A030" : h.k === "p" ? "#2E7D4F" : h.k === "c" ? "#7A3FC0" : "#2F6FDB");
+      c.setAttribute("fill", h.k[0] === "f" || h.k[0] === "o" ? "#FFF3D6" : h.k === "p" ? "#DDF1E4" : h.k === "c" ? "#EADCF8" : /^k\d$/.test(h.k) ? "#D8F0EE" : "#fff");
+      c.setAttribute("stroke", h.k[0] === "f" || h.k[0] === "o" ? "#E0A030" : h.k === "p" ? "#2E7D4F" : h.k === "c" ? "#7A3FC0" : /^k\d$/.test(h.k) ? "#1F8A8A" : "#2F6FDB");
       c.setAttribute("stroke-width", ".35");
       c.setAttribute("data-h", h.k);
       c.style.cursor = "crosshair";

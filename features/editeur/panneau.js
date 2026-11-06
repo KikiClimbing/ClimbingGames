@@ -27,7 +27,11 @@ function edPanel() {
     const rg = (l, k, mn, mx, v) =>
       `<label class="fl2">${l}<input type="range" min="${mn}" max="${mx}" step="1" value="${v}" data-or="${k}"></label>`;
     p.innerHTML = `<h4>Réglages du schéma</h4>
-   <label class="fl2">Type de vue<select id="oMode"><option value="face" ${!top && !pro && !sol ? "selected" : ""}>Vue de face (mur)</option><option value="dessus" ${top ? "selected" : ""}>Vue de dessus (aire de jeu)</option><option value="profil" ${pro ? "selected" : ""}>Vue de profil (mur incliné)</option><option value="sol" ${sol ? "selected" : ""}>Prépa physique (au sol)</option></select></label>
+   <label class="fl2">Type de vue<select id="oMode">${
+      typeof DISC !== "undefined" && DISC === "prepa"
+        ? `<option value="sol" selected>Prépa physique (au sol)</option>`
+        : `<option value="face" ${!top && !pro && !sol ? "selected" : ""}>Vue de face (mur)</option><option value="dessus" ${top ? "selected" : ""}>Vue de dessus (aire de jeu)</option><option value="profil" ${pro ? "selected" : ""}>Vue de profil (mur incliné)</option>${sol ? `<option value="sol" selected>Prépa physique (au sol)</option>` : ""}`
+    }</select></label>
    <label class="fl"><input type="checkbox" id="oMur" ${ED.opt.mur ? "checked" : ""}> ${top ? "Afficher l'aire de jeu" : sol ? "Afficher le sol" : "Afficher le mur"}</label>${top || sol ? "" : `<label class="fl"><input type="checkbox" id="oTapis" ${ED.opt.tapis ? "checked" : ""}> Afficher le tapis</label>`}
    ${
      sol

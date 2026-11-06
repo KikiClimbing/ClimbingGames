@@ -83,6 +83,9 @@ function edInit() {
           ch = [g.sh[0] - g.hip[0], g.sh[1] - g.hip[1]],
           cl = Math.hypot(ch[0], ch[1]) || 1;
         e.cv = +Math.max(-3, Math.min(3, (((p[0] - mx) * -ch[1] + (p[1] - my) * ch[0]) / cl) / e.s)).toFixed(2);
+      } else if (e.t === "gym" && /^k[01]$/.test(h)) {
+        e.kt = e.kt || [null, null];
+        e.kt[+h[1]] = [+((p[0] - e.x) / e.s).toFixed(2), +((p[1] - e.y) / e.s).toFixed(2)];
       } else if (e.t === "gym" && /^o[01]$/.test(h)) {
         const L = gymGeo(e).legs[+h[1]],
           sd = [L.f[0] - L.m[0], L.f[1] - L.m[1]],

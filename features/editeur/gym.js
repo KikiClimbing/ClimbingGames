@@ -428,6 +428,8 @@ function gymPose(e, k) {
   delete e.hdo;
   delete e.fa;
   delete e.cv;
+  delete e.kt;
+  if (P.kt) e.kt = cp(P.kt);
   return e;
 }
 /* retourne le personnage (miroir gauche/droite) */
@@ -441,6 +443,7 @@ function gymFlip(e) {
   e.kp = e.kp.map(fx);
   e.ep = e.ep.map(fx);
   if (e.fa) e.fa = e.fa.map(v => -v);
+  if (e.kt) e.kt = e.kt.map(v => v && [-v[0], v[1]]);
   if (e.cv) e.cv = -e.cv;
 }
 /* deux os (r → t) : renvoie l'articulation (coude, genou) du côté de la préférence pref */
@@ -491,9 +494,21 @@ function gymGeo(e) {
   });
   const legs = [0, 1].map(i => {
     const a = [hip[0] + (i ? -hw : hw), hip[1]],
-      f = P(e.feet[i]);
-    const m = ik2(a, f, GYM.TH * s, GYM.SH * s, (e.kp || [])[i] || [1, 0]),
-      sd = [f[0] - m[0], f[1] - m[1]],
+      f0 = P(e.feet[i]);
+    let m, f = f0;
+    const kt = (e.kt || [])[i];
+    if (kt) {
+      /* genou imposé : la cuisse garde sa longueur, le pied suit la direction du tibia */
+      const K = P(kt),
+        dd = [K[0] - a[0], K[1] - a[1]],
+        dl = Math.hypot(dd[0], dd[1]) || 1,
+        mm = [a[0] + (dd[0] / dl) * GYM.TH * s, a[1] + (dd[1] / dl) * GYM.TH * s],
+        fd = [f0[0] - mm[0], f0[1] - mm[1]],
+        fl = Math.hypot(fd[0], fd[1]) || 1;
+      m = mm;
+      f = [mm[0] + (fd[0] / fl) * GYM.SH * s, mm[1] + (fd[1] / fl) * GYM.SH * s];
+    } else m = ik2(a, f, GYM.TH * s, GYM.SH * s, (e.kp || [])[i] || [1, 0]);
+    const sd = [f[0] - m[0], f[1] - m[1]],
       n = Math.hypot(sd[0], sd[1]) || 1,
       /* pied : perpendiculaire au tibia, tournée de fa[i] degrés (flexion/extension de la cheville) */
       a0 = Math.atan2(sd[0] / n, -sd[1] / n) + rad((e.fa || [])[i] || 0);
@@ -502,6 +517,7 @@ function gymGeo(e) {
   return { s, hip, sh, hd, arms, legs, sw, hw, sp, ctrl };
 }
 function gymSVG(e) {
+  if (e.sty === "bd") return gymBDSVG(e);
   const g = gymGeo(e),
     s = g.s,
     col = CN(e.c || "blue"),
@@ -562,7 +578,7 @@ var gymObjSVG = function(e) {
 }
 const GYMOBJ = ["dumbbell", "bottle", "pullbar", "chair", "stick", "towel", "anchor", "wallv"];
 Object.assign(EDP, {
-  gym: c => gymFix({ t: "gym", x: 50, y: 6, c, s: 1.2 }),
+  gym: c => gymFix({ t: "gym", x: 50, y: 6, c, s: 1.2, sty: "bd" }),
   dumbbell: c => ({ t: "dumbbell", x: 50, y: 12, s: 1, c, rot: 0 }),
   bottle: c => ({ t: "bottle", x: 50, y: 6, s: 1, c, rot: 0 }),
   pullbar: () => ({ t: "pullbar", x: 50, y: 6, s: 1, c: "grey", rot: 0 }),
@@ -641,6 +657,10 @@ function gymPanelHTML(e) {
         .join("")}</select></label>` +
       rg("Taille", "s", 0.6, 1.5, 0.05, e.s) +
       rg("Inclinaison du buste", "lean", -180, 180, 1, Math.round(e.lean || 0)) +
+      `<label class="fl2">Style<select data-gsty><option value="bd" ${e.sty === "bd" ? "selected" : ""}>BD (sympa)</option><option value="" ${e.sty === "bd" ? "" : "selected"}>Bâtons (simple)</option></select></label>` +
+      (e.sty === "bd"
+        ? `<label class="fl2">Regard<select data-glook><option value="0" ${!e.look ? "selected" : ""}>De face</option><option value="-1" ${e.look === -1 ? "selected" : ""}>Vers la gauche</option><option value="1" ${e.look === 1 ? "selected" : ""}>Vers la droite</option></select></label>`
+        : "") +
       rg("Courbure du dos (− creux / + rond)", "cv", -3, 3, 0.1, e.cv || 0) +
       rg("Inclinaison de la tête", "hq", -180, 180, 1, Math.round(e.hq ?? e.lean ?? 0)) +
       rg("Pied avant (cheville)", "fa0", -70, 70, 1, (e.fa || [])[0] || 0) +
@@ -670,6 +690,20 @@ function gymPanelBind(p, e) {
       gymPose(e, ev.target.value);
       e.c = c;
       e.s = s;
+      edRender(true);
+    };
+  const gs = p.querySelector("[data-gsty]");
+  if (gs)
+    gs.onchange = () => {
+      edSnap();
+      e.sty = gs.value;
+      edRender(true);
+    };
+  const gl = p.querySelector("[data-glook]");
+  if (gl)
+    gl.onchange = () => {
+      edSnap();
+      e.look = +gl.value;
       edRender(true);
     };
   p.querySelectorAll("[data-gym]").forEach(b => {
