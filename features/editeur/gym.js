@@ -397,6 +397,7 @@ const GYMPOSES = {
 };
 const GYMNOMS = {
   gym: "Personnage (prépa physique)",
+  main: "Main détaillée",
   dumbbell: "Haltère",
   bottle: "Bouteille d'eau",
   pullbar: "Barre de traction",
@@ -425,6 +426,8 @@ function gymPose(e, k) {
   e.ep = cp(P.ep);
   if (e.hq === undefined) delete e.hq;
   delete e.hdo;
+  delete e.fa;
+  delete e.cv;
   return e;
 }
 /* retourne le personnage (miroir gauche/droite) */
@@ -437,6 +440,8 @@ function gymFlip(e) {
   e.feet = e.feet.map(fx);
   e.kp = e.kp.map(fx);
   e.ep = e.ep.map(fx);
+  if (e.fa) e.fa = e.fa.map(v => -v);
+  if (e.cv) e.cv = -e.cv;
 }
 /* deux os (r → t) : renvoie l'articulation (coude, genou) du côté de la préférence pref */
 function ik2(r, t, l1, l2, pref) {
@@ -463,7 +468,16 @@ function gymGeo(e) {
   const hip = P(e.hip),
     L = rad(e.lean || 0),
     sh = [hip[0] + Math.sin(L) * GYM.TOR * s, hip[1] + Math.cos(L) * GYM.TOR * s],
-    Q = rad(e.hq ?? e.lean ?? 0),
+    /* colonne : courbure (cv) = écart du milieu du dos par rapport à la droite bassin-épaules */
+    ch = [sh[0] - hip[0], sh[1] - hip[1]],
+    cl = Math.hypot(ch[0], ch[1]) || 1,
+    cn = [-ch[1] / cl, ch[0] / cl],
+    cv = (e.cv || 0) * s,
+    sp = [(hip[0] + sh[0]) / 2 + cn[0] * cv, (hip[1] + sh[1]) / 2 + cn[1] * cv],
+    ctrl = [2 * sp[0] - (hip[0] + sh[0]) / 2, 2 * sp[1] - (hip[1] + sh[1]) / 2],
+    Q = rad(
+      e.hq ?? (e.cv ? (Math.atan2(sh[0] - ctrl[0], sh[1] - ctrl[1]) * 180) / Math.PI : (e.lean ?? 0))
+    ),
     hd = [
       sh[0] + Math.sin(Q) * GYM.NECK * s + (e.hdo ? e.hdo[0] * s : 0),
       sh[1] + Math.cos(Q) * GYM.NECK * s + (e.hdo ? e.hdo[1] * s : 0),
@@ -478,9 +492,14 @@ function gymGeo(e) {
   const legs = [0, 1].map(i => {
     const a = [hip[0] + (i ? -hw : hw), hip[1]],
       f = P(e.feet[i]);
-    return { a, f, m: ik2(a, f, GYM.TH * s, GYM.SH * s, (e.kp || [])[i] || [1, 0]) };
+    const m = ik2(a, f, GYM.TH * s, GYM.SH * s, (e.kp || [])[i] || [1, 0]),
+      sd = [f[0] - m[0], f[1] - m[1]],
+      n = Math.hypot(sd[0], sd[1]) || 1,
+      /* pied : perpendiculaire au tibia, tournée de fa[i] degrés (flexion/extension de la cheville) */
+      a0 = Math.atan2(sd[0] / n, -sd[1] / n) + rad((e.fa || [])[i] || 0);
+    return { a, f, m, t: [f[0] + Math.cos(a0) * 1.9 * s, f[1] + Math.sin(a0) * 1.9 * s] };
   });
-  return { s, hip, sh, hd, arms, legs, sw, hw };
+  return { s, hip, sh, hd, arms, legs, sw, hw, sp, ctrl };
 }
 function gymSVG(e) {
   const g = gymGeo(e),
@@ -492,9 +511,7 @@ function gymSVG(e) {
   const leg = i => {
     const L = g.legs[i],
       c = i ? far : col,
-      sd = [L.f[0] - L.m[0], L.f[1] - L.m[1]],
-      n = Math.hypot(sd[0], sd[1]) || 1,
-      toe = [L.f[0] + (-sd[1] / n) * 1.9 * s, L.f[1] + (sd[0] / n) * 1.9 * s];
+      toe = L.t;
     return bone(L.a, L.m, L.f, c, lw) + limbSVG(L.f, toe, c, lw * 0.9);
   };
   const arm = i => {
@@ -505,7 +522,13 @@ function gymSVG(e) {
       `<circle cx="${A.h[0]}" cy="${EY(A.h[1])}" r="${0.5 * s}" fill="${c}" stroke="#fff" stroke-width=".14"/>`
     );
   };
-  let o = leg(1) + arm(1) + limbSVG(g.hip, g.sh, col, lw * 1.5);
+  const spine = () => {
+    if (!(e.cv || 0)) return limbSVG(g.hip, g.sh, col, lw * 1.5);
+    const d = `M${g.hip[0]} ${EY(g.hip[1])}Q${g.ctrl[0]} ${EY(g.ctrl[1])} ${g.sh[0]} ${EY(g.sh[1])}`,
+      w = lw * 1.5;
+    return `<path d="${d}" stroke="#fff" stroke-width="${w + 0.38}" stroke-linecap="round" fill="none"/><path d="${d}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" fill="none"/>`;
+  };
+  let o = leg(1) + arm(1) + spine();
   if (g.sw) o += limbSVG([g.sh[0] - g.sw, g.sh[1]], [g.sh[0] + g.sw, g.sh[1]], col, lw * 1.2);
   if (g.hw) o += limbSVG([g.hip[0] - g.hw, g.hip[1]], [g.hip[0] + g.hw, g.hip[1]], col, lw * 1.2);
   return o + leg(0) + arm(0) + headSVG(g.hd[0], g.hd[1], GYM.HEAD * s, col);
@@ -558,6 +581,7 @@ function edPaletteSol() {
     sec(
       "PERSONNAGE",
       pb("gym", "blue", "Personnage articulé : choisissez la pose à droite", "🧍 personnage") +
+        pb("main", "blue", "Main détaillée : avant-bras, poignet et doigts articulés", "✋ main détaillée") +
         `<p class="hint" style="margin:6px 0 0">Choisissez la pose dans le panneau de droite, puis glissez les points (mains, pieds, bassin, buste) pour l'ajuster. Deux personnages côte à côte montrent le départ et la fin du mouvement.</p>`
     ) +
     sec(
@@ -589,6 +613,7 @@ function edPaletteSol() {
 }
 /* panneau du personnage et des objets (HTML + liaisons) */
 function gymPanelHTML(e) {
+  if (e.t === "main") return mainPanelHTML(e);
   const sw = (list, cur) =>
     list
       .map(
@@ -616,8 +641,12 @@ function gymPanelHTML(e) {
         .join("")}</select></label>` +
       rg("Taille", "s", 0.6, 1.5, 0.05, e.s) +
       rg("Inclinaison du buste", "lean", -180, 180, 1, Math.round(e.lean || 0)) +
+      rg("Courbure du dos (− creux / + rond)", "cv", -3, 3, 0.1, e.cv || 0) +
+      rg("Inclinaison de la tête", "hq", -180, 180, 1, Math.round(e.hq ?? e.lean ?? 0)) +
+      rg("Pied avant (cheville)", "fa0", -70, 70, 1, (e.fa || [])[0] || 0) +
+      rg("Pied arrière (cheville)", "fa1", -70, 70, 1, (e.fa || [])[1] || 0) +
       `<div class="rowb"><button class="chip" data-gym="flip" title="Miroir gauche/droite">↔ Retourner</button><button class="chip" data-gym="kn" title="Plier les genoux de l'autre côté">⇅ Genoux</button><button class="chip" data-gym="el" title="Plier les coudes de l'autre côté">⇅ Coudes</button></div>` +
-      `<p class="hint">Glissez les points : mains, pieds, bassin (vert) et épaules pour régler la posture. Les articulations suivent.</p>`
+      `<p class="hint">Glissez les points : mains, pieds, bassin (vert) et épaules pour régler la posture. Le point violet du dos courbe la colonne, le point orange au bout du pied fait pivoter la cheville. Les articulations suivent.</p>`
     );
   }
   if (GYMOBJ.includes(e.t)) {
@@ -631,6 +660,7 @@ function gymPanelHTML(e) {
   return "";
 }
 function gymPanelBind(p, e) {
+  if (e.t === "main") return mainPanelBind(p, e);
   const ps = p.querySelector("[data-gympose]");
   if (ps)
     ps.onchange = ev => {

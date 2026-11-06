@@ -301,6 +301,8 @@ function elSVG0(e) {
       return climberSVG(e);
     case "gym":
       return gymSVG(e);
+    case "main":
+      return mainSVG(e);
     case "dumbbell":
     case "bottle":
     case "pullbar":

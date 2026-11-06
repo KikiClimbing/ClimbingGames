@@ -316,7 +316,11 @@ function edPanel() {
   p.querySelectorAll("[data-rg]").forEach(i => {
     i.onpointerdown = () => edSnap();
     i.oninput = ev => {
-      e[i.dataset.rg] = +ev.target.value;
+      const fm = /^fa([01])$/.exec(i.dataset.rg);
+      if (fm) {
+        e.fa = e.fa || [0, 0];
+        e.fa[+fm[1]] = +ev.target.value;
+      } else e[i.dataset.rg] = +ev.target.value;
       edRender();
     };
   });

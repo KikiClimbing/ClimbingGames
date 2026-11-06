@@ -74,6 +74,22 @@ function edInit() {
         h = d.h;
       if (e.t === "gym" && h === "p") {
         e.hip = [+((p[0] - e.x) / e.s).toFixed(2), +((p[1] - e.y) / e.s).toFixed(2)];
+      } else if (e.t === "gym" && h === "c") {
+        const g = gymGeo(e),
+          mx = (g.hip[0] + g.sh[0]) / 2,
+          my = (g.hip[1] + g.sh[1]) / 2,
+          ch = [g.sh[0] - g.hip[0], g.sh[1] - g.hip[1]],
+          cl = Math.hypot(ch[0], ch[1]) || 1;
+        e.cv = +Math.max(-3, Math.min(3, (((p[0] - mx) * -ch[1] + (p[1] - my) * ch[0]) / cl) / e.s)).toFixed(2);
+      } else if (e.t === "gym" && /^o[01]$/.test(h)) {
+        const L = gymGeo(e).legs[+h[1]],
+          sd = [L.f[0] - L.m[0], L.f[1] - L.m[1]],
+          base = Math.atan2(sd[0], -sd[1]),
+          cur = Math.atan2(p[1] - L.f[1], p[0] - L.f[0]);
+        let d = ((cur - base) * 180) / Math.PI;
+        d = ((((d + 180) % 360) + 360) % 360) - 180;
+        e.fa = e.fa || [0, 0];
+        e.fa[+h[1]] = Math.round(Math.max(-70, Math.min(70, d)));
       } else if (e.t === "gym" && h === "t") {
         const hx = e.x + e.hip[0] * e.s,
           hy = e.y + e.hip[1] * e.s;
