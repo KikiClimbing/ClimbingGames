@@ -179,7 +179,44 @@ registerClick(e => {
 });
 
 /* phrase à ajouter au message de confirmation quand des invitations ont été envoyées */
+let INV_LAST = null;
+/* e-mail d'invitation prérempli, à envoyer depuis SA propre messagerie */
+function invitPanneau(m) {
+  INV_LAST = m;
+  const bcc = encodeURIComponent(m.adresses.join(","));
+  const su = encodeURIComponent(m.sujet),
+    corps = encodeURIComponent(m.corps);
+  const gmail = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${bcc}&su=${su}&body=${corps}`;
+  const mailto = `mailto:?bcc=${bcc}&subject=${su}&body=${corps}`;
+  const btn = "border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block;text-decoration:none";
+  modal(
+    "Prévenir les personnes invitées",
+    `<p style="margin-top:0">L'équipe est enregistrée. Pour que le message parte <b>de votre messagerie</b>, ouvrez-le ci-dessous puis cliquez sur « Envoyer ».</p>
+    <div class="tools"><a class="btn" href="${gmail}" target="_blank" rel="noopener" style="background:#26364D;color:#fff;${btn}">✉ Ouvrir dans Gmail</a><a class="btn" href="${mailto}" style="background:#EEF1F8;color:#26364D;${btn}">Autre messagerie</a><a class="btn" data-inv="copy" role="button" tabindex="0" style="background:#EEF1F8;color:#26364D;${btn}">Copier le message</a><span id="invMsg" style="color:#2E7D4F;font-weight:700"></span></div>
+    <p style="margin:12px 0 4px"><b>Destinataires (en copie cachée)</b> : ${m.adresses.map(esc).join(", ")}</p>
+    <p style="margin:4px 0"><b>Objet</b> : ${esc(m.sujet)}</p>
+    <pre style="white-space:pre-wrap;font:inherit;background:#F7F9FD;border:1px solid #E3E8F2;border-radius:8px;padding:10px 12px;margin:6px 0 0">${esc(m.corps)}</pre>`,
+    640
+  );
+}
+registerClick(e => {
+  const b = e.target.closest('[data-inv="copy"]');
+  if (!b || !INV_LAST) return;
+  const t = `À : ${INV_LAST.adresses.join(", ")}\nObjet : ${INV_LAST.sujet}\n\n${INV_LAST.corps}`;
+  const ok = () => {
+    const x = document.getElementById("invMsg");
+    if (x) x.textContent = "✓ Copié";
+  };
+  try {
+    navigator.clipboard.writeText(t).then(ok, ok);
+  } catch (err) {}
+  return true;
+});
 function compteInfoMails(m) {
+  if (m && m.etat === "perso" && m.adresses && m.adresses.length) {
+    setTimeout(() => invitPanneau(m), 50);
+    return "";
+  }
   if (!m || !m.envoyes) return "";
   return (
     " " +

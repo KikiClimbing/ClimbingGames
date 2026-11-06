@@ -24,7 +24,16 @@ function edPopup(back, srcCtx, ctx) {
       ED.mis = localStorage.getItem("edSchema");
       localStorage.setItem(
         "edSchema",
-        JSON.stringify(it && it.sch ? it.sch : { els: [], opt: { ...ED.opt } })
+        JSON.stringify(it && it.sch
+          ? it.sch
+          : {
+              els: [],
+              opt: {
+                ...ED.opt,
+                mode: DISC === "prepa" ? "sol" : ED.opt.mode === "sol" ? "face" : ED.opt.mode,
+                vue: DISC === "prepa" ? "" : ED.opt.mode === "sol" ? "VUE DE FACE" : ED.opt.vue,
+              },
+            })
       );
     } catch (e) {}
     ED.els = [];

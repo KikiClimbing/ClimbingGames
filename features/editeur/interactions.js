@@ -2,14 +2,15 @@
 function edInit() {
   edLoad();
   /* discipline : un nouveau dessin démarre au sol en Prépa physique, sur le mur en escalade */
-  if (!ED.els.length && !ED.ctx && !/^item:/.test(ED.back || "")) {
-    if (typeof DISC !== "undefined" && DISC === "prepa" && ED.opt.mode !== "sol") {
-      ED.opt.mode = "sol";
-      ED.opt.vue = "";
-    } else if (DISC !== "prepa" && ED.opt.mode === "sol") {
-      ED.opt.mode = "face";
-      ED.opt.vue = "VUE DE FACE";
-    }
+  const prepa = typeof DISC !== "undefined" && DISC === "prepa";
+  if (!ED.ctx && !/^item:/.test(ED.back || "") && prepa !== (ED.opt.mode === "sol")) {
+    /* un dessin d'une autre discipline (brouillon resté en mémoire) n'est pas repris : on repart d'une page blanche adaptée */
+    ED.els = [];
+    ED.hist = [];
+    ED.redo = [];
+    ED.opt.mode = prepa ? "sol" : "face";
+    ED.opt.vue = prepa ? "" : "VUE DE FACE";
+    ["murX", "murY", "murW", "murH"].forEach(k => delete ED.opt[k]);
   }
   const pl0 = $("#edpal");
   if (pl0) pl0.innerHTML = edPaletteHTML();

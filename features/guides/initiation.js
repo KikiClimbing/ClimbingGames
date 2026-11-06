@@ -111,247 +111,85 @@ const iniTxt = (x, y, t, anchor = "middle") =>
 const iniWall = x => `<rect x="${x}" y="14" width="9" height="170" rx="3" fill="#C9D3E0"/>`;
 const iniFig = (titre, desc, w, inner, cap) =>
   `<figure class="ini-fig"><svg viewBox="0 0 ${w} 200" role="img" aria-label="${esc(titre + " : " + desc)}"><title>${esc(titre)}</title><desc>${esc(desc)}</desc>${inner}</svg>${cap ? `<figcaption>${cap}</figcaption>` : ""}</figure>`;
+/* Figures reprises du PDF d'origine : mêmes coordonnées (pixels de l'image), mêmes traits */
+const PX = { dk: "#2B3F55", gr: "#98AAB9", or: "#E57A3C", wall: "#C9D3DB", panel: "#DEE6EB" };
+const pxL = (pts, far, w = 9) =>
+  `<polyline points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="${far ? PX.gr : PX.dk}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+const pxHead = (x, y, r = 25) =>
+  `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="${PX.dk}" stroke-width="9"/>`;
+const pxDot = (x, y, r = 10) =>
+  `<circle cx="${x}" cy="${y}" r="${r}" fill="${PX.or}" stroke="${PX.dk}" stroke-width="3"/>`;
+const pxPoly = pts =>
+  `<polygon points="${pts.map(p => p.join(",")).join(" ")}" fill="${PX.or}" fill-opacity=".2" stroke="${PX.or}" stroke-opacity=".45" stroke-width="3" stroke-dasharray="12 8" stroke-linejoin="round"/>`;
+const pxDotted = (x, y1, y2) =>
+  `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="${PX.dk}" stroke-width="5" stroke-dasharray="1 10" stroke-linecap="round"/>`;
+const pxArrow = (x1, y1, x2, y2, w = 6) => {
+  const a = Math.atan2(y2 - y1, x2 - x1),
+    h = 20;
+  return `<g stroke="${PX.or}" fill="${PX.or}" stroke-width="${w}" stroke-linecap="round"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><polygon stroke="none" points="${x2},${y2} ${x2 - h * Math.cos(a - 0.42)},${y2 - h * Math.sin(a - 0.42)} ${x2 - h * Math.cos(a + 0.42)},${y2 - h * Math.sin(a + 0.42)}"/></g>`;
+};
+const pxWall = (x, y1, y2) =>
+  `<rect x="${x}" y="${y1}" width="25" height="${y2 - y1}" fill="${PX.wall}"/>`;
+const pxHold = (x, y) =>
+  `<circle cx="${x}" cy="${y}" r="12" fill="${PX.dk}"/><circle cx="${x}" cy="${y}" r="6" fill="none" stroke="${PX.or}" stroke-width="2.4"/>`;
+const pxFig = (titre, desc, w, h, inner, cap, x0 = 0) =>
+  `<figure class="ini-fig"><svg viewBox="${x0} 0 ${w - x0} ${h}" role="img" aria-label="${esc(titre + " : " + desc)}"><title>${esc(titre)}</title><desc>${esc(desc)}</desc>${inner}</svg>${cap ? `<figcaption>${cap}</figcaption>` : ""}</figure>`;
+/* panneau « centre de gravité » (g = décalage x de l'image) */
 const INI_SVG = {
   chute: () =>
-    iniFig(
+    pxFig(
       "Position de réception",
       "Un grimpeur reçoit sa chute sur un tapis : genoux fléchis, pieds à plat, bras devant le corps, dos arrondi.",
-      230,
-      `<rect x="30" y="170" width="170" height="14" rx="3" fill="#C9D3E0" stroke="#8A93A3"/>${iniStick(
-        {
-          head: [118, 66],
-          sh: [112, 86],
-          hip: [104, 124],
-          legs: [
-            [
-              [86, 148],
-              [90, 170],
-            ],
-            [
-              [124, 148],
-              [118, 170],
-            ],
-          ],
-          arms: [
-            [
-              [130, 100],
-              [146, 94],
-            ],
-            [[128, 106], [144, 114], 1, [112, 86]],
-          ],
-          dots: [
-            [90, 170],
-            [118, 170],
-          ],
-        }
-      )}${iniArrow(160, 40, 140, 70)}${iniTxt(115, 197, "Genoux fléchis, bras devant")}`
+      719,
+      519,
+      `<rect x="106" y="385" width="480" height="34" fill="${PX.wall}" stroke="${PX.dk}" stroke-width="3"/>${pxL([[330, 258], [264, 266]], 1)}${pxL([[330, 262], [238, 298]], 1)}${pxL([[332, 252], [346, 320], [290, 358], [272, 385]])}${pxL([[346, 320], [398, 356], [418, 385]])}${pxHead(332, 224, 28)}${pxArrow(530, 202, 472, 272)}`,
+      "Genoux fléchis, bras devant."
     ),
   polygone: () =>
-    iniFig(
+    pxFig(
       "Polygone de sustentation",
       "Un grimpeur de face tient une prise de la main droite et pose les deux pieds. Le triangle formé par ces trois appuis est le polygone de sustentation ; son centre de gravité reste au-dessus.",
-      230,
-      `<rect x="20" y="12" width="190" height="176" rx="10" fill="#E6ECF4"/>${iniHold(46, 40)}${iniHold(186, 46)}${iniHold(44, 120)}${iniHold(180, 120)}<polygon points="82,172 124,172 150,78" fill="${INI_OR}" opacity=".22" stroke="${INI_OR}" stroke-width="1.6" stroke-dasharray="5 4"/>${iniStick(
-        {
-          head: [104, 44],
-          sh: [104, 64],
-          hip: [104, 112],
-          legs: [
-            [
-              [92, 144],
-              [82, 172],
-            ],
-            [
-              [116, 144],
-              [124, 172],
-            ],
-          ],
-          arms: [
-            [
-              [130, 62],
-              [150, 78],
-            ],
-            [[84, 52], [66, 44], 1],
-          ],
-          dots: [
-            [82, 172],
-            [124, 172],
-            [150, 78],
-          ],
-        }
-      )}<line x1="104" y1="112" x2="104" y2="176" stroke="${INI_C}" stroke-width="1.6" stroke-dasharray="2 4"/>`,
+      717,
+      678,
+      `<rect x="27" y="27" width="663" height="624" fill="${PX.panel}"/>${[[144, 97], [604, 128], [128, 354], [596, 448]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="10" fill="${PX.wall}" stroke="${PX.dk}" stroke-width="3"/>`).join("")}<circle cx="190" cy="104" r="10" fill="none" stroke="${PX.or}" stroke-width="4" stroke-dasharray="7 6"/>${pxPoly([[268, 565], [417, 545], [502, 229]])}${pxDotted(347, 392, 515)}${pxL([[215, 128], [352, 203]], 1)}${pxL([[355, 205], [502, 229]])}${pxL([[355, 195], [346, 378]])}${pxL([[346, 378], [268, 565]])}${pxL([[346, 378], [417, 545]])}<circle cx="346" cy="378" r="9" fill="${PX.dk}"/>${pxHead(358, 160, 32)}${pxDot(268, 565, 11)}${pxDot(417, 545, 11)}${pxDot(502, 229, 11)}`,
       "Le polygone est la zone ombrée entre les trois appuis."
     ),
   cdg: () =>
-    iniFig(
+    pxFig(
       "Centre de gravité aligné ou non",
       "À gauche, le bassin est au-dessus des pieds : le corps est équilibré. À droite, le bassin est loin des pieds : le corps bascule et les bras doivent compenser.",
-      470,
-      `<g><rect x="14" y="12" width="210" height="176" rx="10" fill="#E6ECF4"/>${iniStick({
-        head: [96, 40],
-        sh: [96, 60],
-        hip: [94, 108],
-        legs: [
-          [
-            [84, 140],
-            [78, 172],
-          ],
-          [
-            [106, 140],
-            [112, 172],
-          ],
-        ],
-        arms: [
-          [
-            [116, 52],
-            [140, 66],
-          ],
-        ],
-        dots: [
-          [78, 172],
-          [112, 172],
-          [140, 66],
-        ],
-      })}<polygon points="78,172 112,172 140,66" fill="${INI_OR}" opacity=".2"/><line x1="94" y1="108" x2="94" y2="178" stroke="${INI_C}" stroke-width="1.6" stroke-dasharray="2 4"/>${iniTxt(119, 197, "Bassin au-dessus des pieds")}</g><g transform="translate(236 0)"><rect x="14" y="12" width="210" height="176" rx="10" fill="#E6ECF4"/>${iniStick(
-        {
-          head: [128, 40],
-          sh: [124, 60],
-          hip: [118, 108],
-          legs: [
-            [
-              [96, 138],
-              [66, 172],
-            ],
-            [
-              [108, 140],
-              [88, 172],
-            ],
-          ],
-          arms: [
-            [
-              [146, 50],
-              [168, 40],
-            ],
-          ],
-          dots: [
-            [66, 172],
-            [88, 172],
-            [168, 40],
-          ],
-        }
-      )}<polygon points="66,172 88,172 168,40" fill="${INI_OR}" opacity=".2"/><line x1="118" y1="108" x2="118" y2="178" stroke="${INI_C}" stroke-width="1.6" stroke-dasharray="2 4"/>${iniArrow(150, 150, 118, 150)}${iniTxt(119, 197, "Bassin loin des pieds")}</g>`
+      1063,
+      483,
+      `<rect x="25" y="24" width="461" height="434" fill="${PX.panel}"/>${pxPoly([[193, 397], [295, 383], [356, 165]])}${pxDotted(247, 280, 362)}${pxL([[243, 153], [193, 213]], 1)}${pxL([[252, 145], [247, 268]])}${pxL([[252, 147], [356, 165]])}${pxL([[247, 268], [193, 397]])}${pxL([[247, 268], [295, 383]])}<circle cx="247" cy="268" r="8" fill="${PX.dk}"/>${pxHead(255, 116, 24)}${pxDot(193, 397)}${pxDot(295, 383)}${pxDot(356, 165)}<rect x="577" y="24" width="461" height="434" fill="${PX.panel}"/>${pxPoly([[745, 397], [848, 384], [907, 165]])}${pxDotted(962, 272, 362)}${pxL([[958, 150], [907, 203]], 1)}${pxL([[968, 140], [962, 257]])}${pxL([[968, 140], [907, 165]])}${pxL([[962, 257], [745, 397]])}${pxL([[962, 257], [848, 384]])}<circle cx="962" cy="257" r="8" fill="${PX.dk}"/>${pxHead(969, 105, 24)}${pxDot(745, 397)}${pxDot(848, 384)}${pxDot(907, 165)}${pxArrow(940, 360, 880, 360)}`,
+      "À gauche : bassin au-dessus des appuis. À droite : bassin hors du polygone, les bras compensent."
     ),
   transfert: () =>
-    iniFig(
+    pxFig(
       "Transfert de poids",
-      "Deux positions de profil devant un mur. À gauche, jambe pliée, bassin bas. À droite, la jambe d'appui s'est tendue, le bassin est monté et les bras sont restés tendus.",
-      470,
-      `<g>${iniWall(190)}${iniHold(194, 40)}${iniHold(194, 150, 1)}${iniStick({
-        head: [128, 70],
-        sh: [138, 90],
-        hip: [152, 128],
-        legs: [
-          [
-            [132, 142],
-            [190, 150],
-          ],
-          [[160, 150], [180, 168], 1],
-        ],
-        arms: [
-          [
-            [164, 66],
-            [194, 40],
-          ],
-        ],
-        dots: [[194, 40]],
-      })}${iniTxt(100, 197, "1. Jambe pliée")}</g><g transform="translate(236 0)">${iniWall(190)}${iniHold(194, 20)}${iniHold(194, 150, 1)}${iniStick(
-        {
-          head: [136, 40],
-          sh: [148, 60],
-          hip: [166, 96],
-          legs: [
-            [
-              [184, 124],
-              [190, 150],
-            ],
-            [[176, 128], [186, 150], 1],
-          ],
-          arms: [
-            [
-              [168, 40],
-              [194, 20],
-            ],
-          ],
-          dots: [[194, 20]],
-        }
-      )}${iniArrow(118, 140, 118, 90)}${iniTxt(100, 197, "2. Pousser avec la jambe")}</g>`
+      "Deux positions de profil devant un mur. À gauche, la jambe d'appui est pliée, genou vers le mur, bassin bas. À droite, la jambe s'est tendue, le bassin est monté et les bras sont restés tendus.",
+      1061,
+      484,
+      `${pxWall(380, 50, 432)}${pxL([[262, 290], [296, 350], [310, 410]], 1)}${pxL([[276, 178], [250, 290]])}${pxL([[250, 290], [338, 292], [392, 356]])}${pxL([[276, 178], [392, 121]])}${pxHead(268, 142)}${pxHold(392, 121)}${pxHold(392, 356)}${pxWall(932, 50, 432)}${pxL([[880, 232], [892, 290], [900, 340]], 1)}${pxL([[866, 128], [880, 232]])}${pxL([[880, 232], [912, 296], [944, 356]])}${pxL([[866, 128], [944, 62]])}${pxHead(852, 94)}${pxHold(944, 62)}${pxHold(944, 356)}${pxArrow(800, 300, 800, 190)}`,
+      "À gauche : jambe pliée, bassin bas. À droite : on pousse avec la jambe, le bassin monte."
     ),
   bras: () =>
-    iniFig(
+    pxFig(
       "Bras tendus, corps près du mur",
       "À gauche, bras tendus et hanches proches du mur : le squelette porte le poids. À droite, bras pliés et hanches éloignées : les muscles des bras portent le poids et fatiguent vite.",
-      470,
-      `<g>${iniWall(190)}${iniHold(194, 40, 1)}${iniHold(194, 170, 1)}${iniStick({
-        head: [132, 76],
-        sh: [140, 96],
-        hip: [168, 130],
-        legs: [
-          [
-            [184, 150],
-            [192, 170],
-          ],
-        ],
-        arms: [
-          [
-            [168, 66],
-            [194, 40],
-          ],
-        ],
-        dots: [],
-      })}${iniTxt(100, 197, "Bras tendus : économe")}</g><g transform="translate(236 0)">${iniWall(190)}${iniHold(194, 40, 1)}${iniHold(194, 170, 1)}${iniStick(
-        {
-          head: [168, 56],
-          sh: [164, 78],
-          hip: [140, 128],
-          legs: [
-            [
-              [160, 152],
-              [192, 170],
-            ],
-          ],
-          arms: [
-            [
-              [148, 56],
-              [194, 40],
-            ],
-          ],
-          dots: [],
-        }
-      )}${iniTxt(100, 197, "Bras pliés : fatigant")}</g>`
+      1061,
+      484,
+      `${pxWall(380, 50, 432)}${pxL([[272, 180], [228, 206]], 1)}${pxL([[276, 176], [232, 268], [286, 316], [392, 356]])}${pxL([[276, 176], [392, 121]])}${pxHead(280, 140, 24)}${pxHold(392, 121)}${pxHold(392, 356)}${pxWall(932, 50, 432)}${pxL([[890, 190], [857, 215]], 1)}${pxL([[904, 170], [888, 266], [930, 312], [944, 356]])}${pxL([[904, 170], [944, 121]])}${pxHead(912, 152, 24)}<path d="M 880,156 L 898,132 Q 918,122 936,134 L 904,152 Z" fill="${PX.dk}" stroke="${PX.dk}" stroke-width="6" stroke-linejoin="round"/>${pxHold(944, 121)}${pxHold(944, 356)}`,
+      "À gauche : bras tendus, économe. À droite : bras pliés, fatigant."
     ),
   drapeau: () =>
-    iniFig(
+    pxFig(
       "Le drapeau",
-      "Un grimpeur de profil tient une prise en haut et un appui pour le pied en bas ; l'autre jambe est tendue en arrière, sans toucher le mur, comme contrepoids.",
-      230,
-      `${iniWall(170)}${iniHold(174, 40, 1)}${iniHold(174, 150, 1)}${iniStick({
-        head: [138, 52],
-        sh: [146, 72],
-        hip: [150, 114],
-        legs: [
-          [
-            [166, 132],
-            [174, 150],
-          ],
-          [[118, 130], [78, 144], 1],
-        ],
-        arms: [
-          [
-            [168, 56],
-            [174, 40],
-          ],
-        ],
-      })}${iniArrow(96, 100, 74, 116)}${iniTxt(115, 197, "Jambe libre en contrepoids")}`
+      "Un grimpeur de profil tient une prise en haut et un appui pour le pied en bas ; l'autre jambe est tendue vers le bas, près du mur sans le toucher, comme contrepoids.",
+      717,
+      644,
+      `${pxWall(612, 40, 602)}${pxL([[478, 196], [426, 256]], 1)}${pxL([[476, 358], [466, 460], [556, 598]], 1)}${pxL([[500, 186], [476, 358]])}${pxL([[476, 358], [537, 447], [625, 520]])}${pxL([[500, 190], [573, 240], [625, 159]])}${pxHead(514, 145, 30)}${pxHold(625, 159)}${pxHold(625, 520)}${pxArrow(440, 590, 506, 610)}`,
+      "La jambe libre sert de contrepoids, sans toucher le mur.",
+      380
     ),
 };
 
@@ -736,7 +574,7 @@ function iniFicheHTML() {
 }
 function iniView() {
   const t = INI.tab;
-  const head = gsec(
+  const head = ORG.on ? "" : gsec(
     "Initiation à l'escalade de bloc",
     "Guide de séance : comprendre, tomber, grimper. Une heure pour des débutants de tout âge, dont environ 15 minutes de théorie du mouvement."
   );

@@ -247,20 +247,26 @@ function admView() {
       const v = g.valeurs,
         ouvert = ADM.open.has(g.ligne);
       if (!v.Code && ouvert) v.Code = admCodeDuJeu(v);
-      const champs = ADM.cols
-        .filter(c => !ADM_MASQUES.includes(c))
+      /* même formulaire que « Proposer un jeu » (menus, cases, couleurs par famille) ; les colonnes inconnues du formulaire sont ajoutées en bas */
+      const connus = PROP_CHAMPS.map(f => f.k);
+      const extra = ADM.cols
+        .filter(c => !ADM_MASQUES.includes(c) && !connus.includes(c))
         .map(c =>
           c === "Code"
             ? `<label class="sml">Code (automatique)<input data-af="Code" data-l="${g.ligne}" value="${esc(v.Code)}" readonly style="background:#F1F3F8;color:#6B7280;cursor:not-allowed" title="Le code est attribué automatiquement selon la famille ; il ne se modifie pas à la main."></label>`
-            : c === "Famille" && !isEmb(v)
-              ? `<label class="sml">Famille<select data-af="Famille" data-l="${g.ligne}">${[...new Set([...Object.keys(FAMS), v.Famille].filter(Boolean))].map(f => `<option ${f === v.Famille ? "selected" : ""}>${esc(f)}</option>`).join("")}</select></label>`
-              : ADM_LONGS.includes(c)
-                ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="${c === "Principe" ? 5 : 3}" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
-                : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
-        )
-        .join("");
+            : ADM_LONGS.includes(c)
+              ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="3" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
+              : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
+        );
+      const champs = propFormHTML(
+        v,
+        discDeFamille(v.Famille) || "escalade",
+        k => `data-af="${esc(k)}" data-l="${g.ligne}"`,
+        k => `data-at="${esc(k)}" data-l="${g.ligne}"`,
+        { extra: extra }
+      );
       return `<div class="box"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><b style="flex:1">${esc(v.Code ? v.Code + " · " : "")}${esc(v.Titre)}${g.publie ? ' <span style="color:#2E7D4F;font-size:12px">● publié</span>' : ' <span style="color:#B2543A;font-size:12px">● en attente</span>'}</b><span style="color:#6B7280;font-size:13px">${esc(v.Famille || "")} · ${esc(v.Auteur || "")} · ${esc(v.Horodateur || "")}</span><a class="chip" data-adm="open" data-l="${g.ligne}" style="cursor:pointer">${ouvert ? "Fermer" : "Relire / modifier"}</a></div>
-      ${ouvert ? `${v["Remplace le jeu"] ? remplaceBandeau(v["Remplace le jeu"]) : ""}${schemaApercu(v)}${schemaPicker(g)}<div class="smg" style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}${isEmb(v) ? "" : `<a class="btn" data-adm="pick" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>`}${v.Code && !isEmb(v) ? `<a class="btn" data-adm="schema" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner / modifier le schéma</a>` : ""}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
+      ${ouvert ? `${v["Remplace le jeu"] ? remplaceBandeau(v["Remplace le jeu"]) : ""}${schemaApercu(v)}${schemaPicker(g)}<div style="margin-top:10px">${champs}</div><div class="tools" style="margin-top:10px">${g.publie ? "" : `<a class="btn" data-adm="pub" data-l="${g.ligne}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✓ Valider et publier</a>`}${isEmb(v) ? "" : `<a class="btn" data-adm="pick" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>`}${v.Code && !isEmb(v) ? `<a class="btn" data-adm="schema" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner / modifier le schéma</a>` : ""}<a class="btn" data-adm="save" data-l="${g.ligne}" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">${g.publie ? "Enregistrer les modifications" : "Enregistrer sans publier"}</a>${g.publie ? `<a class="btn" data-adm="unpub" data-l="${g.ligne}" style="background:#fff;color:#B2543A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Retirer du site</a>` : `<a class="btn" data-adm="no" data-l="${g.ligne}" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Refuser</a>`}</div>` : ""}</div>`;
     })
     .join("");
   const tb = admOnglet;
@@ -282,7 +288,8 @@ registerView({
       i.addEventListener("input", () => {
         const g = ADM.list.find(x => x.ligne === +i.dataset.l);
         if (g) {
-          g.valeurs[i.dataset.af] = i.value;
+          g.valeurs[i.dataset.af] =
+            i.dataset.af === "Remplace le jeu" ? i.value.split(" · ")[0] : i.value;
           if (i.dataset.af === "Famille") {
             const avant = g.valeurs.Code;
             admFamChange(g.valeurs, g.publie);
@@ -290,6 +297,18 @@ registerView({
             render();
           }
         }
+      })
+    );
+    document.querySelectorAll("[data-at]").forEach(i =>
+      i.addEventListener("change", () => {
+        const g = ADM.list.find(x => x.ligne === +i.dataset.l);
+        if (g)
+          g.valeurs[i.dataset.at] = [
+            ...document.querySelectorAll(`[data-at="${CSS.escape(i.dataset.at)}"][data-l="${i.dataset.l}"]`),
+          ]
+            .filter(x => x.checked)
+            .map(x => x.value)
+            .join(", ");
       })
     );
     const aq = $("#admq");

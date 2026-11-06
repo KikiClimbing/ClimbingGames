@@ -1,6 +1,6 @@
 /* Menu de gauche, construit à partir des entrées déclarées par les fonctionnalités */
 function navBtn(v, label, extra = "") {
-  return `<button class="nav ${VIEW === v ? "on" : ""}" data-go="${esc(v)}">${extra}${label}</button>`;
+  return `<button class="nav ${VIEW === v || (v === "g/organiser" && /^g\/(initiation|seances|cycle|comp)$/.test(VIEW)) ? "on" : ""}" data-go="${esc(v)}">${extra}${label}</button>`;
 }
 /* bouton « Proposer un jeu » : formulaire du site, sinon formulaire Google, sinon rien */
 function proposeHTML() {

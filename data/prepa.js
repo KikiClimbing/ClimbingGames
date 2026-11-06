@@ -11,7 +11,11 @@ Object.assign(AX.FAMDESC, {
 /* ajoute les fiches intégrées qui ne sont pas déjà dans la liste donnée (même code) */
 /* le schéma est fabriqué à la demande (l'éditeur est chargé après ce fichier) */
 PREPA_EMBED.forEach(g => {
-  if (PREPA_SCH[g.Code])
+  if (typeof PREPA_PHOTO !== "undefined" && PREPA_PHOTO[g.Code]) {
+    /* photo réelle (posture exacte) : remplace le schéma dessiné */
+    const u = PREPA_PHOTO[g.Code];
+    Object.defineProperty(g, "Schéma (lien)", { enumerable: true, get: () => u });
+  } else if (PREPA_SCH[g.Code])
     Object.defineProperty(g, "Schéma (lien)", {
       enumerable: true,
       get: () => (typeof edSvgUrl === "function" ? edSvgUrl(PREPA_SCH[g.Code]) : ""),

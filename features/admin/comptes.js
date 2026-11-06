@@ -2,6 +2,7 @@
    Onglets ajoutés à la page Administration quand les comptes Google sont activés. */
 const ADM_TABS_COMPTES = [
   "users",
+  "invit",
   "equipes",
   "seances",
   "cycles",
@@ -24,6 +25,7 @@ const ADM_COULEURS = {
   doc: ["#5B6B82", "#E6EAF0"],
   users: ["#2B5A9E", "#E1EBF8"],
   equipes: ["#2E7D4F", "#E0F1E7"],
+  invit: ["#2B7A9E", "#E0F0F7"],
   seances: ["#1F8A8A", "#DDF1F1"],
   cycles: ["#B03A7A", "#F8E2EE"],
   reglages: ["#9A7400", "#F8EFCF"],
@@ -38,6 +40,7 @@ function admOngletsComptes() {
   if (!compteOn()) return "";
   return [
     ["users", "Utilisateurs"],
+    ["invit", "Invitations"],
     ["equipes", "Équipes"],
     ["seances", "Séances"],
     ["cycles", "Cycles"],
@@ -52,6 +55,7 @@ async function admcCharger() {
   ADC.msg = "Chargement…";
   try {
     if (t === "users") ADC.users = (await admPost("admin_utilisateurs")).utilisateurs;
+    else if (t === "invit") ADC.invit = await admPost("admin_invitations");
     else if (t === "equipes") ADC.equipes = (await comptePost("equipes_liste")).equipes;
     else if (t === "seances" || t === "cycles")
       ADC.seances = (await admPost("admin_seances")).seances;
@@ -180,6 +184,26 @@ function admComptesHTML() {
       .join("");
     return `${msg}${search("Rechercher (titre, propriétaire)…")}<p class="count">${L.length} ${cy ? "cycle" : "séance"}${L.length > 1 ? "s" : ""}${L.length > 300 ? " (300 premiers affichés : affinez la recherche)" : ""} · cliquez sur un titre pour l'aperçu</p><div style="overflow-x:auto"><table class="adt"><thead><tr>${admTh("titre", "TITRE")}${admTh("date", "DATE")}${admTh("partage", "PARTAGÉ")}${admTh("proprietaire", "PROPRIÉTAIRE")}<th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }
+  if (t === "invit") {
+    if (!ADC.invit) return msg;
+    const I = ADC.invit;
+    const inv = I.invitations.filter(x => !q || norm([x.par, x.adresse, x.equipe].join(" ")).includes(q));
+    const cpt = I.comptes.filter(x => !q || norm([x.nom, x.email, x.invitePar].join(" ")).includes(q));
+    const modeLib = { perso: "e-mail ouvert chez l'inviteur", auto: "envoi automatique", off: "sans e-mail" };
+    return `${msg}${search("Rechercher (nom, adresse, équipe)…")}<div class="sh">INVITATIONS (${inv.length})</div>${inv.length ? `<div style="overflow-x:auto"><table class="adt"><thead><tr><th>DATE</th><th>INVITÉ PAR</th><th>ADRESSE INVITÉE</th><th>ÉQUIPE</th><th>MODE</th><th>COMPTE</th></tr></thead><tbody>${inv
+      .slice(0, 300)
+      .map(
+        x =>
+          `<tr><td>${admcDate(x.t)}</td><td>${esc(x.par)}</td><td>${esc(x.adresse)}</td><td>${esc(x.equipe)}</td><td>${esc(modeLib[x.mode] || x.mode)}</td><td>${x.compte ? `<span style="color:#2E7D4F">● créé le ${admcDate(x.compte)}</span>` : '<span style="color:#B2543A">● pas encore connecté</span>'}</td></tr>`
+      )
+      .join("")}</tbody></table></div>` : '<p class="count">Aucune invitation pour le moment.</p>'}<div class="sh">COMPTES CRÉÉS (${cpt.length})</div>${cpt.length ? `<div style="overflow-x:auto"><table class="adt"><thead><tr><th>CRÉÉ LE</th><th>NOM</th><th>ADRESSE</th><th>ORIGINE</th></tr></thead><tbody>${cpt
+      .slice(0, 300)
+      .map(
+        x =>
+          `<tr><td>${admcDate(x.t)}</td><td>${esc(x.nom)}</td><td>${esc(x.email)}</td><td>${x.invitePar ? "invité par " + esc(x.invitePar) : "connexion directe"}</td></tr>`
+      )
+      .join("")}</tbody></table></div>` : ""}`;
+  }
   if (t === "activite") {
     if (!ADC.activite) return msg;
     return msg + admActiviteHTML(q);
@@ -207,7 +231,14 @@ function admComptesHTML() {
   }
   if (!ADC.reglages) return msg;
   const r = ADC.reglages;
-  return `${msg}<div class="box" style="max-width:640px"><b>E-mails d'invitation</b><p style="margin:6px 0">Quand quelqu'un est ajouté à une équipe, il reçoit un e-mail envoyé depuis votre compte Google (adresse de réponse : celle de la personne qui l'a ajouté).</p><p style="margin:6px 0">État : <b style="color:${r.emails ? "#2E7D4F" : "#B2263A"}">${r.emails ? "envoi activé" : "envoi désactivé"}</b>${r.quotaMails !== null && r.quotaMails !== undefined ? ` · il reste ${r.quotaMails} e-mails aujourd'hui` : ""}</p>${admcBtn("emails", `data-v="${r.emails ? "0" : "1"}"`, r.emails ? "Désactiver l'envoi d'e-mails" : "Activer l'envoi d'e-mails", r.emails ? "no" : "ok")}<p style="color:#6B7280;font-size:13px;margin-bottom:0">Limites : 20 invitations par enregistrement et 50 par jour et par personne (hors administrateur), puis le quota de votre compte Google (environ 100 par jour pour un compte gratuit).</p></div>${admSonHTML()}`;
+  const mode = r.mode || (r.emails ? "auto" : "off");
+  const radio = (v, t, d) =>
+    `<label style="display:block;margin:6px 0"><input type="radio" name="invm" value="${v}" ${mode === v ? "checked" : ""}> <b>${t}</b><br><span style="color:#6B7280;font-size:13px;margin-left:22px">${d}</span></label>`;
+  return `${msg}<div class="box" style="max-width:720px"><b>E-mails d'invitation</b><p style="margin:6px 0">Quand quelqu'un est ajouté à une équipe, on lui propose un e-mail d'invitation. Choisissez comment il part :</p>${radio("perso", "Depuis la messagerie de la personne qui invite (recommandé)", "Le site ouvre un e-mail déjà rédigé dans son Gmail ou sa messagerie ; elle clique sur « Envoyer ». L'adresse d'expédition est la sienne.")}${radio("auto", "Automatique, depuis votre compte Google", `Envoi direct par le site, au nom de votre compte${r.quotaMails !== null && r.quotaMails !== undefined ? ` (il reste ${r.quotaMails} e-mails aujourd'hui)` : ""}. Limites : 20 par enregistrement, 50 par jour et par personne.`)}${radio("off", "Aucun e-mail", "L'équipe est enregistrée sans prévenir personne.")}
+  <label class="sml" style="margin-top:10px">Objet de l'e-mail<input id="invSujet" value="${esc(r.sujet || "")}"></label>
+  <label class="sml" style="margin-top:6px">Texte de l'e-mail<textarea id="invCorps" rows="9">${esc(r.corps || "")}</textarea></label>
+  <p style="color:#6B7280;font-size:13px;margin:6px 0">Mots remplacés automatiquement : <code>{inviteur}</code> (nom de la personne qui invite), <code>{email}</code> (son adresse), <code>{equipe}</code> (nom de l'équipe), <code>{site}</code> (adresse du site).</p>
+  <div class="tools">${admcBtn("invsave", "", "Enregistrer", "ok")}${admcBtn("invdef", "", "Remettre le texte d'origine")}</div></div>${admSonHTML()}`;
 }
 /* ---------- activité : connexions et actions des 30 derniers jours ---------- */
 const ACT_GROUPES = [
@@ -224,6 +255,7 @@ const ACT_LIBELLES = {
   seance_suppr: "Séance ou cycle supprimé",
   seance_partage: "Partage modifié",
   equipe_enregistrer: "Équipe enregistrée",
+  "equipe : invitation": "Invitation à une équipe",
   equipe_suppr: "Équipe supprimée",
   equipe_quitter: "Équipe quittée",
   profil_pseudo: "Pseudo modifié",
@@ -435,7 +467,17 @@ registerClick(e => {
       () => admPost("admin_son", { op: "choisir", son: $("#admSon").value }),
       "✓ Son enregistré."
     );
-  else if (a === "emails")
-    fait(() => admPost("admin_reglages", { emails: b.dataset.v === "1" }), "✓ Réglage enregistré.");
+  else if (a === "invsave")
+    fait(
+      () =>
+        admPost("admin_reglages", {
+          mode: (document.querySelector("[name=invm]:checked") || {}).value || "perso",
+          sujet: $("#invSujet").value,
+          corps: $("#invCorps").value,
+        }),
+      "✓ Réglages des invitations enregistrés."
+    );
+  else if (a === "invdef")
+    fait(() => admPost("admin_reglages", { modeleDefaut: true }), "✓ Texte d'origine rétabli.");
   return true;
 });

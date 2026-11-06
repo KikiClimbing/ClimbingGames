@@ -2,14 +2,19 @@
 const GUIDES = [
   ["secu", "Règles de sécurité", "⚠"],
   ["materiel", "Matériel à préparer", "☑"],
-  ["seances", "Séances types", "◷"],
-  ["initiation", "Initiation au bloc", "▲"],
-  ["cycle", "Progression sur un cycle", "↗"],
-  ["comp", "Compétences travaillées", "◎"],
+  ["organiser", "Organiser ses séances", "▲"],
   ["equipes", "Former les équipes", "⚑"],
   ["gloss", "Glossaire", "Aa"],
 ];
+const ORG = { tab: "initiation", on: false };
+const ORG_TABS = [
+  ["initiation", "Initiation au bloc"],
+  ["seances", "Séances types"],
+  ["cycle", "Progression sur un cycle"],
+  ["comp", "Compétences travaillées"],
+];
 function gsec(t, lead, aideTxt) {
+  if (ORG.on) return lead ? `<p class="lead">${lead}</p>` : "";
   return `<h2 class="pt">${t}${aideTxt ? " " + aide(aideTxt) : ""}</h2><p class="lead">${lead || ""}</p>`;
 }
 const MATREG = {
@@ -95,7 +100,27 @@ function materielView() {
       "</table>";
   return h;
 }
+function organiserView(k) {
+  if (k && ORG_TABS.some(t => t[0] === k)) ORG.tab = k;
+  const t = ORG.tab;
+  const head = `<h2 class="pt">Organiser ses séances</h2><p class="lead">Du plus simple au plus fin : démarrer avec des débutants, s'inspirer de séances types, construire un cycle, puis choisir les jeux selon les compétences visées.</p>`;
+  const tabs = `<div class="tools noprint"><div class="seg" role="tablist" style="flex-wrap:wrap;height:auto">${ORG_TABS.map(([c, l]) => `<button role="tab" aria-selected="${c === t}" data-org="${c}" class="${c === t ? "on" : ""}">${l}</button>`).join("")}</div></div>`;
+  ORG.on = true;
+  try {
+    return head + tabs + guideView(t);
+  } finally {
+    ORG.on = false;
+  }
+}
+registerClick(e => {
+  const b = e.target.closest("[data-org]");
+  if (!b) return;
+  ORG.tab = b.dataset.org;
+  render();
+  return true;
+});
 function guideView(k) {
+  if (k === "organiser" || (!ORG.on && ORG_TABS.some(t => t[0] === k))) return organiserView(k === "organiser" ? "" : k);
   if (k === "secu")
     return (
       gsec(

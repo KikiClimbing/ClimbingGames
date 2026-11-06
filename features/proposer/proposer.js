@@ -103,50 +103,45 @@ async function propSchemas() {
   }
   render();
 }
-function propView() {
-  const head = gsec(
-    "Proposer un jeu",
-    DISC === "prepa"
-      ? "Remplissez la fiche de l'exercice : elle sera relue puis publiée sur le site."
-      : "Remplissez la fiche : elle sera relue puis publiée sur le site."
-  );
-  if (!CONFIG.GAME_ADD_URL)
-    return (
-      head +
-      `<div class="box">${CONFIG.FORM_URL ? `Le formulaire intégré n'est pas activé. <a target="_blank" rel="noopener" href="${esc(CONFIG.FORM_URL)}">Ouvrir le formulaire Google ↗</a>` : "Le formulaire n'est pas activé : renseignez <b>GAME_ADD_URL</b> dans config.js."}</div>`
-    );
-  if (PROP.ok)
-    return (
-      head +
-      `<div class="box" style="border-left:6px solid #2E7D4F"><b>Merci !</b> Votre jeu a été envoyé. Il sera relu avant d'apparaître sur le site.<div class="tools" style="margin-top:10px"><a class="btn" data-pr="again" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Proposer un autre jeu</a></div></div>`
-    );
-  const v = PROP.v;
-  if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.nom;
+/* Formulaire de fiche (champs groupés, menus et couleurs par famille) : utilisé pour proposer un jeu
+   et pour le modifier dans l'administration. at(k) = attributs du champ, atTag(k) = attributs des cases à cocher. */
+function propTheme(v, d) {
+  const F = FAMS[v.Famille] || FAMS[famsDisc(d)[0]];
+  return `--l:${F.l};--m:${F.m};--d:${F.d};--a:${F.a}`;
+}
+function propFormHTML(v, d, at, atTag, opt = {}) {
+  const prepa = d === "prepa";
   const champ = f => {
     const val = v[f.k] || "";
-    const lab = `${esc((DISC === "prepa" && f.k === "Objectifs (tags)" ? "Zone travaillée" : f.lab) || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
-    if (f.t === "select")
-      return `<label class="sml">${lab}<select data-pf="${esc(f.k)}">${f.vide ? '<option value=""></option>' : ""}${f
-        .opts()
-        .map(o => `<option ${val === o ? "selected" : ""}>${esc(o)}</option>`)
+    const lab = `${esc((prepa && f.k === "Objectifs (tags)" ? "Zone travaillée" : f.lab) || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
+    if (f.k === "Famille") {
+      const fams = [...new Set([...famsDisc(d), v.Famille].filter(Boolean))];
+      return `<label class="sml">${lab}<select ${at(f.k)}>${fams.map(o => `<option ${val === o ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></label>`;
+    }
+    if (f.t === "select") {
+      const os = f.opts(),
+        low = String(val).toLowerCase(),
+        isSel = o => String(o).toLowerCase() === low || (f.k === "Remplace le jeu" && val && o.startsWith(val + " · "));
+      /* une valeur déjà enregistrée qui n'est plus dans la liste reste visible */
+      const orph = val && !os.some(isSel) ? `<option selected>${esc(val)}</option>` : "";
+      return `<label class="sml">${lab}<select ${at(f.k)}>${f.vide ? '<option value=""></option>' : ""}${orph}${os
+        .map(o => `<option ${isSel(o) ? "selected" : ""}>${esc(o)}</option>`)
         .join("")}</select></label>`;
+    }
     if (f.t === "tags") {
       const sel = val.split(/,\s*/);
-      return `<div class="sml" style="grid-column:1/-1">${lab}<div class="gchk">${f
-        .opts()
+      return `<div class="sml" style="grid-column:1/-1">${lab}<div class="gchk">${objsDisc(d)
         .map(
           o =>
-            `<label class="fl"><input type="checkbox" data-pt="${esc(f.k)}" value="${esc(o)}" ${sel.includes(o) ? "checked" : ""}> ${esc(o)}</label>`
+            `<label class="fl"><input type="checkbox" ${atTag(f.k)} value="${esc(o)}" ${sel.includes(o) ? "checked" : ""}> ${esc(o)}</label>`
         )
         .join("")}</div></div>`;
     }
     if (f.t === "area")
-      return `<label class="sml" style="grid-column:1/-1">${lab}<textarea rows="${f.rows || 3}" data-pf="${esc(f.k)}">${esc(val)}</textarea></label>`;
-    return `<label class="sml">${lab}<input data-pf="${esc(f.k)}" value="${esc(val)}"></label>`;
+      return `<label class="sml" style="grid-column:1/-1">${lab}<textarea rows="${f.rows || 3}" ${at(f.k)}>${esc(val)}</textarea></label>`;
+    return `<label class="sml">${lab}<input ${at(f.k)} value="${esc(val)}"></label>`;
   };
-  const F = FAMS[v.Famille] || FAMS[famsDisc()[0]];
-  const theme = `--l:${F.l};--m:${F.m};--d:${F.d};--a:${F.a}`;
-  const prepa = DISC === "prepa";
+  const theme = propTheme(v, d);
   const GROUPES = [
     ["L'ESSENTIEL", ["Titre", "Famille", "Remplace le jeu", "Résumé", "Principe"]],
     [
@@ -166,10 +161,35 @@ function propView() {
   const groupe = ([t, ks]) =>
     `<div class="pgrp" style="${theme}"><h3>${t}</h3><div class="smg">${ks.map(k => champ(par(k))).join("")}</div></div>`;
   const ta = k =>
-    `<textarea rows="4" data-pf="${k}" style="width:100%;padding:8px;border:1px solid #d5dae5;border-radius:6px;font:inherit;background:#fff">${esc(v[k] || "")}</textarea>`;
+    `<textarea rows="4" ${at(k)} style="width:100%;padding:8px;border:1px solid #d5dae5;border-radius:6px;font:inherit;background:#fff">${esc(v[k] || "")}</textarea>`;
   const complet = `<div class="pgrp" style="${theme}"><h3>FICHE COMPLÈTE</h3><div style="border:1px dashed #8A55B5;border-radius:8px;padding:8px 10px;background:#FAF7FD"><b style="color:#8A55B5;font-size:13px">Autres champs de la fiche complète</b> <span style="font-size:12px;color:#6B7280">— tous facultatifs : ils servent à remplir la fiche complète des séances. Laissez vide ce que vous ne savez pas.</span><div class="smg" style="margin-top:6px">${["Objectif", "But", "Comportements attendus", "Organisation", "Critères de réussite"].map(k => champ(par(k))).join("")}</div></div></div>`;
   const variantes = `<div class="pgrp" style="${theme}"><h3>VARIANTES</h3><div class="pvar"><div class="pfac"><h4>− PLUS FACILE <span style="color:#B2263A">*</span></h4>${ta("Plus facile")}</div><div class="pdif"><h4>+ PLUS DIFFICILE <span style="color:#B2263A">*</span></h4>${ta("Plus difficile")}</div></div><p style="margin:6px 0 0;color:#6B7280;font-size:13px">2 à 3 idées par colonne, une par ligne : la puce « • » est ajoutée toute seule.</p></div>`;
   const fin = `<div class="pgrp" style="${theme}"><h3>CONSEIL ET COMPLÉMENTS</h3><div class="smg">${["Conseil", "Voir aussi", "Compléments", "Auteur"].map(k => champ(par(k))).join("")}</div></div>`;
+  const extra = (opt.extra || []).length
+    ? `<div class="pgrp" style="${theme}"><h3>AUTRES COLONNES DE LA FEUILLE</h3><div class="smg">${opt.extra.join("")}</div></div>`
+    : "";
+  return `${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${prepa ? "" : complet}${fin}${extra}`;
+}
+function propView() {
+  const head = gsec(
+    "Proposer un jeu",
+    DISC === "prepa"
+      ? "Remplissez la fiche de l'exercice : elle sera relue puis publiée sur le site."
+      : "Remplissez la fiche : elle sera relue puis publiée sur le site."
+  );
+  if (!CONFIG.GAME_ADD_URL)
+    return (
+      head +
+      `<div class="box">${CONFIG.FORM_URL ? `Le formulaire intégré n'est pas activé. <a target="_blank" rel="noopener" href="${esc(CONFIG.FORM_URL)}">Ouvrir le formulaire Google ↗</a>` : "Le formulaire n'est pas activé : renseignez <b>GAME_ADD_URL</b> dans config.js."}</div>`
+    );
+  if (PROP.ok)
+    return (
+      head +
+      `<div class="box" style="border-left:6px solid #2E7D4F"><b>Merci !</b> Votre jeu a été envoyé. Il sera relu avant d'apparaître sur le site.<div class="tools" style="margin-top:10px"><a class="btn" data-pr="again" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Proposer un autre jeu</a></div></div>`
+    );
+  const v = PROP.v;
+  if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.nom;
+  const prepa = DISC === "prepa";
   const lien = v["Schéma (lien)"] || "";
   const prev = lien
     ? `<img src="${esc(driveImg(lien))}" alt="Schéma" style="display:block;max-width:100%;max-height:260px;margin-top:8px;border:1px solid #D5DAE5;border-radius:8px;background:#fff" onerror="this.remove()">`
@@ -182,7 +202,7 @@ function propView() {
   const msg = PROP.msg ? `<p style="font-weight:700;color:#B2263A">${esc(PROP.msg)}</p>` : "";
   return (
     head +
-    `<div class="box">${groupe(GROUPES[0])}${groupe(GROUPES[1])}${groupe(GROUPES[2])}${variantes}${prepa ? "" : complet}${fin}<div class="pgrp" style="${theme}"><h3>SCHÉMA</h3>
+    `<div class="box">${propFormHTML(v, DISC, k => `data-pf="${esc(k)}"`, k => `data-pt="${esc(k)}"`)}<div class="pgrp" style="${propTheme(v, DISC)}"><h3>SCHÉMA</h3>
     <div class="sml" style="grid-column:1/-1">Schéma <span style="font-weight:400;color:#6B7280"> — facultatif : dessinez-le, ou choisissez-en un déjà envoyé</span>
       <div class="tools" style="margin:6px 0"><a class="btn" data-pr="draw" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✏ Dessiner un schéma</a><a class="btn" data-pr="pick" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🖼 Choisir un schéma existant</a>${lien ? `<a class="chip" data-pr="nolink" style="cursor:pointer">Retirer</a>` : ""}</div>
       <input data-pf="Schéma (lien)" value="${esc(lien)}" placeholder="ou collez ici le lien d'une image">${prev}</div></div>${choix}

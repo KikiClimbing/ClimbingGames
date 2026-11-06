@@ -62,7 +62,7 @@ function doPost(e) {
       if (
         ["admin_enregistrer", "admin_refuser", "admin_schema", "admin_schema_fichier", "admin_schema_suppr", "admin_utilisateur", "admin_equipe", "admin_seance_proprio", "admin_retour"].indexOf(action) >= 0 ||
         (action === "admin_son" && (d.op === "choisir" || d.op === "envoyer")) ||
-        (action === "admin_reglages" && typeof d.emails === "boolean")
+        (action === "admin_reglages" && (typeof d.emails === "boolean" || d.mode || typeof d.sujet === "string" || d.modeleDefaut === true))
       )
         journaliser(su ? su.email : "administrateur", su ? su.nom : "", action.replace("admin_", "admin : "), detailAdmin(action, d));
       if (action === "admin_utilisateurs") return adminUtilisateurs();
@@ -71,6 +71,7 @@ function doPost(e) {
       if (action === "admin_seances") return adminSeances();
       if (action === "admin_seance_proprio") return adminSeanceProprio(d);
       if (action === "admin_reglages") return adminReglages(d);
+      if (action === "admin_invitations") return adminInvitations();
       if (action === "admin_liste") return adminListe(d.tous);
       if (action === "admin_attente") return adminAttente();
       if (action === "admin_retours") return adminRetours();
@@ -860,10 +861,62 @@ function emailsActifs() {
   // (si la constante ENVOYER_EMAILS manque dans une ancienne copie du script, l'envoi est actif par défaut)
   return v === null ? (typeof ENVOYER_EMAILS === "undefined" ? true : !!ENVOYER_EMAILS) : v === "oui";
 }
-// prévient par e-mail les personnes ajoutées à une équipe. Renvoie { envoyes, etat } (jamais d'erreur bloquante).
+/* Mode d'envoi des invitations (réglage de l'administration) :
+   "perso" (défaut) : le site ouvre un e-mail prérempli dans la messagerie de la personne qui invite (envoyé de SON compte) ;
+   "auto" : envoi automatique depuis le compte du propriétaire du script ; "off" : aucun e-mail. */
+function invitMode() {
+  const v = PropertiesService.getScriptProperties().getProperty("INVIT_MODE");
+  return v === "auto" || v === "off" ? v : "perso";
+}
+const INVIT_SUJET_DEFAUT = "{inviteur} vous a ajouté à l'équipe « {equipe} » — Jeux d'escalade";
+const INVIT_CORPS_DEFAUT =
+  "Bonjour,\n\n{inviteur} ({email}) vous a ajouté à l'équipe « {equipe} » sur le site Jeux d'escalade.\n" +
+  "Les séances et cycles partagés avec cette équipe sont maintenant visibles pour vous.\n\n" +
+  "Pour les voir : ouvrez {site} puis connectez-vous avec Google, avec l'adresse à laquelle ce message est arrivé.\n\n" +
+  "Si vous ne connaissez pas cette personne, ignorez simplement ce message.";
+function invitModele() {
+  const pr = PropertiesService.getScriptProperties();
+  return { sujet: pr.getProperty("INVIT_SUJET") || INVIT_SUJET_DEFAUT, corps: pr.getProperty("INVIT_CORPS") || INVIT_CORPS_DEFAUT };
+}
+// remplit le modèle : {inviteur} {email} {equipe} {site}
+function invitTexte(nomEquipe, u) {
+  const m = invitModele();
+  const f = t =>
+    String(t)
+      .replace(/\{inviteur\}/g, u.nom)
+      .replace(/\{email\}/g, u.email)
+      .replace(/\{equipe\}/g, nomEquipe)
+      .replace(/\{site\}/g, URL_DU_SITE);
+  return { sujet: f(m.sujet), corps: f(m.corps) };
+}
+function feuilleInvitations() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("Invitations");
+  if (!sh) {
+    sh = ss.insertSheet("Invitations");
+    sh.appendRow(["Date", "Invité par (adresse)", "Invité par (nom)", "Adresse invitée", "Équipe", "Mode"]);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+// journal permanent des invitations (jamais purgé) ; ne bloque jamais l'action principale
+function noterInvitations(adresses, nomEquipe, u, mode) {
+  try {
+    const sh = feuilleInvitations();
+    const t = new Date().toISOString();
+    const lignes = adresses.map(a => [t, u.email, u.nom, a, nomEquipe, mode]);
+    if (lignes.length) sh.getRange(sh.getLastRow() + 1, 1, lignes.length, 6).setValues(lignes);
+    journaliser(u.email, u.nom, "equipe : invitation", adresses.length + " · " + nomEquipe);
+  } catch (e) {}
+}
+// prévient les personnes ajoutées à une équipe. Renvoie { envoyes, etat, ... } (jamais d'erreur bloquante).
 function inviter(adresses, nomEquipe, u) {
   if (!adresses.length) return { envoyes: 0, etat: "aucun" };
-  if (!emailsActifs()) return { envoyes: 0, etat: "desactive" };
+  const mode = invitMode();
+  noterInvitations(adresses, nomEquipe, u, mode);
+  if (mode === "off") return { envoyes: 0, etat: "desactive" };
+  const txt = invitTexte(nomEquipe, u);
+  if (mode === "perso") return { envoyes: 0, etat: "perso", adresses: adresses, sujet: txt.sujet, corps: txt.corps };
   // garde-fous anti-abus : 20 invitations par enregistrement, 50 par jour et par personne (l'admin n'est pas limité)
   const cache = CacheService.getScriptCache();
   const cle = "inv:" + u.email + ":" + new Date().toISOString().slice(0, 10);
@@ -875,12 +928,8 @@ function inviter(adresses, nomEquipe, u) {
       if (MailApp.getRemainingDailyQuota() < 1) return { envoyes: envoyes, etat: "quota" };
       MailApp.sendEmail({
         to: a,
-        subject: u.nom + " vous a ajouté à l'équipe « " + nomEquipe + " » — Jeux d'escalade",
-        body:
-          "Bonjour,\n\n" + u.nom + " (" + u.email + ") vous a ajouté à l'équipe « " + nomEquipe + " » sur le site Jeux d'escalade.\n" +
-          "Les séances et cycles partagés avec cette équipe sont maintenant visibles pour vous.\n\n" +
-          "Pour les voir : ouvrez " + URL_DU_SITE + " puis connectez-vous avec Google, avec cette adresse (" + a + ").\n\n" +
-          "Si vous ne connaissez pas cette personne, ignorez simplement ce message.",
+        subject: txt.sujet,
+        body: txt.corps,
         name: typeof NOM_EXPEDITEUR === "undefined" ? "Jeux d'escalade" : NOM_EXPEDITEUR,
         replyTo: u.email,
       });
@@ -892,6 +941,21 @@ function inviter(adresses, nomEquipe, u) {
     return { envoyes: envoyes, etat: "erreur", detail: String(err).slice(0, 200) };
   }
   return { envoyes: envoyes, etat: "ok" };
+}
+// journal des invitations et des comptes créés (administration)
+function adminInvitations() {
+  const sh = feuilleInvitations();
+  const n = sh.getLastRow() - 1;
+  const us = utilisateursLus();
+  const par = {};
+  const inv = (n > 0 ? sh.getRange(2, 1, n, 6).getValues() : []).map(r => {
+    const a = String(r[3]).toLowerCase();
+    const u = us.find(x => x.email === a);
+    if (!par[a]) par[a] = String(r[2] || r[1]);
+    return { t: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), par: String(r[2] || r[1]), parEmail: String(r[1]), adresse: a, equipe: String(r[4]), mode: String(r[5]), compte: u ? u.premiere : "" };
+  });
+  const comptes = us.map(u => ({ t: u.premiere, email: u.email, nom: u.pseudo || u.nom, invitePar: par[u.email] || "" }));
+  return rep({ ok: true, invitations: inv.slice(-1000).reverse(), comptes: comptes.sort((x, y) => String(y.t).localeCompare(String(x.t))) });
 }
 
 /* ---------- utilisateurs (onglet « Utilisateurs », rempli à chaque connexion) ---------- */
@@ -1077,14 +1141,23 @@ function adminSeanceProprio(d) {
   invalider();
   return rep({ ok: true });
 }
-// réglages du site : { emails: true|false } ; sans paramètre, renvoie l'état
+// réglages du site : { mode: "perso"|"auto"|"off", sujet, corps } ; sans paramètre, renvoie l'état
 function adminReglages(d) {
-  if (typeof d.emails === "boolean") PropertiesService.getScriptProperties().setProperty("EMAILS", d.emails ? "oui" : "non");
+  const pr = PropertiesService.getScriptProperties();
+  if (d.mode === "perso" || d.mode === "auto" || d.mode === "off") pr.setProperty("INVIT_MODE", d.mode);
+  else if (typeof d.emails === "boolean") pr.setProperty("INVIT_MODE", d.emails ? "auto" : "off"); // anciennes pages
+  if (typeof d.sujet === "string") pr.setProperty("INVIT_SUJET", d.sujet.slice(0, 300));
+  if (typeof d.corps === "string") pr.setProperty("INVIT_CORPS", d.corps.slice(0, 3000));
+  if (d.modeleDefaut === true) {
+    pr.deleteProperty("INVIT_SUJET");
+    pr.deleteProperty("INVIT_CORPS");
+  }
   let quota = null;
   try {
     quota = MailApp.getRemainingDailyQuota();
   } catch (e) {}
-  return rep({ ok: true, emails: emailsActifs(), quotaMails: quota });
+  const m = invitModele();
+  return rep({ ok: true, mode: invitMode(), emails: invitMode() === "auto", sujet: m.sujet, corps: m.corps, quotaMails: quota });
 }
 
 /* ---------- pseudos, favoris, retours, jeux en attente (v56) ---------- */
