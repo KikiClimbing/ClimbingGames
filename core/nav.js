@@ -23,6 +23,7 @@ registerClick(e => {
   }
 });
 function buildNav() {
+  if (typeof prepaGarde === "function") prepaGarde();
   if (typeof majTitreDisc === "function") majTitreDisc();
   const items = NAVITEMS.slice().sort(
     (a, b) => a.secOrder - b.secOrder || (a.order || 0) - (b.order || 0)

@@ -62,6 +62,30 @@ let DISC = (() => {
     return "escalade";
   }
 })();
+/* Prépa physique en cours de finalisation : visible seulement par l'administrateur.
+   Passer PREPA_PUBLIQUE à true pour l'ouvrir à tout le monde. */
+const PREPA_PUBLIQUE = false;
+let DISC_MASQ = false;
+const prepaOuverte = () => {
+  if (PREPA_PUBLIQUE) return true;
+  try {
+    return (typeof compteAdmin === "function" && compteAdmin()) || !!sessionStorage.getItem("admPw");
+  } catch (e) {
+    return false;
+  }
+};
+/* si la discipline mémorisée est « prépa » mais que la personne n'y a pas accès : retour à l'escalade (sans effacer son choix) */
+function prepaGarde() {
+  if (DISC === "prepa" && !prepaOuverte()) {
+    DISC = "escalade";
+    DISC_MASQ = true;
+    if (typeof seSwitch === "function") seSwitch();
+  } else if (DISC_MASQ && prepaOuverte()) {
+    DISC = "prepa";
+    DISC_MASQ = false;
+    if (typeof seSwitch === "function") seSwitch();
+  }
+}
 const discDeFamille = f =>
   Object.keys(DISCIPLINES).find(d => DISCIPLINES[d].fams.includes(f)) || "escalade";
 const discDe = g => discDeFamille(g.Famille);

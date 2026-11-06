@@ -1,7 +1,7 @@
 /* Mode hors connexion : mise en cache du site et des schémas consultés.
    ⚠ À chaque nouvelle version du site, changer VERSION (même numéro que « ?v= » de index.html) : c'est ce qui
    fait renouveler le cache. Les données Google (séances…) sont gardées par le site lui-même (core/offline.js). */
-const VERSION = "75";
+const VERSION = "77";
 const CACHE = "site-" + VERSION,
   RUN = "execution";
 

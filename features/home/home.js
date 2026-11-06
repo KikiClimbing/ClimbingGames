@@ -73,6 +73,8 @@ function majTitreDisc() {
 }
 function setDisc(d) {
   if (!DISCIPLINES[d] || d === DISC) return;
+  if (d === "prepa" && !prepaOuverte()) return;
+  DISC_MASQ = false;
   DISC = d;
   try {
     localStorage.setItem("discipline", d);
@@ -98,7 +100,9 @@ registerNav({
   secOrder: -1,
   order: 0,
   html: () =>
-    `<div class="discsw" role="group" aria-label="Discipline">${Object.entries(DISCIPLINES)
+    !prepaOuverte()
+      ? ""
+      : `<div class="discsw" role="group" aria-label="Discipline">${Object.entries(DISCIPLINES)
       .map(
         ([k, d]) =>
           `<button data-disc="${k}" aria-pressed="${k === DISC}" class="${k === DISC ? "on" : ""}">${esc(d.nom)}</button>`

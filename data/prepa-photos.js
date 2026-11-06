@@ -37,5 +37,16 @@ const PREPA_PHOTO = {
  "M45": "data/prepa-photos/Side_Neck_Stretch.jpg",
  "M51": "data/prepa-photos/Lying_Glute.jpg",
  "M54": "data/prepa-photos/Childs_Pose.jpg",
- "K1": "data/prepa-photos/Trail_Running_Walking.jpg"
+ "K1": "data/prepa-photos/Trail_Running_Walking.jpg",
+ "R6": "data/prepa-photos/Face_Pull.jpg",
+ "R45": "data/prepa-photos/Pallof_Press.jpg",
+ "R53": "data/prepa-photos/Pullups.jpg",
+ "R54": "data/prepa-photos/Floor_Glute-Ham_Raise.jpg",
+ "M14": "data/prepa-photos/Kneeling_Forearm_Stretch.jpg",
+ "M15": "data/prepa-photos/Kneeling_Forearm_Stretch.jpg",
+ "M28": "data/prepa-photos/Kneeling_Forearm_Stretch.jpg",
+ "M41": "data/prepa-photos/Standing_Hamstring_and_Calf_Stretch.jpg",
+ "M49": "data/prepa-photos/The_Straddle.jpg",
+ "M56": "data/prepa-photos/Knee_Across_The_Body.jpg",
+ "K4": "data/prepa-photos/Bicycling_Stationary.jpg"
 };
