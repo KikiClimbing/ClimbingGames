@@ -72,6 +72,8 @@ function edHandles(e) {
     h.push({ k: "p", x: g.hip[0], y: g.hip[1] }, { k: "t", x: g.sh[0], y: g.sh[1] });
     h.push({ k: "c", x: (g.hip[0] + g.sh[0]) / 2 + (g.sp[0] - (g.hip[0] + g.sh[0]) / 2), y: g.sp[1] });
     g.legs.forEach((L, i) => h.push({ k: "o" + i, x: L.t[0], y: L.t[1] }));
+  } else if (e.t === "main") {
+    h.push(...mainHandles(e));
   } else if (["climber", "stand", "sit", "pclimber"].includes(e.t)) {
     figFix(e);
     h.push(
@@ -112,7 +114,7 @@ function edRender(panel) {
       const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       c.setAttribute("cx", h.x);
       c.setAttribute("cy", EY(h.y));
-      c.setAttribute("r", h.k === "p" ? 0.62 : h.k === "c" || h.k[0] === "o" ? 0.8 : 1.25); /* bassin : point 2 fois plus petit */
+      c.setAttribute("r", 0.62); /* bassin : point 2 fois plus petit */
       c.setAttribute("fill", h.k[0] === "f" || h.k[0] === "o" ? "#FFF3D6" : h.k === "p" ? "#DDF1E4" : h.k === "c" ? "#EADCF8" : "#fff");
       c.setAttribute("stroke", h.k[0] === "f" || h.k[0] === "o" ? "#E0A030" : h.k === "p" ? "#2E7D4F" : h.k === "c" ? "#7A3FC0" : "#2F6FDB");
       c.setAttribute("stroke-width", ".35");
