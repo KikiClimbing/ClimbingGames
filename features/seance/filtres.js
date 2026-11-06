@@ -1,5 +1,5 @@
 /* Créer une séance — recherche d'exercices avec filtres (famille, objectif, intensité, durée, matériel) */
-const GLF = { fam: "", obj: "", int: "", dur: "", nomat: false, sansexp: false };
+const GLF = { fam: "", obj: "", comp: "", int: "", dur: "", nomat: false, sansexp: false };
 /* durée maximale annoncée dans la fiche (« 5 à 10 min » → 10) */
 const glDuree = g => {
   const n = (String(g["Durée"] || "").match(/\d+/g) || []).map(Number);
@@ -15,6 +15,7 @@ function glListe() {
           .split(",")
           .map(s => s.trim())
           .includes(GLF.obj)) &&
+      (!GLF.comp || compDe(g).includes(GLF.comp)) &&
       (!GLF.int || g["Intensité"] === GLF.int) &&
       (!GLF.dur || (glDuree(g) && glDuree(g) <= +GLF.dur)) &&
       (!GLF.nomat || noMat(g)) &&
@@ -40,6 +41,10 @@ function glFiltresHTML() {
     "obj",
     "Tous objectifs",
     objsDisc().map(o => [o, o])
+  )}${DISC === "prepa" ? "" : sel(
+    "comp",
+    "Toutes compétences",
+    COMP_NOMS.map(o => [o, o])
   )}${sel(
     "int",
     "Toute intensité",

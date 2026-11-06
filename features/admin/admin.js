@@ -107,6 +107,11 @@ async function admCharger() {
   try {
     const j = await admPost("admin_liste", { tous: ADM.tous });
     ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre, codeAvant: g.valeurs.Code || "" }));
+    /* compétences : on affiche le classement de départ des jeux de base tant que la colonne est vide */
+    ADM.list.forEach(g => {
+      if (!g.valeurs["Compétences"] && typeof compDe === "function")
+        g.valeurs["Compétences"] = compDe(g.valeurs).join(", ");
+    });
     ADM.cols = j.colonnes;
     ADM.msg = "";
     if (!ADM.tous) {
@@ -270,10 +275,11 @@ function admView() {
     })
     .join("");
   const tb = admOnglet;
-  const onglets = `<div class="tools atabs">${tb("jeux", "Gérer les jeux")}${tb("schemas", "Schémas")}${tb("retours", "Retours")}${tb("doc", "Documentation")}${admOngletsComptes()}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>`;
+  const onglets = `<div class="tools atabs">${tb("jeux", "Gérer les jeux")}${tb("schemas", "Schémas")}${DISC === "prepa" || (typeof prepaOuverte === "function" && prepaOuverte()) ? tb("illustrer", "À illustrer (prépa)") : ""}${tb("retours", "Retours")}${tb("doc", "Documentation")}${admOngletsComptes()}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>`;
   if (ADM_TABS_COMPTES.includes(ADM.tab)) return head + onglets + admComptesHTML();
   if (ADM.tab === "doc") return head + onglets + docHTML();
   if (ADM.tab === "schemas") return head + onglets + msg + schemasHTML();
+  if (ADM.tab === "illustrer") return head + onglets + admIllustrerHTML();
   return (
     head +
     onglets +
@@ -415,6 +421,12 @@ registerClick(e => {
     ADM.tab = b.dataset.t;
     if (ADM_TABS_COMPTES.includes(ADM.tab)) admComptesCharger();
     render();
+  } else if (a === "illu") {
+    try {
+      sessionStorage.setItem("edPrepaCode", b.dataset.c);
+    } catch (e) {}
+    setDisc("prepa");
+    go("editeur");
   } else if (a === "reload") admCharger();
   else if (a === "mode") {
     ADM.tous = b.dataset.m === "1";
@@ -468,3 +480,16 @@ registerClick(e => {
   }
   return true;
 });
+
+/* Prépa : exercices sans image (ni photo ni schéma validé) */
+function admIllustrerHTML() {
+  const L = DATA.filter(
+    g => discDe(g) === "prepa" && g.Code && !(typeof PREPA_PHOTO !== "undefined" && PREPA_PHOTO[g.Code]) && !PREPA_VALIDES.includes(g.Code)
+  );
+  const ph = Object.keys(PREPA_PHOTO).length;
+  return `<div class="box"><b>Exercices de prépa à illustrer (${L.length})</b><p style="margin:6px 0 0;color:#6B7280;font-size:14px">${ph} exercices ont une photo. Ceux-ci n'ont pas d'image : seul le texte s'affiche. « Dessiner » ouvre le schéma d'origine dans l'éditeur pour le corriger. Une photo, c'est mieux pour les exercices de grimpe (doigts, poignets, suspension) : envoyez-la avec le code de l'exercice.</p></div>
+  <div class="box" style="padding:0;overflow:auto"><table class="tbl" style="width:100%;border-collapse:collapse"><tbody>${L.map(
+    g =>
+      `<tr><td style="padding:6px 10px;white-space:nowrap"><b>${esc(g.Code)}</b></td><td style="padding:6px 10px">${esc(g.Titre)}</td><td style="padding:6px 10px;color:#6B7280">${esc(g.Famille)}</td><td style="padding:6px 10px;text-align:right"><button class="chip" data-adm="illu" data-c="${esc(g.Code)}">✎ Dessiner</button></td></tr>`
+  ).join("")}</tbody></table></div>`;
+}

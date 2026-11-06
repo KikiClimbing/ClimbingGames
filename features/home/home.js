@@ -82,6 +82,7 @@ function setDisc(d) {
   S.q = "";
   GLF.fam = "";
   GLF.obj = "";
+  GLF.comp = "";
   if (typeof seSwitch === "function") seSwitch();
   buildNav();
   const v = VIEW;

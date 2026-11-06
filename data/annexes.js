@@ -173,58 +173,6 @@ const AX = {
       "Laisser les enfants choisir ; chacun explique ce qu'il a progressé.",
     ],
   ],
-  COMP: [
-    [
-      "Lecture du mur",
-      "Repérer les prises, anticiper un trajet, choisir son itinéraire.",
-      ["E1", "E2", "E3", "E6", "E7", "C4", "D1", "D7", "D10", "G2"],
-    ],
-    [
-      "Équilibre et placement des pieds",
-      "Poser précisément les pieds, transférer le poids, tenir une position.",
-      ["E4", "E7", "E8", "C7", "C12", "D7", "D10", "D11", "G4"],
-    ],
-    [
-      "Bassin et amplitude",
-      "Placer le bassin, utiliser l'allonge, varier les gestes.",
-      ["E4", "C12", "D10", "D11", "G4"],
-    ],
-    [
-      "Écoute et réactivité",
-      "Réagir vite à une consigne, un signal, une couleur.",
-      ["E3", "E9", "C1", "D2", "D4", "D8", "G1"],
-    ],
-    [
-      "Confiance et entraide",
-      "S'appuyer sur un partenaire, guider, se laisser guider.",
-      ["E8", "C2", "C3", "C5", "C6", "C9"],
-    ],
-    [
-      "Organisation d'équipe",
-      "S'entendre, répartir les rôles, communiquer.",
-      ["C4", "C9", "C10", "C11", "D1", "D3", "D6", "G3"],
-    ],
-    [
-      "Vitesse et endurance",
-      "Enchaîner des efforts, tenir un rythme, relayer.",
-      ["C1", "C10", "C11", "D2", "D3", "D5", "D6", "D8", "D9"],
-    ],
-    [
-      "Mémoire et observation",
-      "Observer, mémoriser un trajet ou une consigne, reproduire.",
-      ["E1", "E2", "E9", "C4", "D7", "G1", "G2"],
-    ],
-    [
-      "Stratégie",
-      "Choisir une tactique, anticiper l'adversaire, décider vite.",
-      ["C9", "C11", "D4", "D9", "G3"],
-    ],
-    [
-      "Manipulation du matériel",
-      "Utiliser une dégaine, un mousqueton, une sangle, un chrono.",
-      ["E5", "D3", "C5"],
-    ],
-  ],
   GLOSS: [
     ["Amplitude", "Écart maximal entre deux appuis : plus il est grand, plus le geste est ample."],
     ["Appui", "Toute prise ou volume sur lequel on pose un pied ou une main."],

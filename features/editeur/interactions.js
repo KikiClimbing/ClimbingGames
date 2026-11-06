@@ -242,6 +242,18 @@ function edInit() {
       if (pl) pl.innerHTML = edPaletteHTML();
       edRender(true);
     };
+  if ($("#edPrepa")) {
+    let pc = "";
+    try {
+      pc = sessionStorage.getItem("edPrepaCode") || "";
+      sessionStorage.removeItem("edPrepaCode");
+    } catch (e) {}
+    if (pc && PREPA_SCH[pc]) {
+      ED.els = [];
+      $("#edPrepa").value = pc;
+      $("#edPrepa").onchange({ target: $("#edPrepa") });
+    }
+  }
   $("#edOpen").onchange = ev => {
     const f = ev.target.files[0];
     if (!f) return;

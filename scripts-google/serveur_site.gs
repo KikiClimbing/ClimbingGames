@@ -157,7 +157,7 @@ function ajouterJeu(jeu) {
   if (!jeu.Titre || !jeu.Principe) return rep({ ok: false, error: "titre ou principe manquant" });
   const sh = feuilleJeux();
   if (!sh) return rep({ ok: false, error: "feuille des fiches introuvable" });
-  ["Remplace le jeu", "Objectif", "But", "Comportements attendus", "Organisation", "Critères de réussite", "Dosage", "Muscles ciblés"].forEach(c => colonneAssurer(sh, c, jeu));
+  ["Remplace le jeu", "Objectif", "But", "Comportements attendus", "Organisation", "Critères de réussite", "Dosage", "Muscles ciblés", "Compétences"].forEach(c => colonneAssurer(sh, c, jeu));
   const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
   const ligne = head.map(h =>
     h === "Horodateur"
@@ -205,6 +205,7 @@ function adminListe(tous) {
 }
 function adminEnregistrer(d) {
   const sh = feuilleJeux();
+  colonneAssurer(sh, "Compétences", d.valeurs || {});
   const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
   const l = Number(d.ligne);
   if (!(l >= 2 && l <= sh.getLastRow())) return rep({ ok: false, error: "ligne introuvable" });

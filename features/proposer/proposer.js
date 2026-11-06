@@ -51,6 +51,12 @@ const PROP_CHAMPS = [
   { k: "Effectif court", aide: "Pour la vignette. Ex. : 2 équipes égales." },
   { k: "Intensité", t: "select", opts: () => ["Calme", "Modérée", "Intense"], vide: 1 },
   { k: "Objectifs (tags)", t: "tags", opts: () => objsDisc() },
+  {
+    k: "Compétences",
+    t: "tags",
+    opts: () => COMP_NOMS,
+    aide: "Cochez toutes les compétences que le jeu fait travailler (aide au choix des jeux).",
+  },
   { k: "Dosage", aide: "Ex. : 3 séries de 15 répétitions, repos 45 s." },
   {
     k: "Muscles ciblés",
@@ -130,7 +136,7 @@ function propFormHTML(v, d, at, atTag, opt = {}) {
     }
     if (f.t === "tags") {
       const sel = val.split(/,\s*/);
-      return `<div class="sml" style="grid-column:1/-1">${lab}<div class="gchk">${objsDisc(d)
+      return `<div class="sml" style="grid-column:1/-1">${lab}<div class="gchk">${(f.opts && f.k !== "Objectifs (tags)" ? f.opts() : objsDisc(d))
         .map(
           o =>
             `<label class="fl"><input type="checkbox" ${atTag(f.k)} value="${esc(o)}" ${sel.includes(o) ? "checked" : ""}> ${esc(o)}</label>`
@@ -154,7 +160,7 @@ function propFormHTML(v, d, at, atTag, opt = {}) {
       "OBJECTIFS",
       prepa
         ? ["Objectif", "Objectifs (tags)", "Muscles ciblés"]
-        : ["Objectifs (tags)", "Format anniversaire"],
+        : ["Objectifs (tags)", "Compétences", "Format anniversaire"],
     ],
   ];
   const par = k => PROP_CHAMPS.find(f => f.k === k);

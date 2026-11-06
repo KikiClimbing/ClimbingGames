@@ -164,9 +164,9 @@ function guideView(k) {
         "Compétences travaillées",
         "Pour chaque compétence, les jeux qui la font travailler (les dominantes, pas une liste exhaustive)."
       ) +
-      AX.COMP.map(
+      AX.COMP.filter(c => c[2].length || compteAdmin() || !!sessionStorage.getItem("admPw")).map(
         ([t, d, c]) =>
-          `<div class="box"><b style="color:#86690F;font-size:17px">${esc(t)}</b><div style="font-size:14.5px;color:#6B7280;margin-bottom:6px">${esc(d)}</div>${lks(c)}</div>`
+          `<div class="box"><b style="color:#86690F;font-size:17px">${esc(t)}</b><div style="font-size:14.5px;color:#6B7280;margin-bottom:6px">${esc(d)}</div>${c.length ? lks(c) : '<div style="font-size:14px;color:#8A93A5">Aucun jeu pour le moment — cochez cette compétence dans la fiche d\'un jeu.</div>'}</div>`
       ).join("")
     );
   if (k === "equipes")
