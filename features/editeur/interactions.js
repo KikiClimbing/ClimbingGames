@@ -146,6 +146,7 @@ function edInit() {
   $("#edUndo").onclick = edUndo;
   $("#edRedo").onclick = edRedo;
   $("#edClear").onclick = () => {
+    ED.pcode = null;
     if (confirm("Tout effacer ?")) {
       edSnap();
       ED.els = [];
@@ -199,8 +200,27 @@ function edInit() {
     const b = new Blob([JSON.stringify({ els: ED.els, opt: ED.opt })], {
       type: "application/json",
     });
-    edDl(b, "schema-brouillon.json");
+    edDl(b, ED.pcode ? "schema-" + ED.pcode + ".json" : "schema-brouillon.json");
   };
+  if ($("#edPrepa"))
+    $("#edPrepa").onchange = ev => {
+      const c = ev.target.value;
+      if (!c || !PREPA_SCH[c]) return;
+      if (ED.els.length && !confirm("Remplacer le dessin en cours par celui de " + c + " ?")) {
+        ev.target.value = ED.pcode || "";
+        return;
+      }
+      edSnap();
+      const s = JSON.parse(JSON.stringify(PREPA_SCH[c]));
+      ED.els = s.els || [];
+      ED.opt = Object.assign(ED.opt, s.opt || {}, { mode: "sol", vue: "" });
+      ED.pcode = c;
+      ED.next = Math.max(1, ...ED.els.map(e => e.id + 1));
+      ED.sel = null;
+      const pl = $("#edpal");
+      if (pl) pl.innerHTML = edPaletteHTML();
+      edRender(true);
+    };
   $("#edOpen").onchange = ev => {
     const f = ev.target.files[0];
     if (!f) return;
