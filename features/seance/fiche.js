@@ -20,6 +20,7 @@ function itemView(it) {
       plus: g["Plus difficile"],
       moins: g["Plus facile"],
       crit: it.crit,
+      img: g["Schéma (lien)"] || "",
       mat: g["Matériel"],
       noMat: noMat(g),
       resume: g["Résumé"] || "",
@@ -186,6 +187,14 @@ function sheetHTML() {
   h += band(tgs(M, M.c, M.all), "CORPS DE SÉANCE", "#E3EEF8", "#2B5A9E");
   const th = (t, c, f) =>
     `<div style="background:${f};color:${c};font-weight:700;font-size:11px;padding:5px 10px;border-bottom:1px solid #D5DAE5">${t}</div>`;
+  /* lien vers la fiche : s'ouvre en fenêtre (on reste sur la page) */
+  const lk = (v, inner) =>
+    v.code
+      ? `<a data-jeu="${esc(v.code)}" style="cursor:pointer;color:inherit;text-decoration:underline dotted">${inner}</a>`
+      : v.url
+        ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${inner}</a>`
+        : inner;
+  const schema = (SMETA.disc || DISC) === "prepa";
   const exo = (x, n) => {
     const v = x.v,
       L = lines;
@@ -201,17 +210,19 @@ function sheetHTML() {
     const cr = L(v.crit);
     const first = x.same
       ? `<div style="margin:0 0 3px">${x.steps.map(l => `<div><b style="color:${C1}">▸</b> ${esc(l)}</div>`).join("")}</div>`
-      : `<b style="color:${C1}">▸</b> ${v.url ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted"><b>${n}. ${nm}</b></a>` : `<b>${n}. ${nm}</b>`}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}<div style="margin:2px 0;white-space:pre-line">${esc(v.desc)}</div>`;
+      : `<b style="color:${C1}">▸</b> ${lk(v, `<b>${n}. ${nm}</b>`)}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}<div style="margin:2px 0;white-space:pre-line">${esc(v.desc)}</div>`;
     return (
-      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">Fiche ${esc(v.code)} ↗</a> · ` : ""}${esc(v.meta)}</div></div>` +
-      col(v.plus, C2, "+", "#FDF3F2") +
-      col(v.moins, "#2E6F3E", "–", "#F1F8F2") +
-      `<div style="background:#FDF3F2;padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${cr.length ? cr.map(l => `<div><b style="color:#2E6F3E">✓</b> ${esc(l)}</div>`).join("") : ph("✓ [critère observable]") + "<br>" + ph("✓ [critère observable]")}</div>`
+      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? lk(v, `Fiche ${esc(v.code)} ↗`) + " · " : ""}${esc(v.meta)}</div></div>` +
+      (schema ? "" : col(v.plus, C2, "+", "#FDF3F2")) +
+      (schema ? "" : col(v.moins, "#2E6F3E", "–", "#F1F8F2")) +
+      (schema
+        ? `<div style="background:#fff;padding:6px;border-bottom:1px solid #D5DAE5;text-align:center">${v.img ? `<img src="${esc(v.img)}" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:260px;object-fit:contain;cursor:pointer" ${v.code ? `data-jeu="${esc(v.code)}"` : ""} onerror="this.remove()">` : ph("—")}</div>`
+        : `<div style="background:#FDF3F2;padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${cr.length ? cr.map(l => `<div><b style="color:#2E6F3E">✓</b> ${esc(l)}</div>`).join("") : ph("✓ [critère observable]") + "<br>" + ph("✓ [critère observable]")}</div>`)
     );
   };
   if (M.subs.length) {
     let n = 0;
-    h += `<div style="display:grid;grid-template-columns:3.2fr 1.2fr 1.2fr 1.3fr;margin-top:8px"><div style="background:#2B5A9E;color:#E3EEF8;font-weight:700;font-size:11px;padding:5px 10px">EXERCICE / DÉFI / JEU</div>${th("PLUS DIFFICILE (+)", "#B2543A", "#FBE6E4")}${th("PLUS FACILE (–)", "#2E6F3E", "#E6F2E8")}${th("CRITÈRES DE RÉUSSITE", "#B2263A", "#FBE6E4")}`;
+    h += `<div style="display:grid;grid-template-columns:${schema ? "1.6fr 1.4fr" : "3.2fr 1.2fr 1.2fr 1.3fr"};margin-top:8px"><div style="background:#2B5A9E;color:#E3EEF8;font-weight:700;font-size:11px;padding:5px 10px">EXERCICE / DÉFI / JEU</div>${schema ? "" : th("PLUS DIFFICILE (+)", "#B2543A", "#FBE6E4")}${schema ? "" : th("PLUS FACILE (–)", "#2E6F3E", "#E6F2E8")}${schema ? th("SCHÉMA", "#2B5A9E", "#E3EEF8") : th("CRITÈRES DE RÉUSSITE", "#B2263A", "#FBE6E4")}`;
     M.subs.forEach((s, k) => {
       const who =
         s.idx.length < M.G.length
@@ -228,7 +239,7 @@ function sheetHTML() {
         )
         .join(
           ""
-        )} &nbsp;${esc(s.titre || "Sous-section " + (k + 1))}${who}</div><div style="background:#FDF3F2"></div><div style="background:#F1F8F2"></div><div style="background:#FDF3F2"></div>`;
+        )} &nbsp;${esc(s.titre || "Sous-section " + (k + 1))}${who}</div>${schema ? "" : '<div style="background:#FDF3F2"></div><div style="background:#F1F8F2"></div>'}<div style="background:#FDF3F2"></div>`;
       s.views.forEach(x => {
         if (!x.same) n++;
         h += exo(x, n);

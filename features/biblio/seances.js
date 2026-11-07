@@ -273,7 +273,7 @@ const sbPastille = (t, c = sbCouleur(t)) =>
   `<span class="tchip" style="color:${c[0]};background:${c[1]}">${esc(t)}</span>`;
 const celDate = ts => {
   const d = new Date(ts);
-  return `<td>${ts && !isNaN(d) ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "2-digit" }) : ""}</td>`;
+  return `<td>${ts && !isNaN(d) && d.getFullYear() > 2001 ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "2-digit" }) : ""}</td>`;
 };
 const celChip = t => `<td title="${esc(t)}">${t ? sbPastille(t) : ""}</td>`;
 const celTitre = (titre, theme, modele) =>

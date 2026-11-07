@@ -72,8 +72,6 @@ function edHandles(e) {
     h.push({ k: "p", x: g.hip[0], y: g.hip[1] }, { k: "t", x: g.sh[0], y: g.sh[1] });
     h.push({ k: "c", x: (g.hip[0] + g.sh[0]) / 2 + (g.sp[0] - (g.hip[0] + g.sh[0]) / 2), y: g.sp[1] });
     g.legs.forEach((L, i) => h.push({ k: "o" + i, x: L.t[0], y: L.t[1] }, { k: "k" + i, x: L.m[0], y: L.m[1] }));
-  } else if (e.t === "main") {
-    h.push(...mainHandles(e));
   } else if (["climber", "stand", "sit", "pclimber"].includes(e.t)) {
     figFix(e);
     h.push(

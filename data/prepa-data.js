@@ -525,7 +525,7 @@ const PREPA_EMBED = [
   "Voir aussi": "R25, R26, R27",
   "Effectif court": "Seul",
   "Intensité": "Modérée",
-  "Objectifs (tags)": "Épaules",
+  "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
   "Publié": "oui"
  },
@@ -547,7 +547,7 @@ const PREPA_EMBED = [
   "Voir aussi": "R24, R26, R27",
   "Effectif court": "Seul",
   "Intensité": "Modérée",
-  "Objectifs (tags)": "Épaules",
+  "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
   "Publié": "oui"
  },
@@ -569,7 +569,7 @@ const PREPA_EMBED = [
   "Voir aussi": "R24, R25, R27",
   "Effectif court": "Seul",
   "Intensité": "Modérée",
-  "Objectifs (tags)": "Épaules",
+  "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
   "Publié": "oui"
  },
@@ -591,7 +591,7 @@ const PREPA_EMBED = [
   "Voir aussi": "R24, R25, R26",
   "Effectif court": "Seul",
   "Intensité": "Modérée",
-  "Objectifs (tags)": "Épaules",
+  "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
   "Publié": "oui"
  },
@@ -701,7 +701,7 @@ const PREPA_EMBED = [
   "Voir aussi": "R33, R34, R35",
   "Effectif court": "Seul",
   "Intensité": "Modérée",
-  "Objectifs (tags)": "Avant-bras",
+  "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 8 — Coudes)",
   "Publié": "oui"
  },
@@ -723,7 +723,7 @@ const PREPA_EMBED = [
   "Voir aussi": "R32, R34, R35",
   "Effectif court": "Seul",
   "Intensité": "Modérée",
-  "Objectifs (tags)": "Avant-bras",
+  "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 8 — Coudes)",
   "Publié": "oui"
  },

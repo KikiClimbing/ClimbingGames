@@ -37,7 +37,13 @@
   text-overflow: ellipsis;
 }
 .sbl th:nth-child(1) {
-  width: 20%;
+  width: 32%;
+}
+.sbl td:first-child {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.3;
 }
 .sbl th:nth-child(2) {
   width: 11%;
@@ -46,7 +52,7 @@
   width: 11%;
 }
 .sbl th:nth-child(4) {
-  width: 22%;
+  width: 16%;
 }
 .sbl th:last-child {
   width: 92px;

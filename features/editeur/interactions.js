@@ -72,9 +72,7 @@ function edInit() {
     } else {
       const e = d.e,
         h = d.h;
-      if (e.t === "main") {
-        mainDrag(e, h, p);
-      } else if (e.t === "gym" && h === "p") {
+      if (e.t === "gym" && h === "p") {
         e.hip = [+((p[0] - e.x) / e.s).toFixed(2), +((p[1] - e.y) / e.s).toFixed(2)];
       } else if (e.t === "gym" && h === "c") {
         const g = gymGeo(e),

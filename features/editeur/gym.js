@@ -397,7 +397,6 @@ const GYMPOSES = {
 };
 const GYMNOMS = {
   gym: "Personnage (prépa physique)",
-  main: "Main détaillée",
   dumbbell: "Haltère",
   bottle: "Bouteille d'eau",
   pullbar: "Barre de traction",
@@ -597,7 +596,6 @@ function edPaletteSol() {
     sec(
       "PERSONNAGE",
       pb("gym", "blue", "Personnage articulé : choisissez la pose à droite", "🧍 personnage") +
-        pb("main", "blue", "Main détaillée : avant-bras, poignet et doigts articulés", "✋ main détaillée") +
         `<p class="hint" style="margin:6px 0 0">Choisissez la pose dans le panneau de droite, puis glissez les points (mains, pieds, bassin, buste) pour l'ajuster. Deux personnages côte à côte montrent le départ et la fin du mouvement.</p>`
     ) +
     sec(
@@ -629,7 +627,6 @@ function edPaletteSol() {
 }
 /* panneau du personnage et des objets (HTML + liaisons) */
 function gymPanelHTML(e) {
-  if (e.t === "main") return mainPanelHTML(e);
   const sw = (list, cur) =>
     list
       .map(
@@ -680,7 +677,6 @@ function gymPanelHTML(e) {
   return "";
 }
 function gymPanelBind(p, e) {
-  if (e.t === "main") return mainPanelBind(p, e);
   const ps = p.querySelector("[data-gympose]");
   if (ps)
     ps.onchange = ev => {

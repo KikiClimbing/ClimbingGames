@@ -28,11 +28,13 @@ Object.assign(FAMS, {
   Renforcement: { k: "R", l: "#E0F1F1", m: "#B6DFDF", d: "#1F7A7A", a: "#6BBFBF" },
   Mobilité: { k: "M", l: "#F8E2EE", m: "#EDBAD6", d: "#9C3269", a: "#DE8DB8" },
   Cardio: { k: "K", l: "#FDF3D3", m: "#F3DF9E", d: "#8A6D12", a: "#E3C463" },
+  Étirements: { k: "S", l: "#E4F3E6", m: "#B9DEC0", d: "#2C7A43", a: "#6FBF86" },
 });
 const OBJS = ["Échauffement", "Équilibre", "Coopération", "Vitesse", "Observation"];
 /* zones travaillées (prépa physique) : sert d'« objectifs » des exercices */
 const MUSCLES = [
   "Épaules",
+  "Bras",
   "Dos",
   "Avant-bras",
   "Doigts et poignets",
@@ -51,7 +53,7 @@ const DISCIPLINES = {
   prepa: {
     nom: "Prépa physique",
     titre: "Prépa physique",
-    fams: ["Renforcement", "Mobilité", "Cardio"],
+    fams: ["Renforcement", "Mobilité", "Étirements", "Cardio"],
   },
 };
 let DISC = (() => {
