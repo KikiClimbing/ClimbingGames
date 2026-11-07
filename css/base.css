@@ -367,3 +367,5 @@ h2.pt {
 .discsw button{flex:1;border:0;background:transparent;padding:7px 6px;border-radius:8px;font:inherit;font-size:13px;font-weight:700;color:#4A5873;cursor:pointer}
 .discsw button.on{background:#fff;color:#26364D;box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .discsw button:focus-visible{outline:2px solid #2B5A9E;outline-offset:1px}
+.admdd-i{border:0;background:none;text-align:left;padding:8px 12px;border-radius:7px;font:600 14px inherit;font-family:inherit;color:#26364D;cursor:pointer}
+.admdd-i:hover{background:#EEF1F8}.admdd-i.on{background:#E1EBF8;color:#1E4E8C}

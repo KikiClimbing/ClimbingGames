@@ -417,7 +417,11 @@ registerClick(e => {
     ADM.pick = null;
     toast("Schéma choisi : pensez à « Enregistrer » le jeu.");
     render();
+  } else if (a === "menu") {
+    ADM.menu = ADM.menu === b.dataset.g ? "" : b.dataset.g;
+    render();
   } else if (a === "tab") {
+    ADM.menu = "";
     ADM.tab = b.dataset.t;
     if (ADM_TABS_COMPTES.includes(ADM.tab)) admComptesCharger();
     render();

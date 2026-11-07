@@ -52,12 +52,26 @@ function admGroupes() {
 function admMenuHTML() {
   const G = admGroupes();
   const cur = G.find(([, l]) => l.some(([t]) => t === ADM.tab)) || G[0];
-  const col = G.length ? ADM_COULEURS[cur[1][0][0]] : ["#3A8FB0", "#E3F1F6"];
-  return `<div class="tools atabs">${G.map(([n, l]) => {
+  const btns = G.map(([n, l]) => {
     const [c, bg] = ADM_COULEURS[l[0][0]] || ["#3A8FB0", "#E3F1F6"];
-    return `<button class="abtn coul ${n === cur[0] ? "on" : ""}" style="--c:${c};--bg:${bg}" data-adm="tab" data-t="${l[0][0]}">${n}</button>`;
-  }).join("")}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>${cur[1].length > 1 ? `<div class="tools atabs" style="margin-top:-4px;padding-left:4px;border-left:4px solid ${col[0]}">${cur[1].map(([t, l]) => admOnglet(t, l)).join("")}</div>` : ""}`;
+    const ouv = ADM.menu === n;
+    const items = l
+      .map(
+        ([t, lb]) =>
+          `<button class="admdd-i ${ADM.tab === t ? "on" : ""}" data-adm="tab" data-t="${t}">${lb}</button>`
+      )
+      .join("");
+    return `<span class="admdd" style="position:relative;display:inline-block"><button class="abtn coul ${n === cur[0] ? "on" : ""}" style="--c:${c};--bg:${bg}" data-adm="menu" data-g="${esc(n)}">${n} ▾</button>${ouv ? `<div class="admdd-m" style="position:absolute;left:0;top:100%;z-index:30;background:#fff;border:1px solid #D5DBE5;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.15);padding:6px;min-width:190px;display:flex;flex-direction:column;gap:2px;border-top:3px solid ${c}">${items}</div>` : ""}</span>`;
+  }).join("");
+  const lab = (cur[1].find(([t]) => t === ADM.tab) || [])[1];
+  return `<div class="tools atabs">${btns}<span style="color:#6B7280;font-size:14px;margin-left:6px">${lab ? "› " + lab : ""}</span><span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>`;
 }
+document.addEventListener("click", e => {
+  if (ADM.menu && !e.target.closest(".admdd")) {
+    ADM.menu = "";
+    if (typeof VIEW !== "undefined" && VIEW === "admin") render();
+  }
+});
 function admOngletsComptes() {
   if (!compteOn()) return "";
   return [
