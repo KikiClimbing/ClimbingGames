@@ -3,7 +3,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S1",
   "Titre": "Respiration abdominale (respiration diaphragmatique)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Inspire lentement par le nez en gonflant le ventre (la main sur le ventre se soulève, celle sur le sternum bouge peu).",
   "Principe": "Position de départ : Allongé sur le dos, jambes légèrement pliées, pieds à plat au sol, largeur de bassin. Une main sur le ventre, une main sur le sternum.\n\nExécution : 1. Inspire lentement par le nez en gonflant le ventre (la main sur le ventre se soulève, celle sur le sternum bouge peu).\n2. Expire lentement par la bouche en rentrant légèrement le nombril vers la colonne.\n3. Répète 8 à 10 cycles en allongeant progressivement l'expiration.\n\nRespiration : C'est l'exercice de respiration lui-même : inspiration 4 secondes, expiration 6 secondes.",
   "Participants": "Seul",
@@ -28,7 +28,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S2",
   "Titre": "Étirement global d'ouverture — grandissement (« star stretch »)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Inspire en tendant les bras loin au-dessus de la tête et les jambes loin dans l'autre sens, comme si on cherchait à s…",
   "Principe": "Position de départ : Allongé sur le dos, jambes tendues, bras tendus au-dessus de la tête, au sol ou proches du sol.\n\nExécution : 1. Inspire en tendant les bras loin au-dessus de la tête et les jambes loin dans l'autre sens, comme si on cherchait à s'allonger entre deux murs.\n2. Pointe les pieds pour allonger encore les jambes, les mains poussent loin devant sans forcer sur les épaules.\n3. Tiens l'allongement 10 à 15 secondes en respirant normalement, puis relâche complètement.\n4. Répète 3 à 4 fois.\n\nRespiration : Inspire en t'allongeant, respiration libre pendant le maintien, expire en relâchant complètement entre les répétitions.",
   "Participants": "Seul",
@@ -53,7 +53,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S3",
   "Titre": "Genou vers la poitrine (knee to chest stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Ramène un genou vers la poitrine en attrapant le tibia ou l'arrière de la cuisse avec les deux mains.",
   "Principe": "Position de départ : Allongé sur le dos, les deux jambes tendues au sol.\n\nExécution : 1. Ramène un genou vers la poitrine en attrapant le tibia ou l'arrière de la cuisse avec les deux mains.\n2. Garde l'autre jambe tendue et détendue au sol (ou genou plié, pied au sol, si le bas du dos tire trop).\n3. Tire doucement le genou vers l'épaule, tête et épaules restent au sol.\n4. Tiens la position 30 à 40 secondes puis change de jambe.\n\nRespiration : Inspire avant de tirer, expire en approfondissant l'étirement.",
   "Participants": "Seul",
@@ -78,7 +78,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S4",
   "Titre": "Étirement et mobilité des chevilles",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Jambe levée tendue vers le plafond, attrape le pied ou l'arrière de la cuisse avec les deux mains (ou passe une sangl…",
   "Principe": "Position de départ : Allongé sur le dos, une jambe pliée, pied à plat au sol, l'autre jambe tendue à la verticale vers le plafond.\n\nExécution : 1. Jambe levée tendue vers le plafond, attrape le pied ou l'arrière de la cuisse avec les deux mains (ou passe une sangle sous la voûte plantaire).\n2. Tire doucement les orteils vers toi pour étirer le mollet et le tendon d'Achille ; la jambe au sol reste stable, bas du dos plaqué au sol.\n3. Relâche l'étirement passif, puis effectue 10 rotations lentes de la cheville dans un sens, 10 dans l'autre, jambe toujours levée.\n4. Change de jambe.\n\nRespiration : Respiration libre et régulière, pas de blocage.",
   "Participants": "Seul",
@@ -103,7 +103,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S5",
   "Titre": "Torsion lombaire allongée (supine spinal twist)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Ramène les genoux pliés vers la poitrine, pieds décollés du sol.",
   "Principe": "Position de départ : Allongé sur le dos, bras en croix, paumes vers le ciel.\n\nExécution : 1. Ramène les genoux pliés vers la poitrine, pieds décollés du sol.\n2. Laisse tomber les deux genoux d'un côté, vers le sol, en gardant les deux épaules au sol.\n3. Tourne éventuellement la tête du côté opposé aux genoux.\n4. Tiens 30 à 45 secondes puis repasse par le centre avant de changer de côté.\n\nRespiration : Expire en laissant tomber les genoux, respire calmement dans la position.",
   "Participants": "Seul",
@@ -128,7 +128,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S6",
   "Titre": "Ischio-jambiers jambe levée avec sangle (lying hamstring stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Passe la sangle sous la voûte plantaire d'un pied et lève la jambe tendue vers le plafond, genou peu ou pas fléchi.",
   "Principe": "Position de départ : Allongé sur le dos, une sangle, une ceinture ou un tee-shirt roulé à portée de main, les deux jambes tendues au sol.\n\nExécution : 1. Passe la sangle sous la voûte plantaire d'un pied et lève la jambe tendue vers le plafond, genou peu ou pas fléchi.\n2. Garde l'autre jambe tendue et active au sol, ou pliée pied à plat si le bas du dos tire.\n3. Tire doucement sur la sangle pour rapprocher la jambe levée de la verticale, épaules qui restent au sol.\n4. Tiens 45 secondes à 1 minute puis change de jambe.\n\nRespiration : Inspire avant de tirer sur la sangle, expire en rapprochant la jambe du buste.",
   "Participants": "Seul",
@@ -153,7 +153,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S7",
   "Titre": "Charrue (Halasana)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Utilise l'élan des jambes et l'appui des mains au sol pour amener les jambes tendues au-dessus de la tête, puis les p…",
   "Principe": "Position de départ : Allongé sur le dos, bras le long du corps, paumes au sol, jambes tendues.\n\nExécution : 1. Utilise l'élan des jambes et l'appui des mains au sol pour amener les jambes tendues au-dessus de la tête, puis les pieds vers le sol derrière la tête (ou le plus loin possible).\n2. Garde les bras au sol, coudes au sol, mains qui peuvent soutenir le bas du dos si besoin.\n3. Le poids du corps repose sur les épaules et les bras, jamais sur la nuque ni la tête, qui restent immobiles et détendues.\n4. Tiens 30 secondes à 1 minute en respirant calmement, puis redescends vertèbre par vertèbre, très lentement, jambes fléchies si besoin pour protéger le bas du dos.\n\nRespiration : Respiration lente et profonde une fois la position installée ; expire à la descente, très progressive.",
   "Participants": "Seul",
@@ -178,7 +178,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S8",
   "Titre": "Quadriceps allongé sur le côté (« lying quad stretch »)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Plie le genou du dessus et attrape le pied ou la cheville avec la main du même côté.",
   "Principe": "Position de départ : Allongé sur le côté, jambe du dessous légèrement pliée pour l'équilibre, tête posée sur le bras ou la main.\n\nExécution : 1. Plie le genou du dessus et attrape le pied ou la cheville avec la main du même côté.\n2. Ramène doucement le talon vers la fesse, sans creuser le bas du dos.\n3. Pousse légèrement le bassin vers l'avant pour ajouter l'étirement du psoas.\n4. Tiens 30 à 40 secondes puis change de côté.\n\nRespiration : Expire en amenant le talon vers la fesse, respire calmement dans la position tenue.",
   "Participants": "Seul",
@@ -203,7 +203,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S9",
   "Titre": "Sleeper stretch (rotation interne d'épaule)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Plie le coude à 90° : l'avant-bras se redresse et pointe vers le plafond, le haut du bras reste au sol.",
   "Principe": "Position de départ : Allongé sur le côté, épaule du dessous coincée contre le sol, tête posée sur un coussin ou sur le bras libre. Le bras du dessous est tendu à l'horizontale devant toi, à hauteur d'épaule, posé sur le sol.\n\nExécution : 1. Plie le coude à 90° : l'avant-bras se redresse et pointe vers le plafond, le haut du bras reste au sol.\n2. Avec la main du dessus, pousse doucement l'avant-bras vers le sol, en direction des hanches.\n3. Arrête dès que tu sens l'étirement à l'arrière de l'épaule.\n4. Tiens 20 à 30 secondes puis change de côté.\n\nRespiration : Respiration calme et régulière, aucun blocage pendant la poussée.",
   "Participants": "Seul",
@@ -228,7 +228,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S10",
   "Titre": "Sphinx / Cobra",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Place les avant-bras au sol, coudes sous les épaules (position sphinx) ou les mains sous les épaules (position cobra).",
   "Principe": "Position de départ : Allongé sur le ventre, jambes tendues et légèrement écartées, front posé au sol.\n\nExécution : 1. Place les avant-bras au sol, coudes sous les épaules (position sphinx) ou les mains sous les épaules (position cobra).\n2. En appuyant sur les avant-bras ou les mains, soulève doucement le buste en gardant le bassin et le pubis au sol.\n3. Ouvre la poitrine, épaules basses et relâchées, loin des oreilles.\n4. Tiens 20 à 30 secondes, redescends, respire, recommence.\n\nRespiration : Inspire en soulevant le buste, expire en tenant la position, expire à la descente.",
   "Participants": "Seul",
@@ -253,7 +253,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S11",
   "Titre": "Sauterelle (locust pose — Salabhasana)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Inspire en soulevant en même temps le buste, la tête et les deux jambes tendues, quelques centimètres au-dessus du so…",
   "Principe": "Position de départ : Allongé sur le ventre, jambes tendues et serrées, bras le long du corps (paumes vers le sol), front posé au sol.\n\nExécution : 1. Inspire en soulevant en même temps le buste, la tête et les deux jambes tendues, quelques centimètres au-dessus du sol.\n2. Garde la nuque longue (regard vers le sol, pas vers l'avant), fessiers et bas du dos qui se contractent activement.\n3. Tiens 8 à 10 secondes en respirant, puis redescends en expirant.\n4. Répète 2 à 3 fois avec un temps de repos entre chaque montée.\n\nRespiration : Inspire en soulevant, respiration courte pendant le maintien, expire à la descente.",
   "Participants": "Seul",
@@ -278,7 +278,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S12",
   "Titre": "Pince assise (seated forward fold)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Inspire en grandissant la colonne, pars du bassin pour incliner le buste vers l'avant, dos long (pas rond).",
   "Principe": "Position de départ : Assis, jambes tendues devant toi, pieds fléchis (orteils vers toi).\n\nExécution : 1. Inspire en grandissant la colonne, pars du bassin pour incliner le buste vers l'avant, dos long (pas rond).\n2. Attrape les tibias, les chevilles ou les pieds selon ta souplesse du jour.\n3. Laisse les épaules se relâcher, ne cherche pas à toucher les pieds à tout prix.\n4. Tiens 45 secondes à 1 minute en respirant calmement.\n\nRespiration : Expire à chaque tentative d'approfondir légèrement l'étirement.",
   "Participants": "Seul",
@@ -303,7 +303,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S13",
   "Titre": "Papillon (butterfly stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Rapproche les talons du bassin autant que confortable.",
   "Principe": "Position de départ : Assis, plantes des pieds jointes devant toi, genoux ouverts sur les côtés.\n\nExécution : 1. Rapproche les talons du bassin autant que confortable.\n2. Garde le dos droit, grandi depuis le sommet du crâne.\n3. Pose les avant-bras ou les mains sur les tibias/chevilles et laisse le poids du buste incliner légèrement vers l'avant.\n4. Tiens 45 secondes à 1 minute.\n\nRespiration : Respire calmement, expire pour laisser les genoux descendre un peu plus vers le sol.",
   "Participants": "Seul",
@@ -328,7 +328,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S14",
   "Titre": "Torsion assise (seated spinal twist)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Plie le genou droit et pose le pied droit à l'extérieur de la cuisse gauche (ou jambe droite simplement croisée par-d…",
   "Principe": "Position de départ : Assis, jambes tendues devant toi.\n\nExécution : 1. Plie le genou droit et pose le pied droit à l'extérieur de la cuisse gauche (ou jambe droite simplement croisée par-dessus la gauche).\n2. Place la main droite au sol derrière toi pour t'ancrer, et le bras gauche (coude plié ou tendu) contre l'extérieur du genou droit.\n3. Inspire en grandissant la colonne, expire en tournant le buste vers la droite, regard qui suit le mouvement.\n4. Tiens 30 à 40 secondes puis change de côté.\n\nRespiration : Inspire pour grandir, expire pour approfondir la rotation, sans jamais forcer brusquement.",
   "Participants": "Seul",
@@ -353,7 +353,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S15",
   "Titre": "Demi-pigeon assis (figure-4 stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Plie une jambe et pose la cheville sur le genou opposé, tibia le plus horizontal possible (comme un « 4 »).",
   "Principe": "Position de départ : Assis, les deux jambes tendues devant toi.\n\nExécution : 1. Plie une jambe et pose la cheville sur le genou opposé, tibia le plus horizontal possible (comme un « 4 »).\n2. Garde le dos droit, ou incline le buste vers l'avant depuis les hanches pour intensifier.\n3. Utilise les mains pour maintenir doucement le genou plié ouvert vers le sol, sans forcer.\n4. Tiens 45 secondes à 1 minute puis change de jambe.\n\nRespiration : Respiration calme, expire à chaque tentative d'inclinaison supplémentaire du buste.",
   "Participants": "Seul",
@@ -378,7 +378,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S16",
   "Titre": "Chat — Vache (cat-cow stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "En inspirant, creuse le dos (position vache) : ventre vers le sol, poitrine ouverte, regard légèrement vers l'avant.",
   "Principe": "Position de départ : À quatre pattes, mains sous les épaules, genoux sous les hanches, dos plat, regard vers le sol.\n\nExécution : 1. En inspirant, creuse le dos (position vache) : ventre vers le sol, poitrine ouverte, regard légèrement vers l'avant.\n2. En expirant, arrondis le dos (position chat) : pousse le sol avec les mains, nombril rentré, regard vers le nombril.\n3. Enchaîne les deux positions lentement, en suivant la respiration.\n\nRespiration : Inspiration = vache (creux). Expiration = chat (rond). Un cycle = une respiration complète.",
   "Participants": "Seul",
@@ -403,7 +403,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S17",
   "Titre": "Étirement des poignets et avant-bras",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Tourne les doigts d'une main vers les genoux, paume toujours au sol, et incline doucement le poids du corps vers l'ar…",
   "Principe": "Position de départ : À quatre pattes, mains à plat au sol sous les épaules.\n\nExécution : 1. Tourne les doigts d'une main vers les genoux, paume toujours au sol, et incline doucement le poids du corps vers l'arrière pour sentir l'étirement dans l'avant-bras.\n2. Tiens 20 à 30 secondes puis relâche.\n3. Retourne la main, dos de la main au sol, doigts vers les genoux, et incline légèrement le poids vers l'avant pour étirer l'autre face de l'avant-bras.\n4. Répète des deux côtés.\n\nRespiration : Respiration calme et régulière, pas de blocage.",
   "Participants": "Seul",
@@ -428,7 +428,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S18",
   "Titre": "Posture de l'enfant (child's pose)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Penche le buste vers l'avant jusqu'à poser le front au sol.",
   "Principe": "Position de départ : Assis sur les talons, genoux écartés largeur du tapis ou serrés.\n\nExécution : 1. Penche le buste vers l'avant jusqu'à poser le front au sol.\n2. Allonge les bras devant toi, paumes au sol, ou ramène-les le long du corps, paumes vers le ciel.\n3. Laisse le poids du corps s'enfoncer vers les talons, relâche complètement les épaules.\n4. Respire profondément dans le bas du dos pendant 45 secondes à 1 minute.\n\nRespiration : Respiration ample et lente, en essayant de sentir le dos se gonfler à l'inspiration.",
   "Participants": "Seul",
@@ -453,7 +453,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S19",
   "Titre": "Posture de l'aiguille (thread the needle)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Glisse un bras sous le corps, paume vers le ciel, jusqu'à poser l'épaule et la tempe au sol.",
   "Principe": "Position de départ : À quatre pattes, mains sous les épaules, genoux sous les hanches.\n\nExécution : 1. Glisse un bras sous le corps, paume vers le ciel, jusqu'à poser l'épaule et la tempe au sol.\n2. L'autre main reste au sol ou vient se poser doucement sur le bas du dos.\n3. Laisse le poids du buste s'enfoncer légèrement vers le sol côté épaule glissée.\n4. Tiens 30 à 40 secondes puis reviens à quatre pattes avant de changer de côté.\n\nRespiration : Expire en glissant le bras et en relâchant l'épaule vers le sol.",
   "Participants": "Seul",
@@ -478,7 +478,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S20",
   "Titre": "Fente basse — le chevalier servant (low lunge)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Redresse le buste, mains sur la cuisse avant ou bras levés au-dessus de la tête.",
   "Principe": "Position de départ : À quatre pattes, avance un pied entre les mains pour former une fente, genou arrière posé au sol (éventuellement sur un coussin).\n\nExécution : 1. Redresse le buste, mains sur la cuisse avant ou bras levés au-dessus de la tête.\n2. Pousse le bassin doucement vers l'avant et vers le bas, sans creuser excessivement le bas du dos.\n3. Contracte légèrement le fessier de la jambe arrière pour protéger le bas du dos et intensifier l'étirement du psoas.\n4. Tiens 45 secondes à 1 minute puis change de jambe.\n\nRespiration : Expire à chaque poussée du bassin vers l'avant.",
   "Participants": "Seul",
@@ -503,7 +503,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S21",
   "Titre": "Quadriceps assis sur les talons / à genoux (half-kneeling quad stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Redresse le buste, engage légèrement les abdominaux et le fessier de la jambe arrière.",
   "Principe": "Position de départ : Comme en fin de fente basse : genou avant plié à 90°, pied à plat au sol ; genou arrière au sol, pied replié, talon proche de la fesse.\n\nExécution : 1. Redresse le buste, engage légèrement les abdominaux et le fessier de la jambe arrière.\n2. Pousse doucement le bassin vers l'avant en gardant le genou arrière plié au maximum (talon proche de la fesse) : c'est la combinaison hanche tendue + genou plié qui étire le quadriceps.\n3. Pour intensifier, attrape le pied arrière avec la main du même côté et rapproche-le encore un peu de la fesse.\n4. Tiens 30 à 45 secondes puis change de côté.\n\nRespiration : Expire à chaque poussée du bassin vers l'avant.",
   "Participants": "Seul",
@@ -528,7 +528,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S22",
   "Titre": "Grenouille à genoux — Frog Stretch (adducteurs profonds)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Écarte les genoux progressivement sur les côtés, en gardant les chevilles fléchies à 90° par rapport aux genoux.",
   "Principe": "Position de départ : À quatre pattes, genoux écartés progressivement plus largement que les épaules, chevilles alignées avec les genoux.\n\nExécution : 1. Écarte les genoux progressivement sur les côtés, en gardant les chevilles fléchies à 90° par rapport aux genoux.\n2. Pose les avant-bras au sol devant toi pour soutenir le buste.\n3. Recule légèrement le bassin vers les talons jusqu'à sentir un étirement dans l'aine et l'intérieur des cuisses.\n4. Tiens 45 secondes à 1 minute, en respirant profondément.\n\nRespiration : Respiration lente et profonde ; à chaque expiration, laisse le bassin descendre un peu plus vers les talons si confortable.",
   "Participants": "Seul",
@@ -553,7 +553,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S23",
   "Titre": "Étirement du mollet contre un mur (calf stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Recule une jambe tendue, talon au sol, pointe de pied légèrement vers l'intérieur.",
   "Principe": "Position de départ : Debout face à un mur, mains posées au mur à hauteur d'épaules.\n\nExécution : 1. Recule une jambe tendue, talon au sol, pointe de pied légèrement vers l'intérieur.\n2. Avance le bassin vers le mur en gardant le talon arrière plaqué au sol et la jambe tendue.\n3. Tiens 30 à 40 secondes, puis plie légèrement le genou arrière (talon toujours au sol) pour cibler le soléaire, en profondeur du mollet.\n4. Change de jambe.\n\nRespiration : Respiration régulière, expire pour approfondir légèrement à chaque cycle.",
   "Participants": "Seul",
@@ -578,7 +578,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S24",
   "Titre": "Grande flexion avant debout (standing forward fold)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Inspire en grandissant la colonne, bras au-dessus de la tête.",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, genoux légèrement déverrouillés (pas bloqués en extension complète).\n\nExécution : 1. Inspire en grandissant la colonne, bras au-dessus de la tête.\n2. Expire en basculant depuis les hanches vers l'avant, dos qui reste long le plus longtemps possible avant de se relâcher complètement.\n3. Laisse la tête et les bras pendre librement vers le sol, genoux toujours légèrement fléchis.\n4. Tiens 45 secondes à 1 minute, balance légèrement le poids d'un pied à l'autre si besoin pour relâcher davantage.\n\nRespiration : Respiration ample et lente ; à chaque expiration, laisse le corps s'alourdir un peu plus vers le sol.",
   "Participants": "Seul",
@@ -603,7 +603,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S25",
   "Titre": "Étirement des épaules et de la nuque (cross-body shoulder stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Amène un bras tendu devant la poitrine, l'autre bras (avant-bras) vient bloquer le bras tendu juste au- dessus du cou…",
   "Principe": "Position de départ : Debout, dos droit, épaules relâchées.\n\nExécution : 1. Amène un bras tendu devant la poitrine, l'autre bras (avant-bras) vient bloquer le bras tendu juste au- dessus du coude pour l'amener davantage vers le corps.\n2. Tiens 20 à 30 secondes, change de bras.\n3. Pour la nuque, incline doucement la tête vers une épaule, la main du même côté peut ajouter un léger poids sur la tête (sans tirer fort).\n4. Tiens 20 à 30 secondes, change de côté.\n\nRespiration : Respiration libre, épaules qui restent basses et détendues.",
   "Participants": "Seul",
@@ -628,7 +628,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S26",
   "Titre": "Respiration finale et ancrage",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Ferme les yeux quelques secondes, sens les appuis au sol.",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, poids réparti également sur les deux pieds.\n\nExécution : 1. Ferme les yeux quelques secondes, sens les appuis au sol.\n2. Inspire en levant lentement les deux bras au-dessus de la tête, grandis-toi.\n3. Expire en redescendant les bras le long du corps.\n4. Répète 4 à 5 fois, puis termine par quelques pas sur place ou une petite marche pour relancer doucement le corps avant l'entraînement ou la journée.\n\nRespiration : Inspiration ample en levant les bras, expiration longue en les redescendant.",
   "Participants": "Seul",
@@ -653,7 +653,7 @@ PREPA_EMBED.push(...[
  {
   "Code": "S27",
   "Titre": "Ischio-jambiers debout, jambe surélevée (standing hamstring stretch)",
-  "Famille": "Étirements",
+  "Famille": "Mobilité et étirements",
   "Résumé": "Pose un talon sur le support, jambe tendue, pointe de pied qui remonte vers toi.",
   "Principe": "Position de départ : Debout devant une chaise, un banc ou une marche stable, à hauteur de hanche maximum.\n\nExécution : 1. Pose un talon sur le support, jambe tendue, pointe de pied qui remonte vers toi.\n2. Garde la jambe au sol légèrement fléchie et stable.\n3. Inspire en grandissant la colonne, puis expire en inclinant le buste vers l'avant depuis les hanches, dos long.\n4. Tiens 45 secondes à 1 minute puis change de jambe.\n\nRespiration : Expire à chaque tentative d'inclinaison supplémentaire du buste vers l'avant.",
   "Participants": "Seul",
@@ -697,4 +697,4 @@ Object.assign(PREPA_PHOTO, {
  "S26": "data/prepa-photos/Upward_Stretch.jpg",
  "S10": "data/prepa-photos/S10.png"
 });
-PREPA_SEANCES.push(...[{"id":"mod-E60","titre":"Routine d'étirements matinale · 1 heure (du sol vers le debout)","theme":"Étirements","educ":"","dates":"","nb":20,"ts":"2000-01-01T00:00:00.000Z","objectif":"Routine de 60 minutes en 7 phases, du sol vers la position debout. Chaque exercice a 5 variantes (A, B, C : formes différentes, D : facile, E : avancé) et chaque phase propose un exercice alternatif. Planning suggéré : variantes A, B, C en rotation sur la semaine, D après une compétition ou une nuit courte, E quand tout est confortable. Dimanche : version courte ou repos.","jeux":"S1 ; S2 ; S3 ; S4 ; S5 ; S8 ; S9 ; S10 ; S12 ; S13 ; S14 ; S16 ; S17 ; S18 ; S20 ; S21 ; S23 ; S24 ; S25 ; S26","data":"{\"meta\":{\"titre\":\"Routine d'étirements matinale · 1 heure (du sol vers le debout)\",\"periode\":\"\",\"theme\":\"Étirements\",\"educ\":\"\",\"objectif\":\"Routine de 60 minutes en 7 phases, du sol vers la position debout. Chaque exercice a 5 variantes (A, B, C : formes différentes, D : facile, E : avancé) et chaque phase propose un exercice alternatif. Planning suggéré : variantes A, B, C en rotation sur la semaine, D après une compétition ou une nuit courte, E quand tout est confortable. Dimanche : version courte ou repos.\",\"dates\":\"\",\"objCol\":\"\",\"secu\":\"• Aucune position ne doit provoquer de douleur\\n• Ne jamais forcer : mieux vaut moins d'amplitude\\n• Respirer calmement, sans blocage\",\"public\":\"Sportifs, routine du matin\",\"groups\":[{\"nom\":\"Groupe\",\"acc\":0,\"rc\":\"\"}],\"disc\":\"prepa\",\"modele\":true,\"logo\":\"\"},\"se\":{\"id\":\"mod-E60\",\"ech\":{\"on\":false,\"nom\":\"\",\"d\":[0],\"txt\":\"\",\"per\":false,\"gtxt\":[\"\"]},\"subs\":[{\"id\":1,\"titre\":\"Mise en route — allongé sur le dos · 0 → 4 min\",\"gs\":null,\"d\":[4],\"items\":[{\"id\":2,\"t\":\"lib\",\"k\":\"S1\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":3,\"t\":\"lib\",\"k\":\"S2\",\"crit\":\"\",\"dos\":\"1 min (3 à 4 répétitions)\"}]},{\"id\":4,\"titre\":\"Allongé sur le dos — chaîne postérieure, chevilles et bas du dos · 4 → 15 min\",\"gs\":null,\"d\":[11],\"items\":[{\"id\":5,\"t\":\"lib\",\"k\":\"S3\",\"crit\":\"\",\"dos\":\"1 min par jambe\"},{\"id\":6,\"t\":\"lib\",\"k\":\"S4\",\"crit\":\"\",\"dos\":\"30 s par cheville + 10 rotations\"},{\"id\":7,\"t\":\"lib\",\"k\":\"S5\",\"crit\":\"\",\"dos\":\"45 s par côté\"}]},{\"id\":8,\"titre\":\"Allongé sur le côté puis sur le ventre — avant du corps · 15 → 25 min\",\"gs\":null,\"d\":[10],\"items\":[{\"id\":9,\"t\":\"lib\",\"k\":\"S8\",\"crit\":\"\",\"dos\":\"40 s par jambe\"},{\"id\":10,\"t\":\"lib\",\"k\":\"S9\",\"crit\":\"\",\"dos\":\"20 à 30 s par côté\"},{\"id\":11,\"t\":\"lib\",\"k\":\"S10\",\"crit\":\"\",\"dos\":\"30 à 40 s, 2 à 3 répétitions\"}]},{\"id\":12,\"titre\":\"Assis — jambes, hanches et torse · 25 → 35 min\",\"gs\":null,\"d\":[10],\"items\":[{\"id\":13,\"t\":\"lib\",\"k\":\"S12\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"},{\"id\":14,\"t\":\"lib\",\"k\":\"S13\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"},{\"id\":15,\"t\":\"lib\",\"k\":\"S14\",\"crit\":\"\",\"dos\":\"30 à 40 s par côté\"}]},{\"id\":16,\"titre\":\"À quatre pattes — mobilité de la colonne et des poignets · 35 → 43 min\",\"gs\":null,\"d\":[8],\"items\":[{\"id\":17,\"t\":\"lib\",\"k\":\"S16\",\"crit\":\"\",\"dos\":\"8 à 10 cycles\"},{\"id\":18,\"t\":\"lib\",\"k\":\"S17\",\"crit\":\"\",\"dos\":\"20 à 30 s par position\"},{\"id\":19,\"t\":\"lib\",\"k\":\"S18\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"}]},{\"id\":20,\"titre\":\"À genoux et en fente — hanches et cuisses · 43 → 51 min\",\"gs\":null,\"d\":[8],\"items\":[{\"id\":21,\"t\":\"lib\",\"k\":\"S20\",\"crit\":\"\",\"dos\":\"45 s à 1 min par jambe\"},{\"id\":22,\"t\":\"lib\",\"k\":\"S21\",\"crit\":\"\",\"dos\":\"30 à 45 s par jambe\"}]},{\"id\":23,\"titre\":\"Debout — dernière ligne droite · 51 → 60 min\",\"gs\":null,\"d\":[9],\"items\":[{\"id\":24,\"t\":\"lib\",\"k\":\"S23\",\"crit\":\"\",\"dos\":\"30 à 40 s par jambe\"},{\"id\":25,\"t\":\"lib\",\"k\":\"S24\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"},{\"id\":26,\"t\":\"lib\",\"k\":\"S25\",\"crit\":\"\",\"dos\":\"20 à 30 s par côté et par mouvement\"},{\"id\":27,\"t\":\"lib\",\"k\":\"S26\",\"crit\":\"\",\"dos\":\"1 à 2 min\"}]}]}}"},{"id":"mod-E30","titre":"Routine d'étirements · version 30 minutes (jour chargé)","theme":"Étirements","educ":"","dates":"","nb":17,"ts":"2000-01-01T00:00:00.000Z","objectif":"Même progression du sol vers le debout, un exercice par grande zone du corps, sans les exercices secondaires. À utiliser les jours de forte charge d'entraînement ou de peu de temps (environ 30 minutes avec les transitions).","jeux":"S1 ; S2 ; S3 ; S4 ; S5 ; S8 ; S10 ; S12 ; S13 ; S14 ; S16 ; S18 ; S20 ; S23 ; S24 ; S25 ; S26","data":"{\"meta\":{\"titre\":\"Routine d'étirements · version 30 minutes (jour chargé)\",\"periode\":\"\",\"theme\":\"Étirements\",\"educ\":\"\",\"objectif\":\"Même progression du sol vers le debout, un exercice par grande zone du corps, sans les exercices secondaires. À utiliser les jours de forte charge d'entraînement ou de peu de temps (environ 30 minutes avec les transitions).\",\"dates\":\"\",\"objCol\":\"\",\"secu\":\"• Aucune position ne doit provoquer de douleur\\n• Ne jamais forcer : mieux vaut moins d'amplitude\\n• Respirer calmement, sans blocage\",\"public\":\"Sportifs, routine du matin\",\"groups\":[{\"nom\":\"Groupe\",\"acc\":0,\"rc\":\"\"}],\"disc\":\"prepa\",\"modele\":true,\"logo\":\"\"},\"se\":{\"id\":\"mod-E30\",\"ech\":{\"on\":false,\"nom\":\"\",\"d\":[0],\"txt\":\"\",\"per\":false,\"gtxt\":[\"\"]},\"subs\":[{\"id\":1,\"titre\":\"Mise en route\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":2,\"t\":\"lib\",\"k\":\"S1\",\"crit\":\"\",\"dos\":\"1 min\"},{\"id\":3,\"t\":\"lib\",\"k\":\"S2\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":4,\"titre\":\"Allongé dos\",\"gs\":null,\"d\":[5],\"items\":[{\"id\":5,\"t\":\"lib\",\"k\":\"S3\",\"crit\":\"\",\"dos\":\"2 min\"},{\"id\":6,\"t\":\"lib\",\"k\":\"S4\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":7,\"t\":\"lib\",\"k\":\"S5\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":8,\"titre\":\"Côté / ventre\",\"gs\":null,\"d\":[3],\"items\":[{\"id\":9,\"t\":\"lib\",\"k\":\"S8\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":10,\"t\":\"lib\",\"k\":\"S10\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":11,\"titre\":\"Assis\",\"gs\":null,\"d\":[4],\"items\":[{\"id\":12,\"t\":\"lib\",\"k\":\"S12\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":13,\"t\":\"lib\",\"k\":\"S13\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":14,\"t\":\"lib\",\"k\":\"S14\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":15,\"titre\":\"Quatre pattes\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":16,\"t\":\"lib\",\"k\":\"S16\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":17,\"t\":\"lib\",\"k\":\"S18\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":18,\"titre\":\"Genoux / fente\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":19,\"t\":\"lib\",\"k\":\"S20\",\"crit\":\"\",\"dos\":\"2 min\"}]},{\"id\":20,\"titre\":\"Debout\",\"gs\":null,\"d\":[6],\"items\":[{\"id\":21,\"t\":\"lib\",\"k\":\"S23\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":22,\"t\":\"lib\",\"k\":\"S24\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":23,\"t\":\"lib\",\"k\":\"S25\",\"crit\":\"\",\"dos\":\"1 min\"},{\"id\":24,\"t\":\"lib\",\"k\":\"S26\",\"crit\":\"\",\"dos\":\"1 min 30\"}]}]}}"},{"id":"mod-E20","titre":"Routine d'étirements · version 20 minutes (format express)","theme":"Étirements","educ":"","dates":"","nb":11,"ts":"2000-01-01T00:00:00.000Z","objectif":"Le strict nécessaire pour ne pas partir totalement froid : un passage rapide par chaque grande position, sans exercices secondaires ni torsions. À réserver aux matins vraiment pressés (17 à 20 minutes avec les transitions).","jeux":"S1 ; S3 ; S10 ; S12 ; S13 ; S16 ; S18 ; S20 ; S23 ; S24 ; S26","data":"{\"meta\":{\"titre\":\"Routine d'étirements · version 20 minutes (format express)\",\"periode\":\"\",\"theme\":\"Étirements\",\"educ\":\"\",\"objectif\":\"Le strict nécessaire pour ne pas partir totalement froid : un passage rapide par chaque grande position, sans exercices secondaires ni torsions. À réserver aux matins vraiment pressés (17 à 20 minutes avec les transitions).\",\"dates\":\"\",\"objCol\":\"\",\"secu\":\"• Aucune position ne doit provoquer de douleur\\n• Ne jamais forcer : mieux vaut moins d'amplitude\\n• Respirer calmement, sans blocage\",\"public\":\"Sportifs, routine du matin\",\"groups\":[{\"nom\":\"Groupe\",\"acc\":0,\"rc\":\"\"}],\"disc\":\"prepa\",\"modele\":true,\"logo\":\"\"},\"se\":{\"id\":\"mod-E20\",\"ech\":{\"on\":false,\"nom\":\"\",\"d\":[0],\"txt\":\"\",\"per\":false,\"gtxt\":[\"\"]},\"subs\":[{\"id\":1,\"titre\":\"Mise en route\",\"gs\":null,\"d\":[1],\"items\":[{\"id\":2,\"t\":\"lib\",\"k\":\"S1\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":3,\"titre\":\"Allongé dos\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":4,\"t\":\"lib\",\"k\":\"S3\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":5,\"titre\":\"Côté / ventre\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":6,\"t\":\"lib\",\"k\":\"S10\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":7,\"titre\":\"Assis\",\"gs\":null,\"d\":[3],\"items\":[{\"id\":8,\"t\":\"lib\",\"k\":\"S12\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":9,\"t\":\"lib\",\"k\":\"S13\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":10,\"titre\":\"Quatre pattes\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":11,\"t\":\"lib\",\"k\":\"S16\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":12,\"t\":\"lib\",\"k\":\"S18\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":13,\"titre\":\"Genoux / fente\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":14,\"t\":\"lib\",\"k\":\"S20\",\"crit\":\"\",\"dos\":\"2 min\"}]},{\"id\":15,\"titre\":\"Debout\",\"gs\":null,\"d\":[4],\"items\":[{\"id\":16,\"t\":\"lib\",\"k\":\"S23\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":17,\"t\":\"lib\",\"k\":\"S24\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":18,\"t\":\"lib\",\"k\":\"S26\",\"crit\":\"\",\"dos\":\"1 min\"}]}]}}"}]);
+PREPA_SEANCES.push(...[{"id":"mod-E60","titre":"Routine d'étirements matinale · 1 heure (du sol vers le debout)","theme":"Étirements","educ":"","dates":"","nb":20,"ts":"2000-01-01T00:00:00.000Z","objectif":"Routine de 60 minutes en 7 phases, du sol vers la position debout. Chaque exercice a 5 variantes (A, B, C : formes différentes, D : facile, E : avancé) et chaque phase propose un exercice alternatif. Planning suggéré : variantes A, B, C en rotation sur la semaine, D après une compétition ou une nuit courte, E quand tout est confortable. Dimanche : version courte ou repos.","jeux":"Respiration abdominale (respiration diaphragmatique) ; Étirement global d'ouverture — grandissement (« star stretch ») ; Genou vers la poitrine (knee to chest stretch) ; Étirement et mobilité des chevilles ; Torsion lombaire allongée (supine spinal twist) ; Quadriceps allongé sur le côté (« lying quad stretch ») ; Sleeper stretch (rotation interne d'épaule) ; Sphinx / Cobra ; Pince assise (seated forward fold) ; Papillon (butterfly stretch) ; Torsion assise (seated spinal twist) ; Chat — Vache (cat-cow stretch) ; Étirement des poignets et avant-bras ; Posture de l'enfant (child's pose) ; Fente basse — le chevalier servant (low lunge) ; Quadriceps assis sur les talons / à genoux (half-kneeling quad stretch) ; Étirement du mollet contre un mur (calf stretch) ; Grande flexion avant debout (standing forward fold) ; Étirement des épaules et de la nuque (cross-body shoulder stretch) ; Respiration finale et ancrage","data":"{\"meta\":{\"titre\":\"Routine d'étirements matinale · 1 heure (du sol vers le debout)\",\"periode\":\"\",\"theme\":\"Étirements\",\"educ\":\"\",\"objectif\":\"Routine de 60 minutes en 7 phases, du sol vers la position debout. Chaque exercice a 5 variantes (A, B, C : formes différentes, D : facile, E : avancé) et chaque phase propose un exercice alternatif. Planning suggéré : variantes A, B, C en rotation sur la semaine, D après une compétition ou une nuit courte, E quand tout est confortable. Dimanche : version courte ou repos.\",\"dates\":\"\",\"objCol\":\"\",\"secu\":\"• Aucune position ne doit provoquer de douleur\\n• Ne jamais forcer : mieux vaut moins d'amplitude\\n• Respirer calmement, sans blocage\",\"public\":\"Sportifs, routine du matin\",\"groups\":[{\"nom\":\"Groupe\",\"acc\":0,\"rc\":\"\"}],\"disc\":\"prepa\",\"modele\":true,\"logo\":\"\"},\"se\":{\"id\":\"mod-E60\",\"ech\":{\"on\":false,\"nom\":\"\",\"d\":[0],\"txt\":\"\",\"per\":false,\"gtxt\":[\"\"]},\"subs\":[{\"id\":1,\"titre\":\"Mise en route — allongé sur le dos · 0 → 4 min\",\"gs\":null,\"d\":[4],\"items\":[{\"id\":2,\"t\":\"lib\",\"k\":\"S1\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":3,\"t\":\"lib\",\"k\":\"S2\",\"crit\":\"\",\"dos\":\"1 min (3 à 4 répétitions)\"}]},{\"id\":4,\"titre\":\"Allongé sur le dos — chaîne postérieure, chevilles et bas du dos · 4 → 15 min\",\"gs\":null,\"d\":[11],\"items\":[{\"id\":5,\"t\":\"lib\",\"k\":\"S3\",\"crit\":\"\",\"dos\":\"1 min par jambe\"},{\"id\":6,\"t\":\"lib\",\"k\":\"S4\",\"crit\":\"\",\"dos\":\"30 s par cheville + 10 rotations\"},{\"id\":7,\"t\":\"lib\",\"k\":\"S5\",\"crit\":\"\",\"dos\":\"45 s par côté\"}]},{\"id\":8,\"titre\":\"Allongé sur le côté puis sur le ventre — avant du corps · 15 → 25 min\",\"gs\":null,\"d\":[10],\"items\":[{\"id\":9,\"t\":\"lib\",\"k\":\"S8\",\"crit\":\"\",\"dos\":\"40 s par jambe\"},{\"id\":10,\"t\":\"lib\",\"k\":\"S9\",\"crit\":\"\",\"dos\":\"20 à 30 s par côté\"},{\"id\":11,\"t\":\"lib\",\"k\":\"S10\",\"crit\":\"\",\"dos\":\"30 à 40 s, 2 à 3 répétitions\"}]},{\"id\":12,\"titre\":\"Assis — jambes, hanches et torse · 25 → 35 min\",\"gs\":null,\"d\":[10],\"items\":[{\"id\":13,\"t\":\"lib\",\"k\":\"S12\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"},{\"id\":14,\"t\":\"lib\",\"k\":\"S13\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"},{\"id\":15,\"t\":\"lib\",\"k\":\"S14\",\"crit\":\"\",\"dos\":\"30 à 40 s par côté\"}]},{\"id\":16,\"titre\":\"À quatre pattes — mobilité de la colonne et des poignets · 35 → 43 min\",\"gs\":null,\"d\":[8],\"items\":[{\"id\":17,\"t\":\"lib\",\"k\":\"S16\",\"crit\":\"\",\"dos\":\"8 à 10 cycles\"},{\"id\":18,\"t\":\"lib\",\"k\":\"S17\",\"crit\":\"\",\"dos\":\"20 à 30 s par position\"},{\"id\":19,\"t\":\"lib\",\"k\":\"S18\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"}]},{\"id\":20,\"titre\":\"À genoux et en fente — hanches et cuisses · 43 → 51 min\",\"gs\":null,\"d\":[8],\"items\":[{\"id\":21,\"t\":\"lib\",\"k\":\"S20\",\"crit\":\"\",\"dos\":\"45 s à 1 min par jambe\"},{\"id\":22,\"t\":\"lib\",\"k\":\"S21\",\"crit\":\"\",\"dos\":\"30 à 45 s par jambe\"}]},{\"id\":23,\"titre\":\"Debout — dernière ligne droite · 51 → 60 min\",\"gs\":null,\"d\":[9],\"items\":[{\"id\":24,\"t\":\"lib\",\"k\":\"S23\",\"crit\":\"\",\"dos\":\"30 à 40 s par jambe\"},{\"id\":25,\"t\":\"lib\",\"k\":\"S24\",\"crit\":\"\",\"dos\":\"45 s à 1 min\"},{\"id\":26,\"t\":\"lib\",\"k\":\"S25\",\"crit\":\"\",\"dos\":\"20 à 30 s par côté et par mouvement\"},{\"id\":27,\"t\":\"lib\",\"k\":\"S26\",\"crit\":\"\",\"dos\":\"1 à 2 min\"}]}]}}"},{"id":"mod-E30","titre":"Routine d'étirements · version 30 minutes (jour chargé)","theme":"Étirements","educ":"","dates":"","nb":17,"ts":"2000-01-01T00:00:00.000Z","objectif":"Même progression du sol vers le debout, un exercice par grande zone du corps, sans les exercices secondaires. À utiliser les jours de forte charge d'entraînement ou de peu de temps (environ 30 minutes avec les transitions).","jeux":"Respiration abdominale (respiration diaphragmatique) ; Étirement global d'ouverture — grandissement (« star stretch ») ; Genou vers la poitrine (knee to chest stretch) ; Étirement et mobilité des chevilles ; Torsion lombaire allongée (supine spinal twist) ; Quadriceps allongé sur le côté (« lying quad stretch ») ; Sphinx / Cobra ; Pince assise (seated forward fold) ; Papillon (butterfly stretch) ; Torsion assise (seated spinal twist) ; Chat — Vache (cat-cow stretch) ; Posture de l'enfant (child's pose) ; Fente basse — le chevalier servant (low lunge) ; Étirement du mollet contre un mur (calf stretch) ; Grande flexion avant debout (standing forward fold) ; Étirement des épaules et de la nuque (cross-body shoulder stretch) ; Respiration finale et ancrage","data":"{\"meta\":{\"titre\":\"Routine d'étirements · version 30 minutes (jour chargé)\",\"periode\":\"\",\"theme\":\"Étirements\",\"educ\":\"\",\"objectif\":\"Même progression du sol vers le debout, un exercice par grande zone du corps, sans les exercices secondaires. À utiliser les jours de forte charge d'entraînement ou de peu de temps (environ 30 minutes avec les transitions).\",\"dates\":\"\",\"objCol\":\"\",\"secu\":\"• Aucune position ne doit provoquer de douleur\\n• Ne jamais forcer : mieux vaut moins d'amplitude\\n• Respirer calmement, sans blocage\",\"public\":\"Sportifs, routine du matin\",\"groups\":[{\"nom\":\"Groupe\",\"acc\":0,\"rc\":\"\"}],\"disc\":\"prepa\",\"modele\":true,\"logo\":\"\"},\"se\":{\"id\":\"mod-E30\",\"ech\":{\"on\":false,\"nom\":\"\",\"d\":[0],\"txt\":\"\",\"per\":false,\"gtxt\":[\"\"]},\"subs\":[{\"id\":1,\"titre\":\"Mise en route\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":2,\"t\":\"lib\",\"k\":\"S1\",\"crit\":\"\",\"dos\":\"1 min\"},{\"id\":3,\"t\":\"lib\",\"k\":\"S2\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":4,\"titre\":\"Allongé dos\",\"gs\":null,\"d\":[5],\"items\":[{\"id\":5,\"t\":\"lib\",\"k\":\"S3\",\"crit\":\"\",\"dos\":\"2 min\"},{\"id\":6,\"t\":\"lib\",\"k\":\"S4\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":7,\"t\":\"lib\",\"k\":\"S5\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":8,\"titre\":\"Côté / ventre\",\"gs\":null,\"d\":[3],\"items\":[{\"id\":9,\"t\":\"lib\",\"k\":\"S8\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":10,\"t\":\"lib\",\"k\":\"S10\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":11,\"titre\":\"Assis\",\"gs\":null,\"d\":[4],\"items\":[{\"id\":12,\"t\":\"lib\",\"k\":\"S12\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":13,\"t\":\"lib\",\"k\":\"S13\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":14,\"t\":\"lib\",\"k\":\"S14\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":15,\"titre\":\"Quatre pattes\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":16,\"t\":\"lib\",\"k\":\"S16\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":17,\"t\":\"lib\",\"k\":\"S18\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":18,\"titre\":\"Genoux / fente\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":19,\"t\":\"lib\",\"k\":\"S20\",\"crit\":\"\",\"dos\":\"2 min\"}]},{\"id\":20,\"titre\":\"Debout\",\"gs\":null,\"d\":[6],\"items\":[{\"id\":21,\"t\":\"lib\",\"k\":\"S23\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":22,\"t\":\"lib\",\"k\":\"S24\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":23,\"t\":\"lib\",\"k\":\"S25\",\"crit\":\"\",\"dos\":\"1 min\"},{\"id\":24,\"t\":\"lib\",\"k\":\"S26\",\"crit\":\"\",\"dos\":\"1 min 30\"}]}]}}"},{"id":"mod-E20","titre":"Routine d'étirements · version 20 minutes (format express)","theme":"Étirements","educ":"","dates":"","nb":11,"ts":"2000-01-01T00:00:00.000Z","objectif":"Le strict nécessaire pour ne pas partir totalement froid : un passage rapide par chaque grande position, sans exercices secondaires ni torsions. À réserver aux matins vraiment pressés (17 à 20 minutes avec les transitions).","jeux":"Respiration abdominale (respiration diaphragmatique) ; Genou vers la poitrine (knee to chest stretch) ; Sphinx / Cobra ; Pince assise (seated forward fold) ; Papillon (butterfly stretch) ; Chat — Vache (cat-cow stretch) ; Posture de l'enfant (child's pose) ; Fente basse — le chevalier servant (low lunge) ; Étirement du mollet contre un mur (calf stretch) ; Grande flexion avant debout (standing forward fold) ; Respiration finale et ancrage","data":"{\"meta\":{\"titre\":\"Routine d'étirements · version 20 minutes (format express)\",\"periode\":\"\",\"theme\":\"Étirements\",\"educ\":\"\",\"objectif\":\"Le strict nécessaire pour ne pas partir totalement froid : un passage rapide par chaque grande position, sans exercices secondaires ni torsions. À réserver aux matins vraiment pressés (17 à 20 minutes avec les transitions).\",\"dates\":\"\",\"objCol\":\"\",\"secu\":\"• Aucune position ne doit provoquer de douleur\\n• Ne jamais forcer : mieux vaut moins d'amplitude\\n• Respirer calmement, sans blocage\",\"public\":\"Sportifs, routine du matin\",\"groups\":[{\"nom\":\"Groupe\",\"acc\":0,\"rc\":\"\"}],\"disc\":\"prepa\",\"modele\":true,\"logo\":\"\"},\"se\":{\"id\":\"mod-E20\",\"ech\":{\"on\":false,\"nom\":\"\",\"d\":[0],\"txt\":\"\",\"per\":false,\"gtxt\":[\"\"]},\"subs\":[{\"id\":1,\"titre\":\"Mise en route\",\"gs\":null,\"d\":[1],\"items\":[{\"id\":2,\"t\":\"lib\",\"k\":\"S1\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":3,\"titre\":\"Allongé dos\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":4,\"t\":\"lib\",\"k\":\"S3\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":5,\"titre\":\"Côté / ventre\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":6,\"t\":\"lib\",\"k\":\"S10\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":7,\"titre\":\"Assis\",\"gs\":null,\"d\":[3],\"items\":[{\"id\":8,\"t\":\"lib\",\"k\":\"S12\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":9,\"t\":\"lib\",\"k\":\"S13\",\"crit\":\"\",\"dos\":\"1 min 30\"}]},{\"id\":10,\"titre\":\"Quatre pattes\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":11,\"t\":\"lib\",\"k\":\"S16\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":12,\"t\":\"lib\",\"k\":\"S18\",\"crit\":\"\",\"dos\":\"1 min\"}]},{\"id\":13,\"titre\":\"Genoux / fente\",\"gs\":null,\"d\":[2],\"items\":[{\"id\":14,\"t\":\"lib\",\"k\":\"S20\",\"crit\":\"\",\"dos\":\"2 min\"}]},{\"id\":15,\"titre\":\"Debout\",\"gs\":null,\"d\":[4],\"items\":[{\"id\":16,\"t\":\"lib\",\"k\":\"S23\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":17,\"t\":\"lib\",\"k\":\"S24\",\"crit\":\"\",\"dos\":\"1 min 30\"},{\"id\":18,\"t\":\"lib\",\"k\":\"S26\",\"crit\":\"\",\"dos\":\"1 min\"}]}]}}"}]);

@@ -3,10 +3,8 @@
 Object.assign(AX.FAMDESC, {
   Renforcement:
     "Exercices de renforcement complémentaire : équilibrer les muscles que l'escalade sollicite peu (épaules, dos, avant-bras, tronc) et limiter les risques de blessure.",
-  Mobilité:
-    "Étirements et ouverture articulaire (épaules, bassin, poignets, doigts) pour garder de l'amplitude et récupérer.",
-  Étirements:
-    "Routine d'étirements du sol vers le debout : postures détaillées pas à pas, avec 5 variantes par exercice (formes différentes, niveau facile, niveau avancé).",
+  "Mobilité et étirements":
+    "Mobilité articulaire et étirements du sol vers le debout (épaules, bassin, poignets, doigts) : postures détaillées pas à pas, avec des variantes faciles ou avancées, pour garder de l'amplitude et récupérer.",
   Cardio:
     "Course ou vélo à intensité modérée pour garder une base cardiovasculaire sans fatiguer avant la prochaine séance de grimpe.",
 });
