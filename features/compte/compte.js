@@ -31,8 +31,17 @@ function compteVoirComme(email) {
 /* suffixe des clés du navigateur : une personne ne voit pas les copies locales d'une autre */
 const compteSuffixe = () => (compteOn() && AUTH.user ? ":" + AUTH.user.email : "");
 /* séance ou cycle à moi ? (sans comptes : toujours) */
-const compteMien = r =>
-  !compteOn() || !AUTH.user || AUTH.user.admin || !r.owner || r.owner === AUTH.user.email;
+const compteMien = r => {
+  /* séances modèles de la prépa : seul l'administrateur peut les modifier ou les supprimer */
+  if (String(r.id).startsWith("mod-")) {
+    try {
+      return (compteOn() && AUTH.user && !!AUTH.user.admin) || (typeof compteAdmin === "function" && compteAdmin()) || !!sessionStorage.getItem("admPw");
+    } catch (e) {
+      return false;
+    }
+  }
+  return !compteOn() || !AUTH.user || AUTH.user.admin || !r.owner || r.owner === AUTH.user.email;
+};
 function compteExpiree() {
   if (typeof offVider === "function") offVider();
   AUTH.session = "";

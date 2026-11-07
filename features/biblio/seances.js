@@ -84,6 +84,12 @@ function sbTous() {
       partage: x["Partage"] || "",
     })
   );
+  /* séances modèles de la prépa (lecture seule) */
+  if (typeof PREPA_SEANCES !== "undefined")
+    PREPA_SEANCES.forEach(x => {
+      if (typeof x.data !== "string") x.data = JSON.stringify(x.data);
+      garde(x);
+    });
   const del = new Set(sbSupprimees());
   /* propriétaire et partage : toujours ceux du serveur, même si la copie locale est plus récente */
   m.forEach(r => {
@@ -209,7 +215,7 @@ async function enregistrerSeance(meta0, se0) {
 /* ---------- liste ---------- */
 function seancesListeHTML() {
   if (compteOn() && !AUTH.user) return compteInvite();
-  if (!compteOn() && !CONFIG.SEANCES_CSV_URL && !sbLocal().length)
+  if (!compteOn() && !CONFIG.SEANCES_CSV_URL && !sbLocal().length && !(DISC === "prepa" && typeof PREPA_SEANCES !== "undefined"))
     return `<div class="box">La base de séances n'est pas encore configurée. L'administrateur du site doit renseigner <b>SEANCES_CSV_URL</b> et <b>GAME_ADD_URL</b> dans <i>config.js</i>. En attendant, les séances enregistrées depuis ce navigateur apparaissent ici.</div>`;
   const q = norm(SBQ);
   const L = sbAll()
@@ -231,20 +237,22 @@ function seancesListeHTML() {
       };
     })
     .filter(r => r.disc === DISC)
+    .filter(r => !SBMOD || (SBMOD === "mod") === String(r.id).startsWith("mod-"))
     .filter(
       r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj, r.jeux].join(" ")).includes(q)
     );
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     r =>
-      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme)}${cel(r.educ)}${cel(r.dates)}${celChip(r.theme)}${cel(r.obj)}${celDate(r.ts)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right"><a class="chip" data-sbdup="${esc(r.id)}" title="Dupliquer : préparer une nouvelle séance à partir de celle-ci" style="cursor:pointer">⧉</a> ${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme, String(r.id).startsWith("mod-"))}${cel(r.educ)}${cel(r.dates)}${celChip(r.theme)}${cel(r.obj)}${celDate(r.ts)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right"><a class="chip" data-sbdup="${esc(r.id)}" title="Dupliquer : préparer une nouvelle séance à partir de celle-ci" style="cursor:pointer">⧉</a> ${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
-  return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px"></div>
+  return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px">${DISC === "prepa" && typeof PREPA_SEANCES !== "undefined" ? `<select id="sbmod" style="margin-left:8px"><option value="">Toutes les séances</option><option value="mod"${SBMOD === "mod" ? " selected" : ""}>Séances modèles</option><option value="mes"${SBMOD === "mes" ? " selected" : ""}>Mes séances</option></select>` : ""}</div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
   ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th class="c-mod">MODIFIÉ</th>${compteOn() ? '<th class="c-par">PAR</th>' : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
-let SBQ = "";
+let SBQ = "",
+  SBMOD = "";
 /* tableaux colorés : une couleur par thème, pastilles « thème » et « par » */
 const SB_COULEURS = [
   ["#2B5A9E", "#E1EBF8"],
@@ -268,8 +276,8 @@ const celDate = ts => {
   return `<td>${ts && !isNaN(d) ? d.toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "2-digit" }) : ""}</td>`;
 };
 const celChip = t => `<td title="${esc(t)}">${t ? sbPastille(t) : ""}</td>`;
-const celTitre = (titre, theme) =>
-  `<td title="${esc(titre)}" style="font-weight:700;border-left:6px solid ${theme ? sbCouleur(theme)[0] : "#C9D1DE"}">${esc(titre)}</td>`;
+const celTitre = (titre, theme, modele) =>
+  `<td title="${esc(titre)}" style="font-weight:700;border-left:6px solid ${theme ? sbCouleur(theme)[0] : "#C9D1DE"}">${modele ? '<span class="tchip" style="color:#7A4FA3;background:#EEE5F6;margin-right:6px">Modèle</span>' : ""}${esc(titre)}</td>`;
 const celPar = (mien, par) =>
   `<td>${mien ? sbPastille("Moi", ["#2E7D4F", "#E0F1E7"]) : par ? sbPastille(par, ["#2B5A9E", "#E1EBF8"]) : ""}</td>`;
 async function sbSupprimer(id) {

@@ -12,12 +12,14 @@ Object.assign(AX.FAMDESC, {
 /* le schéma est fabriqué à la demande (l'éditeur est chargé après ce fichier) */
 /* codes dont le schéma dessiné a été corrigé et validé : seuls ceux-là (et les photos) sont affichés */
 const PREPA_VALIDES = [];
+/* en attendant les photos : true = on affiche aussi les schémas dessinés (non modifiables par les visiteurs) */
+const PREPA_DESSINS_VISIBLES = true;
 PREPA_EMBED.forEach(g => {
   if (typeof PREPA_PHOTO !== "undefined" && PREPA_PHOTO[g.Code]) {
     /* photo réelle (posture exacte) : remplace le schéma dessiné */
     const u = PREPA_PHOTO[g.Code];
     Object.defineProperty(g, "Schéma (lien)", { enumerable: true, get: () => u });
-  } else if (PREPA_SCH[g.Code] && PREPA_VALIDES.includes(g.Code))
+  } else if (PREPA_SCH[g.Code] && (PREPA_DESSINS_VISIBLES || PREPA_VALIDES.includes(g.Code)))
     Object.defineProperty(g, "Schéma (lien)", {
       enumerable: true,
       get: () => (typeof edSvgUrl === "function" ? edSvgUrl(PREPA_SCH[g.Code]) : ""),

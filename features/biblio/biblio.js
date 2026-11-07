@@ -60,6 +60,12 @@ registerView({
   match: v => v === "biblio",
   html: () => biblioView(),
   bind: () => {
+    const sm = $("#sbmod");
+    if (sm)
+      sm.addEventListener("change", () => {
+        SBMOD = sm.value;
+        render();
+      });
     const q = $("#sbq");
     if (q)
       q.addEventListener("input", () => {

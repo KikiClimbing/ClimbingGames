@@ -21,6 +21,7 @@ const admcBtn = (a, extra, txt, variante = "sm") =>
 /* une couleur par onglet, pour les distinguer d'un coup d'œil */
 const ADM_COULEURS = {
   jeux: ["#C2571A", "#FBE9DC"],
+  illustrer: ["#2E7D4F", "#E0F1E7"],
   schemas: ["#7A4FA3", "#EEE5F6"],
   doc: ["#5B6B82", "#E6EAF0"],
   users: ["#2B5A9E", "#E1EBF8"],
@@ -35,6 +36,27 @@ const ADM_COULEURS = {
 function admOnglet(t, l) {
   const [c, bg] = ADM_COULEURS[t] || ["#3A8FB0", "#E3F1F6"];
   return `<button class="abtn coul ${ADM.tab === t ? "on" : ""}" style="--c:${c};--bg:${bg}" data-adm="tab" data-t="${t}">${l}</button>`;
+}
+/* menu à deux niveaux : 4 rubriques en haut, leurs onglets en dessous */
+function admGroupes() {
+  const c = compteOn(),
+    pr = DISC === "prepa" || (typeof prepaOuverte === "function" && prepaOuverte());
+  const G = [
+    ["Contenu", [["jeux", "Jeux"], ["schemas", "Schémas"], pr && ["illustrer", "À illustrer (prépa)"], c && ["seances", "Séances"], c && ["cycles", "Cycles"]]],
+    ["Personnes", c ? [["users", "Utilisateurs"], ["equipes", "Équipes"], ["invit", "Invitations"]] : []],
+    ["Suivi", [["retours", "Retours"], c && ["activite", "Activité"]]],
+    ["Réglages", [c && ["reglages", "Réglages"], ["doc", "Documentation"]]],
+  ];
+  return G.map(([n, l]) => [n, l.filter(Boolean)]).filter(([, l]) => l.length);
+}
+function admMenuHTML() {
+  const G = admGroupes();
+  const cur = G.find(([, l]) => l.some(([t]) => t === ADM.tab)) || G[0];
+  const col = G.length ? ADM_COULEURS[cur[1][0][0]] : ["#3A8FB0", "#E3F1F6"];
+  return `<div class="tools atabs">${G.map(([n, l]) => {
+    const [c, bg] = ADM_COULEURS[l[0][0]] || ["#3A8FB0", "#E3F1F6"];
+    return `<button class="abtn coul ${n === cur[0] ? "on" : ""}" style="--c:${c};--bg:${bg}" data-adm="tab" data-t="${l[0][0]}">${n}</button>`;
+  }).join("")}<span class="grow" style="flex:1"></span>${compteOn() ? "" : `<a class="abtn no sm" data-adm="logout">Se déconnecter</a>`}</div>${cur[1].length > 1 ? `<div class="tools atabs" style="margin-top:-4px;padding-left:4px;border-left:4px solid ${col[0]}">${cur[1].map(([t, l]) => admOnglet(t, l)).join("")}</div>` : ""}`;
 }
 function admOngletsComptes() {
   if (!compteOn()) return "";
