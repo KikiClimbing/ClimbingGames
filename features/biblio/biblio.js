@@ -35,11 +35,11 @@ function biblioView() {
   const tab =
     BTAB || (compteOn() || CONFIG.SEANCES_CSV_URL || sbLocal().length ? "outil" : "drive");
   const head = gsec(
-    "Séances et cycles",
-    "Vos séances et cycles enregistrés, ceux qu'on a partagés avec vous, et le dossier Google Drive.",
-    "<b>Comment faire ?</b><br>Cliquez sur une ligne pour ouvrir une séance ou un cycle. Vous pouvez l'imprimer, la télécharger en Word, la partager (personnes ou équipes) ou la copier pour la modifier.<br>L'onglet « Drive et modèles » donne le dossier partagé et les modèles Google Docs."
+    cyS("Séances et cycles"),
+    cyS("Vos séances et cycles enregistrés, ceux qu'on a partagés avec vous, et le dossier Google Drive."),
+    cyS("<b>Comment faire ?</b><br>Cliquez sur une ligne pour ouvrir une séance ou un cycle. Vous pouvez l'imprimer, la télécharger en Word, la partager (personnes ou équipes) ou la copier pour la modifier.<br>L'onglet « Drive et modèles » donne le dossier partagé et les modèles Google Docs.")
   );
-  const tabs = `<div class="tools"><div class="seg"><button data-bt="outil" class="${tab === "outil" ? "on" : ""}">Séances créées avec l'outil</button><button data-bt="cycles" class="${tab === "cycles" ? "on" : ""}">Cycles de formation</button><button data-bt="drive" class="${tab === "drive" ? "on" : ""}">Drive et modèles</button></div></div>`;
+  const tabs = cyH(`<div class="tools"><div class="seg"><button data-bt="outil" class="${tab === "outil" ? "on" : ""}">Séances créées avec l'outil</button><button data-bt="cycles" class="${tab === "cycles" ? "on" : ""}">Cycles de formation</button><button data-bt="drive" class="${tab === "drive" ? "on" : ""}">Drive et modèles</button></div></div>`);
   return (
     head +
     tabs +
@@ -54,7 +54,7 @@ registerNav({
   sec: "MES SÉANCES",
   secOrder: 30,
   order: 4,
-  html: () => navBtn("biblio", "Séances et cycles", '<span class="ic">▤</span>'),
+  html: () => navBtn("biblio", cyS("Séances et cycles"), '<span class="ic">▤</span>'),
 });
 registerView({
   match: v => v === "biblio",

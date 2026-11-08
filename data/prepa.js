@@ -3,10 +3,10 @@
 Object.assign(AX.FAMDESC, {
   Renforcement:
     "Exercices de renforcement complémentaire : équilibrer les muscles que l'escalade sollicite peu (épaules, dos, avant-bras, tronc) et limiter les risques de blessure.",
+  Poutre:
+    "Suspensions sur poutre pour la force des doigts (max hangs, 7-53, repeaters). Réservé aux grimpeurs expérimentés, sans blessure récente, avec un échauffement progressif.",
   "Mobilité et étirements":
     "Mobilité articulaire et étirements du sol vers le debout (épaules, bassin, poignets, doigts) : postures détaillées pas à pas, avec des variantes faciles ou avancées, pour garder de l'amplitude et récupérer.",
-  Cardio:
-    "Course ou vélo à intensité modérée pour garder une base cardiovasculaire sans fatiguer avant la prochaine séance de grimpe.",
 });
 /* ajoute les fiches intégrées qui ne sont pas déjà dans la liste donnée (même code) */
 /* le schéma est fabriqué à la demande (l'éditeur est chargé après ce fichier) */

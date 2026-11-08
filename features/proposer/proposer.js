@@ -48,6 +48,7 @@ const PROP_CHAMPS = [
   },
   { k: "Conseil", t: "area", aide: "Sécurité ou astuce d'animation, 1 à 2 phrases." },
   { k: "Voir aussi", aide: "Codes de jeux proches, séparés par des virgules (ex. E4, D11)." },
+  { k: "Type", t: "select", opts: () => ["Renforcement", "Antagoniste"], vide: 1, aide: "Antagoniste : muscles opposés à ceux de la grimpe (poussée, extenseurs)." },
   { k: "Effectif court", aide: "Pour la vignette. Ex. : 2 équipes égales." },
   { k: "Intensité", t: "select", opts: () => ["Calme", "Modérée", "Intense"], vide: 1 },
   { k: "Objectifs (tags)", t: "tags", opts: () => objsDisc() },
@@ -149,11 +150,11 @@ function propFormHTML(v, d, at, atTag, opt = {}) {
   };
   const theme = propTheme(v, d);
   const GROUPES = [
-    ["L'ESSENTIEL", ["Titre", "Famille", "Remplace le jeu", "Résumé", "Principe"]],
+    ["L'ESSENTIEL", prepa ? ["Titre", "Famille", "Type", "Résumé", "Principe"] : ["Titre", "Famille", "Remplace le jeu", "Résumé", "Principe"]],
     [
       "ORGANISATION",
       prepa
-        ? ["Participants", "Matériel", "Espace", "Durée", "Dosage", "Intensité"]
+        ? ["Matériel", "Espace", "Durée", "Dosage"]
         : ["Participants", "Matériel", "Espace", "Durée", "Effectif court", "Intensité"],
     ],
     [
@@ -221,7 +222,7 @@ async function propEnvoyer() {
     if (f.t === "select" && !f.vide && !v[f.k])
       v[f.k] = f.opts()[0]; /* valeur affichée par défaut */
   });
-  const manque = PROP_CHAMPS.filter(f => f.req && !String(v[f.k] || "").trim()).map(f => f.k);
+  const manque = PROP_CHAMPS.filter(f => f.req && !(DISC === "prepa" && f.k === "Participants") && !String(v[f.k] || "").trim()).map(f => f.k);
   if (manque.length) {
     PROP.msg = "À compléter : " + manque.join(", ") + ".";
     render();

@@ -45,7 +45,7 @@ function glFiltresHTML() {
     "comp",
     "Toutes compétences",
     COMP_NOMS.map(o => [o, o])
-  )}${sel(
+  )}${DISC === "prepa" ? "" : sel(
     "int",
     "Toute intensité",
     ["Calme", "Modérée", "Intense"].map(i => [i, i])

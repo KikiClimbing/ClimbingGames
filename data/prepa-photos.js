@@ -27,7 +27,6 @@ const PREPA_PHOTO = {
  "M42": "data/prepa-photos/Standing_Hip_Circles.jpg",
  "M43": "data/prepa-photos/Arm_Circles.jpg",
  "M45": "data/prepa-photos/Side_Neck_Stretch.jpg",
- "K1": "data/prepa-photos/Trail_Running_Walking.jpg",
  "R6": "data/prepa-photos/Face_Pull.jpg",
  "R45": "data/prepa-photos/Pallof_Press.jpg",
  "R53": "data/prepa-photos/Pullups.jpg",
@@ -36,5 +35,4 @@ const PREPA_PHOTO = {
  "M15": "data/prepa-photos/Kneeling_Forearm_Stretch.jpg",
  "M41": "data/prepa-photos/Standing_Hamstring_and_Calf_Stretch.jpg",
  "M49": "data/prepa-photos/The_Straddle.jpg",
- "K4": "data/prepa-photos/Bicycling_Stationary.jpg"
 };

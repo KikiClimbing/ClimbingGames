@@ -237,6 +237,7 @@ function seancesListeHTML() {
       };
     })
     .filter(r => r.disc === DISC)
+    .filter(r => !/^mod-P\d/.test(String(r.id))) /* séances des programmes : visibles dans le programme */
     .filter(r => !SBMOD || (SBMOD === "mod") === String(r.id).startsWith("mod-"))
     .filter(
       r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj, r.jeux].join(" ")).includes(q)
@@ -312,7 +313,7 @@ const SB_ECHEC = {};
 function seanceFicheView(id) {
   const rec = sbAll().find(r => r.id === id);
   const d = rec && sbParse(rec);
-  const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer">← Séances et cycles</a></div>`;
+  const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer">← ${cyS("Séances et cycles")}</a></div>`;
   if (rec && !rec.data && !SB_ECHEC[id]) {
     sbCharger(id)
       .then(() => VIEW.startsWith("sb/") && render())

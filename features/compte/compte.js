@@ -33,7 +33,7 @@ const compteSuffixe = () => (compteOn() && AUTH.user ? ":" + AUTH.user.email : "
 /* séance ou cycle à moi ? (sans comptes : toujours) */
 const compteMien = r => {
   /* séances modèles de la prépa : seul l'administrateur peut les modifier ou les supprimer */
-  if (String(r.id).startsWith("mod-")) {
+  if (/^(cy)?mod-/.test(String(r.id))) {
     try {
       return (compteOn() && AUTH.user && !!AUTH.user.admin) || (typeof compteAdmin === "function" && compteAdmin()) || !!sessionStorage.getItem("admPw");
     } catch (e) {

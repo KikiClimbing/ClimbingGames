@@ -7,7 +7,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Ouvrir l'avant-bras vers l'extérieur en pivotant depuis l'épaule, sans décoller le coude du corps.",
   "Principe": "Position de départ : Debout, de profil par rapport au point d'ancrage de l'élastique. Le coude du bras travaillant est plié à 90° et reste collé contre le flanc pendant tout l'exercice (on peut coincer une serviette roulée entre le coude et les côtes pour le vérifier). L'avant-bras part vers le nombril, paume tournée vers le ventre.\n\nExécution : Ouvrir l'avant-bras vers l'extérieur en pivotant depuis l'épaule, sans décoller le coude du corps. Le mouvement est lent (2s aller, 2s retour), l'amplitude va du nombril jusqu'à environ 45° vers l'extérieur. L'épaule ne monte pas vers l'oreille et le buste ne pivote pas pour aider.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, une serviette",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -17,11 +16,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la résistance de l'élastique toutes les 2 à 3 semaines\n• Ajouter une série une fois les 3x15 maîtrisés sans fatigue excessive",
   "Conseil": "• Charge très légère au départ (élastique fin ou 0,5-1 kg), la coiffe des rotateurs est un petit groupe musculaire\n• Toute douleur = arrêt immédiat de l'exercice\n• Ne pas hausser les épaules vers les oreilles pendant le mouvement",
   "Voir aussi": "R2, R3, R4",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 1 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R2",
@@ -29,7 +27,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Faire pivoter l'avant-bras vers le haut et l'arrière, comme pour armer un lancer, jusqu'à ce qu'il soit à la verticale (ou…",
   "Principe": "Position de départ : Debout, bras levé sur le côté à hauteur d'épaule, coude plié à 90°, avant-bras dirigé vers l'avant et parallèle au sol. L'élastique est ancré devant soi, à hauteur d'épaule.\n\nExécution : Faire pivoter l'avant-bras vers le haut et l'arrière, comme pour armer un lancer, jusqu'à ce qu'il soit à la verticale (ou un peu moins si l'amplitude manque). Le coude reste fixe dans l'espace, à hauteur d'épaule. L'omoplate reste basse et plaquée, le bas du dos ne se cambre pas.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -39,11 +36,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la résistance de l'élastique toutes les 2 à 3 semaines\n• Ajouter une série une fois les 3x15 maîtrisés sans fatigue excessive",
   "Conseil": "• Charge très légère au départ (élastique fin ou 0,5-1 kg), la coiffe des rotateurs est un petit groupe musculaire\n• Toute douleur = arrêt immédiat de l'exercice\n• Ne pas hausser les épaules vers les oreilles pendant le mouvement",
   "Voir aussi": "R1, R3, R4",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 1 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R3",
@@ -51,7 +47,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Position Y : monter les bras vers l'avant et en diagonale, pouces vers le haut, jusqu'à former un Y avec le buste.",
   "Principe": "Position de départ : Debout, pieds écartés largeur de bassin, genoux légèrement fléchis, buste penché vers l'avant à environ 45°, dos plat (ni arrondi ni cambré). Bras pendants vers le sol, un élastique léger tenu à deux mains ou un petit haltère dans chaque main.\n\nExécution : Position Y : monter les bras vers l'avant et en diagonale, pouces vers le haut, jusqu'à former un Y avec le buste. Position T : monter les bras sur les côtés, perpendiculaires au buste, jusqu'à former un T. Dans les deux cas, le mouvement part des omoplates que l'on serre vers le bas et l'arrière. Aucun élan, montée lente, pause 1s en haut.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, un haltère léger ou une bouteille",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -61,11 +56,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la résistance de l'élastique toutes les 2 à 3 semaines\n• Ajouter une série une fois les 3x15 maîtrisés sans fatigue excessive",
   "Conseil": "• Charge très légère au départ (élastique fin ou 0,5-1 kg), la coiffe des rotateurs est un petit groupe musculaire\n• Toute douleur = arrêt immédiat de l'exercice\n• Ne pas hausser les épaules vers les oreilles pendant le mouvement",
   "Voir aussi": "R1, R2, R4",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 1 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R4",
@@ -73,7 +67,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter les bras tendus sur les côtés jusqu'à ce qu'ils arrivent juste en dessous de l'horizontale du dos, sans aller plus…",
   "Principe": "Position de départ : Allongé à plat ventre sur un tapis ou en travers d'un banc, front posé (ou regard vers le sol), bras pendants sur les côtés, perpendiculaires au buste, paumes vers le sol.\n\nExécution : Monter les bras tendus sur les côtés jusqu'à ce qu'ils arrivent juste en dessous de l'horizontale du dos, sans aller plus haut. Serrer les omoplates en fin de mouvement, tenir 1s, redescendre lentement. Les épaules ne remontent pas vers les oreilles, la nuque reste longue.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc, un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -83,11 +76,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la résistance de l'élastique toutes les 2 à 3 semaines\n• Ajouter une série une fois les 3x15 maîtrisés sans fatigue excessive",
   "Conseil": "• Charge très légère au départ (élastique fin ou 0,5-1 kg), la coiffe des rotateurs est un petit groupe musculaire\n• Toute douleur = arrêt immédiat de l'exercice\n• Ne pas hausser les épaules vers les oreilles pendant le mouvement",
   "Voir aussi": "R1, R2, R3",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 1 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R5",
@@ -95,7 +87,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tirer les mains vers le bas des côtes en gardant les coudes proches du corps tout au long du tirage.",
   "Principe": "Position de départ : Debout face au point d'ancrage, élastique fixé à hauteur de poitrine, une extrémité dans chaque main, bras tendus devant soi. Reculer jusqu'à mettre l'élastique légèrement en tension. Pieds largeur de bassin, genoux souples, gainage léger.\n\nExécution : Tirer les mains vers le bas des côtes en gardant les coudes proches du corps tout au long du tirage. L'initiation vient des omoplates que l'on ramène vers l'arrière et vers le bas, pas des bras. Pause 1s en fin de tirage, puis retour lent et contrôlé sans se laisser emporter par l'élastique. Les épaules ne montent jamais vers les oreilles.",
-  "Participants": "Seul",
   "Matériel": "Un élastique",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -105,11 +96,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer d'un élastique léger à moyen\n• Ajouter des haltères plus lourds sur le Y-raise\n• Augmenter le temps de maintien en fin de mouvement",
   "Conseil": "• Éviter de compenser en haussant les trapèzes supérieurs\n• Respirer normalement, ne jamais bloquer sa respiration\n• Contrôler la phase de retour, ne pas se laisser tirer par l'élastique",
   "Voir aussi": "R6, R7, R8, R9",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiches 2 — Dos, 13)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R6",
@@ -117,7 +107,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tirer l'élastique vers le visage en écartant les mains, de façon à finir mains à hauteur des oreilles, élastique vers le…",
   "Principe": "Position de départ : Debout face à l'ancrage, élastique fixé un peu au-dessus de la hauteur du visage. Une extrémité dans chaque main, paumes vers le bas, bras tendus vers l'avant et légèrement vers le haut.\n\nExécution : Tirer l'élastique vers le visage en écartant les mains, de façon à finir mains à hauteur des oreilles, élastique vers le front. En fin de mouvement les avant-bras sont quasi verticaux, comme une double position armée. Serrer les omoplates, tenir 1s, revenir lentement.",
-  "Participants": "Seul",
   "Matériel": "Un élastique",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -127,11 +116,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer d'un élastique léger à moyen\n• Ajouter des haltères plus lourds sur le Y-raise\n• Augmenter le temps de maintien en fin de mouvement",
   "Conseil": "• Éviter de compenser en haussant les trapèzes supérieurs\n• Respirer normalement, ne jamais bloquer sa respiration\n• Contrôler la phase de retour, ne pas se laisser tirer par l'élastique",
   "Voir aussi": "R5, R7, R8, R9",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 2 — Dos)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R7",
@@ -139,7 +127,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter les bras tendus vers l'avant en diagonale pour former un Y avec le buste, pouces dirigés vers le plafond.",
   "Principe": "Position de départ : Debout, buste penché à 45°, dos plat, genoux légèrement fléchis. Un petit haltère (0,5 à 2 kg) dans chaque main ou un élastique léger, bras pendants vers le sol, pouces vers le haut.\n\nExécution : Monter les bras tendus vers l'avant en diagonale pour former un Y avec le buste, pouces dirigés vers le plafond. Le trapèze inférieur travaille : on cherche à faire glisser les omoplates vers le bas et l'arrière pendant la montée. Mouvement lent, sans élan, pause 1s en haut.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, un haltère léger ou une bouteille",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -149,11 +136,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer d'un élastique léger à moyen\n• Ajouter des haltères plus lourds sur le Y-raise\n• Augmenter le temps de maintien en fin de mouvement",
   "Conseil": "• Éviter de compenser en haussant les trapèzes supérieurs\n• Respirer normalement, ne jamais bloquer sa respiration\n• Contrôler la phase de retour, ne pas se laisser tirer par l'élastique",
   "Voir aussi": "R5, R6, R8, R9",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 2 — Dos)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R8",
@@ -161,7 +147,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Serrer les omoplates vers le bas et l'arrière, puis décoller les avant-bras de quelques centimètres en gardant les coudes…",
   "Principe": "Position de départ : Allongé à plat ventre, front léger au sol. Coudes fléchis à 90°, bras écartés à hauteur d'épaule, avant-bras dirigés vers la tête : le buste et les bras dessinent un “W” vu de dessus. Gainage léger, fessiers légèrement contractés.\n\nExécution : Serrer les omoplates vers le bas et l'arrière, puis décoller les avant-bras de quelques centimètres en gardant les coudes fléchis, pouces qui tournent légèrement vers le haut. Tenir 1 à 2s sans hausser les épaules ni décoller la poitrine, puis redescendre lentement (2 à 3s). Le mouvement vient des omoplates, pas des bras.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -171,11 +156,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer d'un élastique léger à moyen\n• Ajouter des haltères plus lourds sur le Y-raise\n• Augmenter le temps de maintien en fin de mouvement",
   "Conseil": "• Éviter de compenser en haussant les trapèzes supérieurs\n• Respirer normalement, ne jamais bloquer sa respiration\n• Contrôler la phase de retour, ne pas se laisser tirer par l'élastique",
   "Voir aussi": "R5, R6, R7, R9",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 2 — Dos)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R9",
@@ -183,7 +167,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Sans plier les coudes, laisser le haut du dos s'enfoncer entre les omoplates, puis pousser activement le sol pour arrondir…",
   "Principe": "Position de départ : En position de planche sur les mains, bras tendus, corps aligné, mains sous les épaules.\n\nExécution : Sans plier les coudes, laisser le haut du dos s'enfoncer entre les omoplates, puis pousser activement le sol pour arrondir légèrement le haut du dos et écarter les omoplates. Seul le haut du dos bouge, les hanches restent immobiles. Amplitude petite mais volontaire, 2s dans chaque sens.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -193,11 +176,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer d'un élastique léger à moyen\n• Ajouter des haltères plus lourds sur le Y-raise\n• Augmenter le temps de maintien en fin de mouvement",
   "Conseil": "• Éviter de compenser en haussant les trapèzes supérieurs\n• Respirer normalement, ne jamais bloquer sa respiration\n• Contrôler la phase de retour, ne pas se laisser tirer par l'élastique",
   "Voir aussi": "R5, R6, R7, R8",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 2 — Dos)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R10",
@@ -205,7 +187,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter le dos de la main vers le plafond en ne bougeant que le poignet, l'avant-bras reste parfaitement plaqué sur le…",
   "Principe": "Position de départ : Assis, avant-bras posé à plat sur une table ou sur la cuisse, paume tournée vers le sol, poignet et main dépassant dans le vide. Un petit haltère (0,5 à 2 kg) ou une bouteille d'eau tenu en prise souple.\n\nExécution : Monter le dos de la main vers le plafond en ne bougeant que le poignet, l'avant-bras reste parfaitement plaqué sur le support. Amplitude complète : remonter jusqu'en haut. Phase de descente très lente (3s), c'est elle qui compte le plus.",
-  "Participants": "Seul",
   "Matériel": "Un haltère léger ou une bouteille, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -215,11 +196,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter très progressivement la charge (les extenseurs progressent lentement)\n• Viser la régularité (2 fois par semaine) plutôt que l'intensité",
   "Conseil": "• Charges très légères au départ, les extenseurs sont un petit groupe musculaire vite sursollicité\n• Arrêter en cas de douleur au coude\n• Ne pas faire cet exercice en cas de douleur active de type épicondylite ; consulter un professionnel de santé",
   "Voir aussi": "R11, R12, R13",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Avant-bras",
   "Auteur": "30 fiches jours sans escalade (fiche 3 — Avant-bras)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R11",
@@ -227,7 +207,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Ouvrir la main en écartant les cinq doigts contre la résistance de l'élastique, jusqu'à l'amplitude maximale confortable.",
   "Principe": "Position de départ : Assis ou debout, avant-bras détendu, main devant soi, doigts et pouce rassemblés en pince. Un petit élastique (ou un gros élastique de bureau) est passé autour des cinq doigts.\n\nExécution : Ouvrir la main en écartant les cinq doigts contre la résistance de l'élastique, jusqu'à l'amplitude maximale confortable. Tenir 1s en position ouverte, puis refermer très lentement en contrôlant le retour. Le poignet reste neutre, l'avant-bras ne bouge pas.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -237,11 +216,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter très progressivement la charge (les extenseurs progressent lentement)\n• Viser la régularité (2 fois par semaine) plutôt que l'intensité",
   "Conseil": "• Charges très légères au départ, les extenseurs sont un petit groupe musculaire vite sursollicité\n• Arrêter en cas de douleur au coude\n• Ne pas faire cet exercice en cas de douleur active de type épicondylite ; consulter un professionnel de santé",
   "Voir aussi": "R10, R12, R13",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Avant-bras",
   "Auteur": "30 fiches jours sans escalade (fiche 3 — Avant-bras)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R12",
@@ -249,7 +227,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Enrouler la corde autour du bâton en alternant les mains, uniquement par des rotations du poignet, jusqu'à remonter le poids.",
   "Principe": "Position de départ : Debout, bras tendus devant soi à hauteur d'épaule, un bâton tenu à deux mains en pronation (paumes vers le sol). Une corde attachée au milieu du bâton, lestée d'un petit poids qui pend au sol.\n\nExécution : Enrouler la corde autour du bâton en alternant les mains, uniquement par des rotations du poignet, jusqu'à remonter le poids. Puis dérouler tout aussi lentement en contrôlant la descente. Les bras restent tendus et immobiles à hauteur d'épaule pendant tout l'exercice.",
-  "Participants": "Seul",
   "Matériel": "Un bâton",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -259,11 +236,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter très progressivement la charge (les extenseurs progressent lentement)\n• Viser la régularité (2 fois par semaine) plutôt que l'intensité",
   "Conseil": "• Charges très légères au départ, les extenseurs sont un petit groupe musculaire vite sursollicité\n• Arrêter en cas de douleur au coude\n• Ne pas faire cet exercice en cas de douleur active de type épicondylite ; consulter un professionnel de santé",
   "Voir aussi": "R10, R11, R13",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Avant-bras",
   "Auteur": "30 fiches jours sans escalade (fiche 3 — Avant-bras)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R13",
@@ -271,7 +247,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Incliner le poignet vers le haut (déviation radiale) puis vers le bas (déviation ulnaire), uniquement par le poignet :…",
   "Principe": "Position de départ : Assis, avant-bras posé sur la cuisse, pouce vers le haut, main dans le vide. Tenir un marteau léger (ou une bouteille) par l'extrémité du manche, la tête du marteau vers le haut.\n\nExécution : Incliner le poignet vers le haut (déviation radiale) puis vers le bas (déviation ulnaire), uniquement par le poignet : l'avant-bras et le coude ne bougent pas. Mouvement lent dans les deux sens, amplitude confortable, sans à-coup. Réduire le levier en rapprochant la main de la tête du marteau si c'est trop dur.",
-  "Participants": "Seul",
   "Matériel": "Un haltère léger ou une bouteille, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -281,11 +256,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter très progressivement la charge (les extenseurs progressent lentement)\n• Viser la régularité (2 fois par semaine) plutôt que l'intensité",
   "Conseil": "• Charges très légères au départ, les extenseurs sont un petit groupe musculaire vite sursollicité\n• Arrêter en cas de douleur au coude\n• Ne pas faire cet exercice en cas de douleur active de type épicondylite ; consulter un professionnel de santé",
   "Voir aussi": "R10, R11, R12",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Avant-bras",
   "Auteur": "30 fiches jours sans escalade (fiche 3 — Avant-bras)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R14",
@@ -293,7 +267,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Le corps forme une ligne droite de la tête aux talons : les hanches ne s'affaissent pas vers le sol et ne remontent pas en…",
   "Principe": "Position de départ : En appui sur les avant-bras et la pointe des pieds. Coudes à l'aplomb des épaules, avant-bras parallèles, mains à plat ou poings fermés. Pieds écartés largeur de bassin.\n\nExécution : Le corps forme une ligne droite de la tête aux talons : les hanches ne s'affaissent pas vers le sol et ne remontent pas en pointe. Rentrer légèrement le menton, regard vers le sol entre les mains. Serrer les fessiers et rentrer le nombril pour verrouiller le bassin. Respirer normalement pendant tout le maintien.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -303,11 +276,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le temps de maintien avant d'ajouter de la charge ou de l'instabilité (ex. pieds surélevés)",
   "Conseil": "• En cas de douleur lombaire, réduire l'amplitude (genoux fléchis pour le hollow body et le dead bug)\n• Ne jamais bloquer la respiration, souffler pendant l'effort",
   "Voir aussi": "R15, R16, R17, R18",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiches 4 — Tronc, 13)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R15",
@@ -315,7 +287,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Décoller la hanche du sol pour aligner cheville, hanche, épaule et tête sur une seule ligne.",
   "Principe": "Position de départ : Allongé sur le côté, en appui sur un avant-bras, coude à l'aplomb de l'épaule. Jambes tendues et superposées, pieds l'un sur l'autre (ou l'un devant l'autre pour plus de stabilité). Main libre sur la hanche.\n\nExécution : Décoller la hanche du sol pour aligner cheville, hanche, épaule et tête sur une seule ligne. La hanche ne redescend pas et ne part pas vers l'arrière. Les épaules restent empilées l'une au-dessus de l'autre, sans rotation du buste. Version plus facile : appui sur le genou de la jambe inférieure.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -325,11 +296,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le temps de maintien avant d'ajouter de la charge ou de l'instabilité (ex. pieds surélevés)",
   "Conseil": "• En cas de douleur lombaire, réduire l'amplitude (genoux fléchis pour le hollow body et le dead bug)\n• Ne jamais bloquer la respiration, souffler pendant l'effort",
   "Voir aussi": "R14, R16, R17, R18",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 4 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R16",
@@ -337,7 +307,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Décoller épaules et jambes de quelques centimètres en gardant impérativement le bas du dos collé au sol : c'est le seul…",
   "Principe": "Position de départ : Allongé sur le dos, bras tendus dans le prolongement de la tête, jambes tendues. Commencer par plaquer fermement le bas du dos contre le sol en basculant le bassin.\n\nExécution : Décoller épaules et jambes de quelques centimètres en gardant impérativement le bas du dos collé au sol : c'est le seul critère qui compte. Dès que la cambrure revient, l'exercice est trop dur — plier alors les genoux ou ramener les bras le long du corps pour réduire le levier. Respirer par petites inspirations sans relâcher le gainage.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -347,11 +316,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le temps de maintien avant d'ajouter de la charge ou de l'instabilité (ex. pieds surélevés)",
   "Conseil": "• En cas de douleur lombaire, réduire l'amplitude (genoux fléchis pour le hollow body et le dead bug)\n• Ne jamais bloquer la respiration, souffler pendant l'effort",
   "Voir aussi": "R14, R15, R17, R18",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 4 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R17",
@@ -359,7 +327,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre simultanément un bras vers l'arrière et la jambe opposée vers l'avant, jusqu'à quelques centimètres du sol, puis…",
   "Principe": "Position de départ : Allongé sur le dos, bras tendus vers le plafond à l'aplomb des épaules, hanches et genoux fléchis à 90° (tibias parallèles au sol). Bas du dos plaqué au sol.\n\nExécution : Descendre simultanément un bras vers l'arrière et la jambe opposée vers l'avant, jusqu'à quelques centimètres du sol, puis revenir et alterner. Le bas du dos reste plaqué au sol pendant tout le mouvement : si la cambrure apparaît, réduire l'amplitude. Souffler pendant la descente, mouvement lent et contrôlé.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -369,11 +336,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le temps de maintien avant d'ajouter de la charge ou de l'instabilité (ex. pieds surélevés)",
   "Conseil": "• En cas de douleur lombaire, réduire l'amplitude (genoux fléchis pour le hollow body et le dead bug)\n• Ne jamais bloquer la respiration, souffler pendant l'effort",
   "Voir aussi": "R14, R15, R16, R18",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 4 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R18",
@@ -381,7 +347,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tendre simultanément un bras vers l'avant et la jambe opposée vers l'arrière, jusqu'à l'horizontale, sans monter plus haut.",
   "Principe": "Position de départ : À quatre pattes, mains à l'aplomb des épaules, genoux à l'aplomb des hanches, dos plat, nuque dans le prolongement (regard vers le sol).\n\nExécution : Tendre simultanément un bras vers l'avant et la jambe opposée vers l'arrière, jusqu'à l'horizontale, sans monter plus haut. Le bassin reste parfaitement horizontal : il ne bascule pas sur le côté (imaginer un verre d'eau posé sur le bas du dos). Tenir 2s, revenir lentement, alterner.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -391,11 +356,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le temps de maintien avant d'ajouter de la charge ou de l'instabilité (ex. pieds surélevés)",
   "Conseil": "• En cas de douleur lombaire, réduire l'amplitude (genoux fléchis pour le hollow body et le dead bug)\n• Ne jamais bloquer la respiration, souffler pendant l'effort",
   "Voir aussi": "R14, R15, R16, R17",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 4 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R19",
@@ -403,7 +367,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre en poussant les fesses vers l'arrière comme pour s'asseoir, puis fléchir les genoux.",
   "Principe": "Position de départ : Debout, pieds écartés largeur d'épaules, pointes de pieds légèrement ouvertes vers l'extérieur. Bras tendus devant soi ou mains sur la poitrine pour l'équilibre.\n\nExécution : Descendre en poussant les fesses vers l'arrière comme pour s'asseoir, puis fléchir les genoux. Les genoux suivent l'axe des pointes de pieds et ne rentrent pas vers l'intérieur. Le dos reste droit, le poids réparti sur tout le pied (talons au sol). Descendre jusqu'à cuisses parallèles au sol si la mobilité le permet, puis remonter en poussant dans les talons.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -413,11 +376,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ajouter du poids (sac à dos lesté, haltères)\n• Augmenter le nombre de répétitions ou passer en unilatéral (ex. pistol squat assisté)",
   "Conseil": "• Privilégier une bonne technique avant d'ajouter de la charge\n• Contrôler la descente pour protéger les genoux",
   "Voir aussi": "R20, R21, R22, R23",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiches 5 — Membres inférieurs, 13)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R20",
@@ -425,7 +387,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre verticalement jusqu'à ce que le genou arrière frôle le sol sans le toucher, les deux genoux formant environ 90°.",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, mains sur les hanches. Faire un grand pas vers l'avant, le poids réparti entre les deux jambes.\n\nExécution : Descendre verticalement jusqu'à ce que le genou arrière frôle le sol sans le toucher, les deux genoux formant environ 90°. Le genou avant reste dans l'axe du pied et ne dépasse pas excessivement la pointe. Le buste reste droit et vertical, pas penché vers l'avant. Remonter en poussant dans le talon de la jambe avant.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -435,11 +396,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ajouter du poids (sac à dos lesté, haltères)\n• Augmenter le nombre de répétitions ou passer en unilatéral (ex. pistol squat assisté)",
   "Conseil": "• Privilégier une bonne technique avant d'ajouter de la charge\n• Contrôler la descente pour protéger les genoux",
   "Voir aussi": "R19, R21, R22, R23",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiches 5 — Membres inférieurs, 13)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R21",
@@ -447,7 +407,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Décoller le bassin en poussant dans les talons, jusqu'à aligner genoux, hanches et épaules.",
   "Principe": "Position de départ : Allongé sur le dos, genoux fléchis, pieds à plat au sol écartés largeur de bassin, talons assez proches des fesses. Bras le long du corps, paumes au sol.\n\nExécution : Décoller le bassin en poussant dans les talons, jusqu'à aligner genoux, hanches et épaules. Serrer volontairement les fessiers en haut du mouvement et tenir 1 à 2s. Ne pas chercher à monter plus haut en cambrant le bas du dos : c'est l'extension de hanche qui monte le bassin, pas la colonne. Redescendre lentement, vertèbre après vertèbre.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -457,11 +416,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ajouter du poids (sac à dos lesté, haltères)\n• Augmenter le nombre de répétitions ou passer en unilatéral (ex. pistol squat assisté)",
   "Conseil": "• Privilégier une bonne technique avant d'ajouter de la charge\n• Contrôler la descente pour protéger les genoux",
   "Voir aussi": "R19, R20, R22, R23",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 5 — Membres inférieurs)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R22",
@@ -469,7 +427,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter lentement sur la pointe des pieds jusqu'à l'amplitude maximale, tenir 1s en haut, puis redescendre très lentement…",
   "Principe": "Position de départ : Debout, pieds parallèles écartés largeur de bassin. Idéalement l'avant des pieds sur une marche, talons dans le vide, une main en appui léger sur un mur pour l'équilibre.\n\nExécution : Monter lentement sur la pointe des pieds jusqu'à l'amplitude maximale, tenir 1s en haut, puis redescendre très lentement (3s) jusqu'à l'étirement complet si l'on est sur une marche. Les chevilles ne partent ni vers l'intérieur ni vers l'extérieur : la poussée passe par les gros orteils.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc, un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -479,11 +436,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ajouter du poids (sac à dos lesté, haltères)\n• Augmenter le nombre de répétitions ou passer en unilatéral (ex. pistol squat assisté)",
   "Conseil": "• Privilégier une bonne technique avant d'ajouter de la charge\n• Contrôler la descente pour protéger les genoux",
   "Voir aussi": "R19, R20, R21, R23",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 5 — Membres inférieurs)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R23",
@@ -491,7 +447,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter en poussant uniquement dans le talon de la jambe posée sur le banc, sans prendre d'élan avec la jambe arrière et sans…",
   "Principe": "Position de départ : Debout face à un banc ou une marche stable arrivant à peu près à hauteur de genou. Un pied posé à plat au centre de la surface, l'autre au sol.\n\nExécution : Monter en poussant uniquement dans le talon de la jambe posée sur le banc, sans prendre d'élan avec la jambe arrière et sans à-coup. Se redresser complètement en haut. Redescendre très lentement en contrôlant tout le trajet (c'est la phase la plus formatrice). Le genou de la jambe qui travaille reste dans l'axe du pied.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -501,11 +456,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ajouter du poids (sac à dos lesté, haltères)\n• Augmenter le nombre de répétitions ou passer en unilatéral (ex. pistol squat assisté)",
   "Conseil": "• Privilégier une bonne technique avant d'ajouter de la charge\n• Contrôler la descente pour protéger les genoux",
   "Voir aussi": "R19, R20, R21, R22",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 5 — Membres inférieurs)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R24",
@@ -513,7 +467,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre en fléchissant les coudes à environ 45° du corps (pas écartés à 90°), jusqu'à ce que la poitrine arrive près du…",
   "Principe": "Position de départ : En appui sur les mains et la pointe des pieds (ou sur les genoux pour la version allégée). Mains légèrement plus écartées que les épaules, à l'aplomb de la poitrine. Corps gainé en ligne droite.\n\nExécution : Descendre en fléchissant les coudes à environ 45° du corps (pas écartés à 90°), jusqu'à ce que la poitrine arrive près du sol. Le corps descend et remonte d'un bloc : les hanches ne s'affaissent pas et ne remontent pas avant les épaules. Souffler à la remontée. Amplitude complète plutôt que nombre de répétitions.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -523,11 +476,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer des pompes genoux aux pompes pieds\n• Ajouter du lest sur les dips\n• Augmenter à 4 séries",
   "Conseil": "• Bien échauffer les épaules avant les dips\n• Réduire l'amplitude en cas d'inconfort articulaire",
   "Voir aussi": "R25, R26, R27",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R25",
@@ -535,7 +487,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre en fléchissant les coudes vers l'arrière, en gardant le buste proche de la chaise.",
   "Principe": "Position de départ : Assis au bord d'une chaise ou d'un banc stable, mains posées de part et d'autre des hanches, doigts vers l'avant. Avancer les fesses dans le vide, jambes tendues ou genoux fléchis (version plus facile).\n\nExécution : Descendre en fléchissant les coudes vers l'arrière, en gardant le buste proche de la chaise. Descendre uniquement dans une amplitude confortable — inutile et déconseillé de descendre très bas. Les épaules restent basses et actives, elles ne remontent pas vers les oreilles. Remonter en poussant dans les paumes, sans verrouiller brutalement les coudes.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -545,11 +496,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer des pompes genoux aux pompes pieds\n• Ajouter du lest sur les dips\n• Augmenter à 4 séries",
   "Conseil": "• Bien échauffer les épaules avant les dips\n• Réduire l'amplitude en cas d'inconfort articulaire",
   "Voir aussi": "R24, R26, R27",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R26",
@@ -557,7 +507,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Pousser les mains verticalement au-dessus de la tête jusqu'à bras tendus, sans verrouiller brutalement les coudes.",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, gainage abdominal actif. Un petit haltère dans chaque main à hauteur d'épaules, coudes fléchis, paumes vers l'avant (ou élastique sous les pieds).\n\nExécution : Pousser les mains verticalement au-dessus de la tête jusqu'à bras tendus, sans verrouiller brutalement les coudes. Le bas du dos ne se cambre pas : serrer les fessiers et rentrer les côtes pour verrouiller le buste. Redescendre lentement jusqu'à hauteur d'oreilles. Charge très légère, la technique prime.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, un haltère léger ou une bouteille",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -567,11 +516,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer des pompes genoux aux pompes pieds\n• Ajouter du lest sur les dips\n• Augmenter à 4 séries",
   "Conseil": "• Bien échauffer les épaules avant les dips\n• Réduire l'amplitude en cas d'inconfort articulaire",
   "Voir aussi": "R24, R25, R27",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R27",
@@ -579,7 +527,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tendre les coudes pour amener les mains au-dessus de la tête, sans que les coudes ne s'écartent vers l'extérieur ni ne se…",
   "Principe": "Position de départ : Debout, élastique tenu à deux mains derrière la tête (ancrage au sol sous un pied), coudes fléchis et pointés vers le plafond, mains derrière la nuque. Variante : élastique ancré en hauteur et tirage vers le bas, coudes le long du corps.\n\nExécution : Tendre les coudes pour amener les mains au-dessus de la tête, sans que les coudes ne s'écartent vers l'extérieur ni ne se déplacent vers l'avant : seuls les avant-bras bougent. Revenir lentement en contrôlant l'élastique. Le buste reste droit, le bas du dos ne se cambre pas.",
-  "Participants": "Seul",
   "Matériel": "Un élastique",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -589,11 +536,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer des pompes genoux aux pompes pieds\n• Ajouter du lest sur les dips\n• Augmenter à 4 séries",
   "Conseil": "• Bien échauffer les épaules avant les dips\n• Réduire l'amplitude en cas d'inconfort articulaire",
   "Voir aussi": "R24, R25, R26",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 6 — Push / triceps)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R28",
@@ -601,7 +547,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Sans plier les coudes, abaisser les épaules pour éloigner les oreilles des mains : le corps monte de 3 à 5 cm seulement.",
   "Principe": "Position de départ : Suspendu bras tendus à une barre, prise largeur d'épaules, épaules volontairement relâchées vers les oreilles au départ. Jambes croisées ou légèrement fléchies, corps immobile.\n\nExécution : Sans plier les coudes, abaisser les épaules pour éloigner les oreilles des mains : le corps monte de 3 à 5 cm seulement. Tenir 2s en haut, puis redescendre lentement en position relâchée. Les coudes restent tendus pendant tout le mouvement — dès qu'ils plient, c'est une traction et l'exercice perd son intérêt.\n\nPlus facile : Pieds au sol ou sur une chaise pour retirer une partie du poids du corps.\n\nPlus difficile : Suspension à une seule main en alternance, ou lest léger sur un baudrier.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -611,11 +556,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'ajouter du lest\n• Passer à une suspension active sur un bras assistée par un élastique une fois 4x8 maîtrisés proprement",
   "Conseil": "• Arrêter immédiatement en cas de douleur d'épaule en suspension\n• Si les doigts fatiguent avant les épaules, utiliser une prise plus confortable ou un élastique d'assistance\n• Ne pas enchaîner cette fiche juste avant une séance de grimpe exigeante pour les doigts",
   "Voir aussi": "R29, R30, R31",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiches 7 — Contrôle scapulaire et suspension active, 12)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R29",
@@ -623,7 +567,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Rester suspendu en respirant calmement, sans balancer.",
   "Principe": "Position de départ : Suspendu bras tendus, prise largeur d'épaules, corps relâché mais gainé, jambes immobiles.\n\nExécution : Rester suspendu en respirant calmement, sans balancer. Garder une légère activation des épaules (ni totalement effondré, ni totalement tiré vers le haut). Si les doigts sont le facteur limitant avant les épaules, réduire la durée : cette fiche vise l'épaule, pas les doigts.\n\nPlus facile : Élastique d'assistance sous les pieds, ou appui partiel d'un pied au sol.\n\nPlus difficile : Suspension à une main, quelques secondes en alternance.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -633,11 +576,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'ajouter du lest\n• Passer à une suspension active sur un bras assistée par un élastique une fois 4x8 maîtrisés proprement",
   "Conseil": "• Arrêter immédiatement en cas de douleur d'épaule en suspension\n• Si les doigts fatiguent avant les épaules, utiliser une prise plus confortable ou un élastique d'assistance\n• Ne pas enchaîner cette fiche juste avant une séance de grimpe exigeante pour les doigts",
   "Voir aussi": "R28, R30, R31",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 7 — Contrôle scapulaire et suspension active)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R30",
@@ -645,7 +587,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Sans plier les coudes ni bouger le corps, pousser activement les omoplates vers l'avant et les écarter l'une de l'autre…",
   "Principe": "Position de départ : Suspendu bras tendus à une barre, prise largeur d'épaules, corps immobile, jambes croisées ou légèrement fléchies.\n\nExécution : Sans plier les coudes ni bouger le corps, pousser activement les omoplates vers l'avant et les écarter l'une de l'autre (protraction), comme pour repousser la barre vers le haut, puis relâcher en les laissant se rapprocher. Le mouvement est petit et localisé entre les omoplates : le reste du corps reste immobile.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -655,11 +596,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'ajouter du lest\n• Passer à une suspension active sur un bras assistée par un élastique une fois 4x8 maîtrisés proprement",
   "Conseil": "• Arrêter immédiatement en cas de douleur d'épaule en suspension\n• Si les doigts fatiguent avant les épaules, utiliser une prise plus confortable ou un élastique d'assistance\n• Ne pas enchaîner cette fiche juste avant une séance de grimpe exigeante pour les doigts",
   "Voir aussi": "R28, R29, R31",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 7 — Contrôle scapulaire et suspension active)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R31",
@@ -667,7 +607,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Faire glisser les bras vers le haut le long du mur en gardant coudes et mains en contact, jusqu'à l'amplitude où le contact…",
   "Principe": "Position de départ : Debout dos au mur, talons à 10 cm du mur, bas du dos plaqué. Bras en W contre le mur : coudes fléchis à 90°, dos des mains et coudes en contact avec le mur.\n\nExécution : Faire glisser les bras vers le haut le long du mur en gardant coudes et mains en contact, jusqu'à l'amplitude où le contact se perd — s'arrêter là. Le bas du dos ne se décolle jamais du mur : si les côtes s'ouvrent, l'exercice ne travaille plus le bon secteur. Redescendre lentement en serrant les omoplates vers le bas.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -677,11 +616,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'ajouter du lest\n• Passer à une suspension active sur un bras assistée par un élastique une fois 4x8 maîtrisés proprement",
   "Conseil": "• Arrêter immédiatement en cas de douleur d'épaule en suspension\n• Si les doigts fatiguent avant les épaules, utiliser une prise plus confortable ou un élastique d'assistance\n• Ne pas enchaîner cette fiche juste avant une séance de grimpe exigeante pour les doigts",
   "Voir aussi": "R28, R29, R30",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 7 — Contrôle scapulaire et suspension active)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R32",
@@ -689,7 +627,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tenir la position immobile en respirant.",
   "Principe": "Position de départ : Suspendu à la barre, coudes fléchis à environ 90°, menton en dessous ou au niveau des mains, épaules basses et actives.\n\nExécution : Tenir la position immobile en respirant. Ne pas laisser les épaules remonter vers les oreilles ni le corps se balancer. Descendre dès que la position se dégrade plutôt que d'aller à l'échec. Version allégée : pieds en appui partiel au sol ou sur une chaise.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction, une chaise ou un banc",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -699,11 +636,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter d'abord la durée des isométriques, puis la charge des excentriques\n• Deux séances hebdomadaires espacées valent mieux qu'une séance intense",
   "Conseil": "• Cette fiche ne remplace aucun avis médical : une douleur de coude installée doit être évaluée par un professionnel de santé\n• Ne jamais pousser jusqu'à la douleur ; une gêne légère qui disparaît à l'échauffement peut être tolérable, une douleur croissante non\n• Progression très lente : les structures tendineuses s'adaptent bien plus lentement que les muscles",
   "Voir aussi": "R33, R34, R35",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 8 — Coudes)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R33",
@@ -711,7 +647,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter en 2s, puis redescendre en 4s en contrôlant tout le trajet — c'est la descente qui compte.",
   "Principe": "Position de départ : Debout ou assis, un haltère léger tenu en prise marteau (pouce vers le haut), bras le long du corps, coude collé au flanc.\n\nExécution : Monter en 2s, puis redescendre en 4s en contrôlant tout le trajet — c'est la descente qui compte. Le coude reste fixe contre le corps, aucun balancement du buste. Charge légère volontairement : la qualité de la descente prime sur le poids.",
-  "Participants": "Seul",
   "Matériel": "Un haltère léger ou une bouteille",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -721,11 +656,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter d'abord la durée des isométriques, puis la charge des excentriques\n• Deux séances hebdomadaires espacées valent mieux qu'une séance intense",
   "Conseil": "• Cette fiche ne remplace aucun avis médical : une douleur de coude installée doit être évaluée par un professionnel de santé\n• Ne jamais pousser jusqu'à la douleur ; une gêne légère qui disparaît à l'échauffement peut être tolérable, une douleur croissante non\n• Progression très lente : les structures tendineuses s'adaptent bien plus lentement que les muscles",
   "Voir aussi": "R32, R34, R35",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Bras",
   "Auteur": "30 fiches jours sans escalade (fiche 8 — Coudes)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R34",
@@ -733,7 +667,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Faire pivoter lentement l'avant-bras paume vers le haut (supination) puis paume vers le bas (pronation), sans bouger le…",
   "Principe": "Position de départ : Assis, avant-bras posé sur la cuisse, main dans le vide, tenant un marteau par l'extrémité du manche, tête du marteau vers le haut.\n\nExécution : Faire pivoter lentement l'avant-bras paume vers le haut (supination) puis paume vers le bas (pronation), sans bouger le coude ni l'épaule. Amplitude complète et lente dans les deux sens. Réduire le levier en avançant la main vers la tête du marteau si c'est trop dur.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -743,11 +676,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter d'abord la durée des isométriques, puis la charge des excentriques\n• Deux séances hebdomadaires espacées valent mieux qu'une séance intense",
   "Conseil": "• Cette fiche ne remplace aucun avis médical : une douleur de coude installée doit être évaluée par un professionnel de santé\n• Ne jamais pousser jusqu'à la douleur ; une gêne légère qui disparaît à l'échauffement peut être tolérable, une douleur croissante non\n• Progression très lente : les structures tendineuses s'adaptent bien plus lentement que les muscles",
   "Voir aussi": "R32, R33, R35",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Avant-bras",
   "Auteur": "30 fiches jours sans escalade (fiche 8 — Coudes)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R35",
@@ -755,7 +687,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter le poids en s'aidant de l'autre main, puis le redescendre très lentement (5s) avec le seul bras travaillant.",
   "Principe": "Position de départ : Avant-bras posé sur une table, paume vers le sol, main dans le vide, petit haltère en main.\n\nExécution : Monter le poids en s'aidant de l'autre main, puis le redescendre très lentement (5s) avec le seul bras travaillant. C'est uniquement la phase de descente qui est travaillée. Charge légère.",
-  "Participants": "Seul",
   "Matériel": "Un haltère léger ou une bouteille, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -765,11 +696,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter d'abord la durée des isométriques, puis la charge des excentriques\n• Deux séances hebdomadaires espacées valent mieux qu'une séance intense",
   "Conseil": "• Cette fiche ne remplace aucun avis médical : une douleur de coude installée doit être évaluée par un professionnel de santé\n• Ne jamais pousser jusqu'à la douleur ; une gêne légère qui disparaît à l'échauffement peut être tolérable, une douleur croissante non\n• Progression très lente : les structures tendineuses s'adaptent bien plus lentement que les muscles",
   "Voir aussi": "R32, R33, R34",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Avant-bras",
   "Auteur": "30 fiches jours sans escalade (fiche 8 — Coudes)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R36",
@@ -777,7 +707,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Décoller les cinq doigts de la table en même temps, sans que le poignet ni l'avant-bras ne bougent : ils restent posés à…",
   "Principe": "Position de départ : Assis, avant-bras et main à plat sur une table, doigts serrés et détendus, paume vers le bas.\n\nExécution : Décoller les cinq doigts de la table en même temps, sans que le poignet ni l'avant-bras ne bougent : ils restent posés à plat. Monter le plus haut possible, tenir 1 à 2s, puis reposer très lentement. Variante plus exigeante : lever un seul doigt à la fois, en contrôlant bien chacun.",
-  "Participants": "Seul",
   "Matériel": "Une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -787,11 +716,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions ou la durée avant la résistance\n• Cette fiche se prête bien à une pratique quotidienne courte plutôt qu'à une grosse séance hebdomadaire",
   "Conseil": "• Aucune douleur dans les doigts ni sensation de pincement à la base d'un doigt\n• En cas de blessure de poulie récente ou de doigt douloureux, ne pas faire cette fiche sans avis d'un professionnel de santé\n• Résistance légère : ces muscles sont petits et se fatiguent vite",
   "Voir aussi": "R37, R38, R39, R40",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 9 — Extenseurs des doigts)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R37",
@@ -799,7 +727,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Ouvrir et fermer la main dans le riz, puis écarter les doigts contre la résistance du grain.",
   "Principe": "Position de départ : Main enfoncée dans un bac rempli de riz ou de lentilles, jusqu'au poignet, doigts rassemblés.\n\nExécution : Ouvrir et fermer la main dans le riz, puis écarter les doigts contre la résistance du grain. Varier : rotations du poignet, préhension et relâchement, doigts écartés. Résistance douce et continue, idéale pour un travail long sans charge articulaire. Exercice à sauter si le matériel n'est pas disponible.",
-  "Participants": "Seul",
   "Matériel": "Un bac de riz",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -809,11 +736,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions ou la durée avant la résistance\n• Cette fiche se prête bien à une pratique quotidienne courte plutôt qu'à une grosse séance hebdomadaire",
   "Conseil": "• Aucune douleur dans les doigts ni sensation de pincement à la base d'un doigt\n• En cas de blessure de poulie récente ou de doigt douloureux, ne pas faire cette fiche sans avis d'un professionnel de santé\n• Résistance légère : ces muscles sont petits et se fatiguent vite",
   "Voir aussi": "R36, R38, R39, R40",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 9 — Extenseurs des doigts)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R38",
@@ -821,7 +747,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Écarter les cinq doigts au maximum en allongeant volontairement chaque doigt, tenir 2 à 3s, puis relâcher complètement.",
   "Principe": "Position de départ : Main ouverte devant soi, avant-bras détendu, paume vers le bas.\n\nExécution : Écarter les cinq doigts au maximum en allongeant volontairement chaque doigt, tenir 2 à 3s, puis relâcher complètement. Mouvement lent et ample, sans crispation de l'avant-bras.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -831,11 +756,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions ou la durée avant la résistance\n• Cette fiche se prête bien à une pratique quotidienne courte plutôt qu'à une grosse séance hebdomadaire",
   "Conseil": "• Aucune douleur dans les doigts ni sensation de pincement à la base d'un doigt\n• En cas de blessure de poulie récente ou de doigt douloureux, ne pas faire cette fiche sans avis d'un professionnel de santé\n• Résistance légère : ces muscles sont petits et se fatiguent vite",
   "Voir aussi": "R36, R37, R39, R40",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 9 — Extenseurs des doigts)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R39",
@@ -843,7 +767,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Amener le pouce successivement contre chaque doigt en formant un cercle net, presser 2s en douceur, puis relâcher et ouvrir…",
   "Principe": "Position de départ : Main devant soi, avant-bras relâché, pouce en opposition face aux autres doigts.\n\nExécution : Amener le pouce successivement contre chaque doigt en formant un cercle net, presser 2s en douceur, puis relâcher et ouvrir la main en grand. Travail de contrôle fin, sans force : c'est la précision du geste et l'ouverture complète entre chaque répétition qui comptent.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -853,11 +776,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions ou la durée avant la résistance\n• Cette fiche se prête bien à une pratique quotidienne courte plutôt qu'à une grosse séance hebdomadaire",
   "Conseil": "• Aucune douleur dans les doigts ni sensation de pincement à la base d'un doigt\n• En cas de blessure de poulie récente ou de doigt douloureux, ne pas faire cette fiche sans avis d'un professionnel de santé\n• Résistance légère : ces muscles sont petits et se fatiguent vite",
   "Voir aussi": "R36, R37, R38, R40",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 9 — Extenseurs des doigts)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R40",
@@ -865,7 +787,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter le dos de la main vers soi en pliant uniquement le poignet contre la résistance de l'élastique, sans bouger…",
   "Principe": "Position de départ : Debout, une extrémité de l'élastique coincée sous la plante du pied avant, l'autre tenue en main. Avant-bras plaqué contre le corps ou posé sur la cuisse, coude fléchi, paume vers le sol, poignet fléchi vers le bas en position de départ.\n\nExécution : Monter le dos de la main vers soi en pliant uniquement le poignet contre la résistance de l'élastique, sans bouger l'avant-bras ni le coude. Redescendre lentement (3s) jusqu'à la position de départ, en gardant une légère tension dans l'élastique pour ne pas relâcher brutalement.",
-  "Participants": "Seul",
   "Matériel": "Un élastique",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -875,11 +796,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions ou la durée avant la résistance\n• Cette fiche se prête bien à une pratique quotidienne courte plutôt qu'à une grosse séance hebdomadaire",
   "Conseil": "• Aucune douleur dans les doigts ni sensation de pincement à la base d'un doigt\n• En cas de blessure de poulie récente ou de doigt douloureux, ne pas faire cette fiche sans avis d'un professionnel de santé\n• Résistance légère : ces muscles sont petits et se fatiguent vite",
   "Voir aussi": "R36, R37, R38, R39",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 9 — Extenseurs des doigts)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R41",
@@ -887,7 +807,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Pousser les hanches vers l'arrière en laissant le buste s'incliner, genoux légèrement fléchis.",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, un bâton tenu verticalement dans le dos, en contact simultané avec l'arrière de la tête, le haut du dos et le sacrum. Une main en haut, une main en bas pour le maintenir.\n\nExécution : Pousser les hanches vers l'arrière en laissant le buste s'incliner, genoux légèrement fléchis. Les trois points de contact du bâton ne doivent jamais se perdre : c'est le contrôle de la position du dos. Descendre jusqu'à environ 45°, puis revenir en poussant les hanches vers l'avant et en serrant les fessiers.",
-  "Participants": "Seul",
   "Matériel": "Un bâton",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -897,11 +816,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Maîtriser la charnière à vide au bâton avant d'ajouter la moindre charge\n• Augmenter la charge très progressivement, la technique restant le critère",
   "Conseil": "• Le dos arrondi sous charge est la principale erreur à éviter : réduire l'amplitude ou la charge plutôt que de forcer\n• En cas d'antécédent de lombalgie, commencer sans charge et demander l'avis d'un professionnel de santé\n• Souffler à la remontée, ne jamais bloquer la respiration sous charge",
   "Voir aussi": "R42, R43, R44",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 10 — Chaîne postérieure)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R42",
@@ -909,7 +827,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre la charge le long des jambes en poussant les hanches vers l'arrière, dos plat, jusqu'à sentir l'étirement à…",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, une charge légère (haltères, sac lesté) tenue devant les cuisses, bras tendus, genoux légèrement fléchis et fixés.\n\nExécution : Descendre la charge le long des jambes en poussant les hanches vers l'arrière, dos plat, jusqu'à sentir l'étirement à l'arrière des cuisses (souvent à mi-tibia). Remonter en poussant le sol avec les talons et en serrant les fessiers. Le dos ne s'arrondit à aucun moment : c'est le critère d'arrêt de la descente, pas la hauteur atteinte.",
-  "Participants": "Seul",
   "Matériel": "Un haltère léger ou une bouteille",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -919,11 +836,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Maîtriser la charnière à vide au bâton avant d'ajouter la moindre charge\n• Augmenter la charge très progressivement, la technique restant le critère",
   "Conseil": "• Le dos arrondi sous charge est la principale erreur à éviter : réduire l'amplitude ou la charge plutôt que de forcer\n• En cas d'antécédent de lombalgie, commencer sans charge et demander l'avis d'un professionnel de santé\n• Souffler à la remontée, ne jamais bloquer la respiration sous charge",
   "Voir aussi": "R41, R43, R44",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 10 — Chaîne postérieure)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R43",
@@ -931,7 +847,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter le bassin en poussant dans le talon de la jambe d'appui, jusqu'à aligner genou, hanche et épaule.",
   "Principe": "Position de départ : Allongé sur le dos, un pied à plat au sol genou fléchi, l'autre jambe tendue vers le plafond ou dans le prolongement du corps. Bras le long du corps.\n\nExécution : Monter le bassin en poussant dans le talon de la jambe d'appui, jusqu'à aligner genou, hanche et épaule. Le bassin reste horizontal : il ne bascule pas du côté de la jambe levée. Tenir 2s en haut en serrant le fessier, redescendre lentement.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -941,11 +856,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Maîtriser la charnière à vide au bâton avant d'ajouter la moindre charge\n• Augmenter la charge très progressivement, la technique restant le critère",
   "Conseil": "• Le dos arrondi sous charge est la principale erreur à éviter : réduire l'amplitude ou la charge plutôt que de forcer\n• En cas d'antécédent de lombalgie, commencer sans charge et demander l'avis d'un professionnel de santé\n• Souffler à la remontée, ne jamais bloquer la respiration sous charge",
   "Voir aussi": "R41, R42, R44",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 10 — Chaîne postérieure)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R44",
@@ -953,7 +867,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Décoller bras et jambes de quelques centimètres en allongeant le corps plutôt qu'en cherchant la hauteur.",
   "Principe": "Position de départ : Allongé à plat ventre, bras tendus devant la tête, jambes tendues, regard vers le sol.\n\nExécution : Décoller bras et jambes de quelques centimètres en allongeant le corps plutôt qu'en cherchant la hauteur. La sensation reste dans le haut du dos et les fessiers, pas dans le bas du dos.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -963,11 +876,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Maîtriser la charnière à vide au bâton avant d'ajouter la moindre charge\n• Augmenter la charge très progressivement, la technique restant le critère",
   "Conseil": "• Le dos arrondi sous charge est la principale erreur à éviter : réduire l'amplitude ou la charge plutôt que de forcer\n• En cas d'antécédent de lombalgie, commencer sans charge et demander l'avis d'un professionnel de santé\n• Souffler à la remontée, ne jamais bloquer la respiration sous charge",
   "Voir aussi": "R41, R42, R43",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 10 — Chaîne postérieure)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R45",
@@ -975,7 +887,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tendre les bras devant soi puis revenir, sans laisser le buste pivoter vers l'ancrage.",
   "Principe": "Position de départ : Debout de profil par rapport à l'ancrage de l'élastique, fixé à hauteur de poitrine. Élastique tenu à deux mains contre le sternum, bras fléchis. Pieds largeur de bassin, genoux souples, gainage actif.\n\nExécution : Tendre les bras devant soi puis revenir, sans laisser le buste pivoter vers l'ancrage. Tout l'exercice consiste à résister à la rotation : plus les bras s'éloignent, plus l'élastique tire. Bassin et épaules restent face à l'avant. Si le buste tourne, s'éloigner moins de l'ancrage ou réduire la tension.",
-  "Participants": "Seul",
   "Matériel": "Un élastique",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -985,11 +896,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien et la tension de l'élastique avant d'ajouter des répétitions\n• Passer à une version un bras ou une jambe pour augmenter la demande anti-rotation",
   "Conseil": "• En cas de gêne lombaire, réduire l'amplitude et privilégier les exercices de maintien (pallof press, gainage latéral)\n• Souffler pendant l'effort, ne jamais bloquer la respiration",
   "Voir aussi": "R46, R47, R48",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 11 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R46",
@@ -997,7 +907,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Décoller une main et venir toucher l'épaule opposée, puis reposer et alterner.",
   "Principe": "Position de départ : En planche sur les mains, bras tendus, corps aligné, pieds écartés un peu plus que la largeur de bassin pour la stabilité.\n\nExécution : Décoller une main et venir toucher l'épaule opposée, puis reposer et alterner. Le bassin ne doit pas basculer sur le côté pendant le transfert de poids : c'est le seul critère. Écarter davantage les pieds si le bassin bouge trop, mouvement lent.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1007,11 +916,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien et la tension de l'élastique avant d'ajouter des répétitions\n• Passer à une version un bras ou une jambe pour augmenter la demande anti-rotation",
   "Conseil": "• En cas de gêne lombaire, réduire l'amplitude et privilégier les exercices de maintien (pallof press, gainage latéral)\n• Souffler pendant l'effort, ne jamais bloquer la respiration",
   "Voir aussi": "R45, R47, R48",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 11 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R47",
@@ -1019,7 +927,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Marcher en ligne droite sur une vingtaine de mètres en gardant le buste parfaitement vertical, sans se pencher du côté…",
   "Principe": "Position de départ : Debout, une charge assez lourde (haltère, bidon d'eau, sac lesté) tenue dans une seule main, bras tendu le long du corps. Épaules de niveau, gainage actif.\n\nExécution : Marcher en ligne droite sur une vingtaine de mètres en gardant le buste parfaitement vertical, sans se pencher du côté opposé à la charge pour compenser. Le tronc résiste activement à la flexion latérale créée par le poids. Poser la charge, souffler, puis refaire de l'autre côté.",
-  "Participants": "Seul",
   "Matériel": "Un haltère léger ou une bouteille, une chaise ou un banc",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1029,11 +936,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien et la tension de l'élastique avant d'ajouter des répétitions\n• Passer à une version un bras ou une jambe pour augmenter la demande anti-rotation",
   "Conseil": "• En cas de gêne lombaire, réduire l'amplitude et privilégier les exercices de maintien (pallof press, gainage latéral)\n• Souffler pendant l'effort, ne jamais bloquer la respiration",
   "Voir aussi": "R45, R46, R48",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 11 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R48",
@@ -1041,7 +947,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Pivoter lentement le buste d'un côté puis de l'autre en gardant le dos droit et la poitrine ouverte.",
   "Principe": "Position de départ : Assis au sol, genoux fléchis, pieds au sol ou légèrement décollés, buste incliné vers l'arrière à environ 45°, dos droit, mains jointes devant la poitrine.\n\nExécution : Pivoter lentement le buste d'un côté puis de l'autre en gardant le dos droit et la poitrine ouverte. La rotation vient du tronc, pas des bras qui ballottent. Mouvement lent et contrôlé, sans à-coup ni élan. Poser les pieds au sol pour faciliter.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1051,11 +956,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien et la tension de l'élastique avant d'ajouter des répétitions\n• Passer à une version un bras ou une jambe pour augmenter la demande anti-rotation",
   "Conseil": "• En cas de gêne lombaire, réduire l'amplitude et privilégier les exercices de maintien (pallof press, gainage latéral)\n• Souffler pendant l'effort, ne jamais bloquer la respiration",
   "Voir aussi": "R45, R46, R47",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Tronc",
   "Auteur": "30 fiches jours sans escalade (fiche 11 — Tronc)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R49",
@@ -1063,7 +967,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Tenir la position immobile en verrouillant le tronc : fessiers serrés, côtes rentrées, bas du dos neutre.",
   "Principe": "Position de départ : Debout, pieds largeur de bassin, une charge légère tenue à bout de bras au-dessus de la tête, bras tendus, poignets à l'aplomb des épaules.\n\nExécution : Tenir la position immobile en verrouillant le tronc : fessiers serrés, côtes rentrées, bas du dos neutre. Les bras restent verticaux et proches des oreilles, sans partir vers l'avant. Marcher quelques pas dans cette position rend l'exercice plus exigeant. Arrêter dès que la cambrure apparaît.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1073,11 +976,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien, puis la distance de marche sous charge\n• Passer au maintien à un seul bras une fois la position parfaitement contrôlée à deux bras",
   "Conseil": "• Si le bras ne peut pas monter à la verticale sans cambrer, c'est un manque de mobilité : travailler d'abord la fiche de mobilité des épaules\n• Charges légères, la stabilité prime sur la force\n• Arrêter en cas de pincement dans l'épaule bras levé",
   "Voir aussi": "R50, R51",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 12 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R50",
@@ -1085,7 +987,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Monter et descendre les bras le long du mur en gardant les cinq points de contact : tête, haut du dos, bas du dos, coudes,…",
   "Principe": "Position de départ : Debout dos au mur, talons décollés de 10 cm, bas du dos plaqué contre le mur. Bras en W, coudes et dos des mains en contact avec le mur.\n\nExécution : Monter et descendre les bras le long du mur en gardant les cinq points de contact : tête, haut du dos, bas du dos, coudes, mains. S'arrêter à l'amplitude où le contact se perd. C'est souvent bien plus bas qu'attendu, et c'est justement l'information utile.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1095,11 +996,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien, puis la distance de marche sous charge\n• Passer au maintien à un seul bras une fois la position parfaitement contrôlée à deux bras",
   "Conseil": "• Si le bras ne peut pas monter à la verticale sans cambrer, c'est un manque de mobilité : travailler d'abord la fiche de mobilité des épaules\n• Charges légères, la stabilité prime sur la force\n• Arrêter en cas de pincement dans l'épaule bras levé",
   "Voir aussi": "R49, R51",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 12 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R51",
@@ -1107,7 +1007,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Sans bouger l'épaule ni le coude, faire pivoter l'avant-bras vers le haut jusqu'à ce qu'il pointe vers le plafond, puis…",
   "Principe": "Position de départ : Debout, élastique fixé à hauteur de coude sur le côté. Bras tenant l'élastique levé à l'horizontale (abduction à 90°), coude fléchi à 90°, avant-bras pointant vers le bas, poing face à l'élastique.\n\nExécution : Sans bouger l'épaule ni le coude, faire pivoter l'avant-bras vers le haut jusqu'à ce qu'il pointe vers le plafond, puis revenir lentement. Seule l'articulation de l'épaule tourne : le coude reste immobile à hauteur d'épaule pendant tout le mouvement. Garder le tronc gainé, sans compenser en cambrant le dos.",
-  "Participants": "Seul",
   "Matériel": "Un élastique, un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1117,11 +1016,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter la durée de maintien, puis la distance de marche sous charge\n• Passer au maintien à un seul bras une fois la position parfaitement contrôlée à deux bras",
   "Conseil": "• Si le bras ne peut pas monter à la verticale sans cambrer, c'est un manque de mobilité : travailler d'abord la fiche de mobilité des épaules\n• Charges légères, la stabilité prime sur la force\n• Arrêter en cas de pincement dans l'épaule bras levé",
   "Voir aussi": "R49, R50",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 12 — Épaules)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R52",
@@ -1129,7 +1027,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre coudes à 45° du corps, poitrine près du sol, remonter d'un bloc sans laisser les hanches s'affaisser.",
   "Principe": "Position de départ : En appui sur les mains et la pointe des pieds (ou les genoux), mains un peu plus écartées que les épaules, corps gainé.\n\nExécution : Descendre coudes à 45° du corps, poitrine près du sol, remonter d'un bloc sans laisser les hanches s'affaisser.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1139,11 +1036,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Passer de 2 à 3, puis 4 tours\n• Ajouter de la charge sur les squats et les fentes une fois 4 tours confortables",
   "Conseil": "• Enchaîner les exercices d'un tour sans repos, mais s'arrêter si la technique se dégrade\n• Adapter le nombre de tours à la forme du jour : deux tours propres valent mieux que trois tours bâclés",
   "Voir aussi": "",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 13 — Circuit complet corps entier)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R53",
@@ -1151,7 +1047,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre en 5 secondes pleines, de façon parfaitement régulière, jusqu'à bras tendus.",
   "Principe": "Position de départ : Position haute de traction, menton au-dessus ou au niveau de la barre, atteinte en montant sur une chaise ou en sautant. Épaules basses et actives.\n\nExécution : Descendre en 5 secondes pleines, de façon parfaitement régulière, jusqu'à bras tendus. Ne jamais se laisser tomber sur la fin : si la descente s'accélère en bas, réduire le nombre de répétitions. Remonter en s'aidant de la chaise, sans effort concentrique.\n\nPlus facile : Descente en 3s au lieu de 5s, ou en partant d'une position moins haute.\n\nPlus difficile : Descente en 6 à 8s, ou lest léger sur un baudrier.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction, une chaise ou un banc",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1161,11 +1056,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'allonger la durée des descentes\n• Passer de 3 à 5 secondes puis à 6 secondes de descente",
   "Conseil": "• Le travail excentrique génère des courbatures importantes : prévoir au moins 48h avant une séance de grimpe exigeante\n• Commencer par une seule série de chaque exercice la première semaine\n• Ne pas réaliser cette fiche en cas de douleur tendineuse en cours d'évaluation médicale",
   "Voir aussi": "R54, R55, R56",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 14 — Travail excentrique des tendons)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R54",
@@ -1173,7 +1067,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Laisser le buste basculer vers l'avant en gardant le corps parfaitement droit des genoux à la tête, en freinant le mouvement…",
   "Principe": "Position de départ : À genoux sur un tapis, chevilles bloquées sous un meuble stable ou tenues par un partenaire, buste droit et vertical, bras le long du corps ou prêts devant soi.\n\nExécution : Laisser le buste basculer vers l'avant en gardant le corps parfaitement droit des genoux à la tête, en freinant le mouvement le plus longtemps possible avec l'arrière des cuisses. Se rattraper avec les mains au sol dès que le contrôle n'est plus possible, puis remonter en s'aidant des mains, sans effort concentrique des ischio-jambiers. Mouvement très exigeant : commencer par très peu de répétitions.\n\nPlus facile : Partir d'un angle moins incliné, ou garder les mains proches du sol dès le départ pour pouvoir se rattraper plus tôt.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1183,11 +1076,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'allonger la durée des descentes\n• Passer de 3 à 5 secondes puis à 6 secondes de descente",
   "Conseil": "• Le travail excentrique génère des courbatures importantes : prévoir au moins 48h avant une séance de grimpe exigeante\n• Commencer par une seule série de chaque exercice la première semaine\n• Ne pas réaliser cette fiche en cas de douleur tendineuse en cours d'évaluation médicale",
   "Voir aussi": "R53, R55, R56",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 14 — Travail excentrique des tendons)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "R55",
@@ -1195,7 +1087,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre en 5 secondes contrôlées jusqu'à la poitrine près du sol, puis remonter normalement ou en posant les genoux.",
   "Principe": "Position de départ : Position de pompe haute, bras tendus, corps gainé (genoux au sol pour la version allégée).\n\nExécution : Descendre en 5 secondes contrôlées jusqu'à la poitrine près du sol, puis remonter normalement ou en posant les genoux. Le corps descend d'un bloc, les hanches ne s'affaissent pas avant les épaules.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1205,11 +1096,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'allonger la durée des descentes\n• Passer de 3 à 5 secondes puis à 6 secondes de descente",
   "Conseil": "• Le travail excentrique génère des courbatures importantes : prévoir au moins 48h avant une séance de grimpe exigeante\n• Commencer par une seule série de chaque exercice la première semaine\n• Ne pas réaliser cette fiche en cas de douleur tendineuse en cours d'évaluation médicale",
   "Voir aussi": "R53, R54, R56",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 14 — Travail excentrique des tendons)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Antagoniste"
  },
  {
   "Code": "R56",
@@ -1217,7 +1107,6 @@ const PREPA_EMBED = [
   "Famille": "Renforcement",
   "Résumé": "Descendre en 5 secondes jusqu'à cuisses parallèles, puis remonter à vitesse normale.",
   "Principe": "Position de départ : Debout, pieds largeur d'épaules, bras devant soi.\n\nExécution : Descendre en 5 secondes jusqu'à cuisses parallèles, puis remonter à vitesse normale. Genoux dans l'axe, dos droit, talons au sol pendant toute la descente.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 5 min",
@@ -1227,11 +1116,10 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de répétitions avant d'allonger la durée des descentes\n• Passer de 3 à 5 secondes puis à 6 secondes de descente",
   "Conseil": "• Le travail excentrique génère des courbatures importantes : prévoir au moins 48h avant une séance de grimpe exigeante\n• Commencer par une seule série de chaque exercice la première semaine\n• Ne pas réaliser cette fiche en cas de douleur tendineuse en cours d'évaluation médicale",
   "Voir aussi": "R53, R54, R55",
-  "Effectif court": "Seul",
-  "Intensité": "Modérée",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 14 — Travail excentrique des tendons)",
-  "Publié": "oui"
+  "Publié": "oui",
+  "Type": "Renforcement"
  },
  {
   "Code": "M1",
@@ -1239,7 +1127,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avec l'avant-bras opposé, accrocher le bras tendu au-dessus du coude (pas sur l'articulation) et le tirer doucement vers la…",
   "Principe": "Position de départ : Debout ou assis, dos droit, épaules relâchées. Amener un bras tendu horizontalement devant la poitrine, vers l'épaule opposée.\n\nExécution : Avec l'avant-bras opposé, accrocher le bras tendu au-dessus du coude (pas sur l'articulation) et le tirer doucement vers la poitrine. L'épaule étirée reste basse et ne monte pas vers l'oreille, le buste ne pivote pas pour accompagner. Sensation d'étirement à l'arrière de l'épaule. Respirer lentement pendant le maintien.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1249,8 +1136,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien jusqu'à 45-60s\n• Affiner l'amplitude sans jamais forcer",
   "Conseil": "• Ne jamais forcer dans une sensation de douleur vive\n• Rester dans un étirement confortable-inconfortable, respirer sans bloquer",
   "Voir aussi": "S9, M3, M4, M5",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 15 — Mobilité des épaules)",
   "Publié": "oui"
@@ -1261,7 +1146,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avancer doucement le buste et le pied avant jusqu'à sentir l'étirement à l'avant de l'épaule et de la poitrine.",
   "Principe": "Position de départ : Debout dans un encadrement de porte. Avant-bras posé à plat contre le montant, coude fléchi à 90°, bras à hauteur d'épaule. Un pied avancé pour l'équilibre.\n\nExécution : Avancer doucement le buste et le pied avant jusqu'à sentir l'étirement à l'avant de l'épaule et de la poitrine. Le buste ne pivote pas, il avance en restant face à l'avant. Ne pas forcer : l'avant de l'épaule est une zone sensible. Répéter avec le bras plus haut (~120°) et plus bas (~60°) pour couvrir les différents faisceaux du pectoral.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1271,8 +1155,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien jusqu'à 45-60s\n• Affiner l'amplitude sans jamais forcer",
   "Conseil": "• Ne jamais forcer dans une sensation de douleur vive\n• Rester dans un étirement confortable-inconfortable, respirer sans bloquer",
   "Voir aussi": "M1, S9, M4, M5",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiches 15 — Mobilité des épaules, 19, 24)",
   "Publié": "oui"
@@ -1283,7 +1165,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avec la main du bas, tirer très doucement le bâton vers le bas pour amener la main du haut plus loin derrière la nuque, puis…",
   "Principe": "Position de départ : Debout, un bâton (ou un manche à balai) tenu à deux mains derrière le dos, une main en haut derrière la nuque, l'autre en bas dans le creux du dos.\n\nExécution : Avec la main du bas, tirer très doucement le bâton vers le bas pour amener la main du haut plus loin derrière la nuque, puis inverser le sens. Mouvement lent, progressif, sans à-coup. Le buste reste droit et ne se cambre pas pour gagner de l'amplitude. Sensation d'étirement dans l'épaule, jamais de pincement.",
-  "Participants": "Seul",
   "Matériel": "Un bâton",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1293,8 +1174,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien jusqu'à 45-60s\n• Affiner l'amplitude sans jamais forcer",
   "Conseil": "• Ne jamais forcer dans une sensation de douleur vive\n• Rester dans un étirement confortable-inconfortable, respirer sans bloquer",
   "Voir aussi": "M1, S9, M3, M5",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 15 — Mobilité des épaules)",
   "Publié": "oui"
@@ -1305,7 +1184,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Reculer les pieds et laisser le buste descendre entre les bras, en gardant le dos plat et les bras tendus.",
   "Principe": "Position de départ : Debout face à un mur (ou à un plan de travail), à une longueur de bras. Poser les deux mains à plat sur le mur, bras tendus au-dessus de la tête, pieds largeur de bassin.\n\nExécution : Reculer les pieds et laisser le buste descendre entre les bras, en gardant le dos plat et les bras tendus. Chercher à allonger les flancs plutôt qu'à cambrer : rentrer légèrement les côtes et le bassin. Sensation d'étirement sur les côtés du dos et sous les aisselles. Respirer lentement, l'étirement se creuse à chaque expiration.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1315,8 +1193,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien jusqu'à 45-60s\n• Affiner l'amplitude sans jamais forcer",
   "Conseil": "• Ne jamais forcer dans une sensation de douleur vive\n• Rester dans un étirement confortable-inconfortable, respirer sans bloquer",
   "Voir aussi": "M1, S9, M3, M4",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 15 — Mobilité des épaules)",
   "Publié": "oui"
@@ -1327,7 +1203,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Faire basculer les deux genoux d'un côté à l'autre en passant par le sol, sans décoller les fesses ni prendre d'élan.",
   "Principe": "Position de départ : Assis au sol, mains posées derrière ou sur les côtés pour le soutien. Une jambe devant, pliée à 90° (tibia perpendiculaire au buste), l'autre jambe sur le côté, également pliée à 90°, genou vers l'extérieur.\n\nExécution : Faire basculer les deux genoux d'un côté à l'autre en passant par le sol, sans décoller les fesses ni prendre d'élan. Le buste reste le plus droit possible, la bascule vient uniquement des hanches. Passage lent et contrôlé. Version plus facile : placer les mains plus loin derrière soi pour incliner légèrement le buste.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1337,8 +1212,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Approfondir l'amplitude sur plusieurs semaines, sans précipitation",
   "Conseil": "• Entrer et sortir des positions lentement, ne jamais rebondir dans l'étirement\n• Arrêter si douleur articulaire, différente d'une tension musculaire normale",
   "Voir aussi": "S15, M8, S13, S20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 16 — Mobilité du bassin et des hanches)",
   "Publié": "oui"
@@ -1349,7 +1222,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Ouvrir le buste en montant l'autre bras vers le plafond, en suivant la main du regard.",
   "Principe": "Position de départ : En fente avant profonde : un pied à plat devant, genou fléchi au-dessus de la cheville, genou arrière posé ou proche du sol, jambe arrière allongée. Main opposée à la jambe avant posée au sol à l'intérieur du pied avant.\n\nExécution : Ouvrir le buste en montant l'autre bras vers le plafond, en suivant la main du regard. La rotation part du milieu du dos, pas du bas du dos. Le bassin reste stable et orienté vers l'avant, il ne pivote pas avec le buste. Tenir en respirant, puis redescendre lentement.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1359,8 +1231,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Approfondir l'amplitude sur plusieurs semaines, sans précipitation",
   "Conseil": "• Entrer et sortir des positions lentement, ne jamais rebondir dans l'étirement\n• Arrêter si douleur articulaire, différente d'une tension musculaire normale",
   "Voir aussi": "M6, S15, S13, S20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 16 — Mobilité du bassin et des hanches)",
   "Publié": "oui"
@@ -1371,7 +1241,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Remonter doucement les mains jointes le long du ventre vers la poitrine en gardant les dos de mains en contact, ce qui…",
   "Principe": "Position de départ : Debout ou assis, dos des mains joints l'un contre l'autre devant le ventre, doigts pointés vers le bas, coudes écartés sur les côtés.\n\nExécution : Remonter doucement les mains jointes le long du ventre vers la poitrine en gardant les dos de mains en contact, ce qui augmente progressivement la flexion des poignets. Monter uniquement jusqu'à une sensation d'étirement confortable. Les épaules restent basses et relâchées. Respirer lentement, ne jamais forcer.",
-  "Participants": "Seul",
   "Matériel": "Une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1381,8 +1250,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Ajouter du poids du corps progressivement sur les rotations en appui",
   "Conseil": "• Progresser doucement, en particulier sur l'appui au sol (position plus exigeante)\n• Arrêter en cas de douleur articulaire vive",
   "Voir aussi": "M12, M13, M14, M15",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 17 — Mobilité des poignets)",
   "Publié": "oui"
@@ -1393,7 +1260,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Descendre lentement les mains jointes vers le nombril en gardant les paumes complètement en contact, ce qui augmente…",
   "Principe": "Position de départ : Debout ou assis, paumes jointes devant la poitrine, doigts vers le haut, coudes écartés sur les côtés (position de prière classique).\n\nExécution : Descendre lentement les mains jointes vers le nombril en gardant les paumes complètement en contact, ce qui augmente progressivement l'extension des poignets. Descendre seulement jusqu'à l'étirement confortable. Si les paumes se décollent, on est allé trop bas. Épaules relâchées, respiration lente.",
-  "Participants": "Seul",
   "Matériel": "Une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1403,8 +1269,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Ajouter du poids du corps progressivement sur les rotations en appui",
   "Conseil": "• Progresser doucement, en particulier sur l'appui au sol (position plus exigeante)\n• Arrêter en cas de douleur articulaire vive",
   "Voir aussi": "M11, M13, M14, M15",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 17 — Mobilité des poignets)",
   "Publié": "oui"
@@ -1415,7 +1279,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Transférer très progressivement du poids sur les mains, puis faire pivoter les mains (doigts vers l'extérieur, puis vers…",
   "Principe": "Position de départ : À quatre pattes, mains à plat au sol sous les épaules. Commencer avec les doigts pointés vers l'avant, genoux au sol.\n\nExécution : Transférer très progressivement du poids sur les mains, puis faire pivoter les mains (doigts vers l'extérieur, puis vers soi) en gardant les paumes plaquées. Reculer légèrement le bassin pour doser l'intensité. Progression lente sur plusieurs semaines — c'est la position la plus exigeante de la fiche. Arrêter à la moindre gêne articulaire.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1425,8 +1288,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Ajouter du poids du corps progressivement sur les rotations en appui",
   "Conseil": "• Progresser doucement, en particulier sur l'appui au sol (position plus exigeante)\n• Arrêter en cas de douleur articulaire vive",
   "Voir aussi": "M11, M12, M14, M15",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 17 — Mobilité des poignets)",
   "Publié": "oui"
@@ -1437,7 +1298,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avec l'autre main, attraper les doigts et les tirer doucement vers soi, en gardant le coude du bras étiré parfaitement tendu.",
   "Principe": "Position de départ : Debout ou assis, un bras tendu devant soi à hauteur d'épaule, paume tournée vers l'avant, doigts vers le haut (comme pour faire un signe stop).\n\nExécution : Avec l'autre main, attraper les doigts et les tirer doucement vers soi, en gardant le coude du bras étiré parfaitement tendu. Sensation d'étirement sur la face intérieure de l'avant-bras (fléchisseurs). L'épaule reste basse. Étirement progressif et confortable, jamais de traction brusque.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1447,8 +1307,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Ajouter du poids du corps progressivement sur les rotations en appui",
   "Conseil": "• Progresser doucement, en particulier sur l'appui au sol (position plus exigeante)\n• Arrêter en cas de douleur articulaire vive",
   "Voir aussi": "M11, M12, M13, M15",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 17 — Mobilité des poignets)",
   "Publié": "oui"
@@ -1459,7 +1317,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avec l'autre main, ramener doucement le dos de la main vers soi, coude du bras étiré toujours tendu.",
   "Principe": "Position de départ : Debout ou assis, un bras tendu devant soi à hauteur d'épaule, poignet fléchi de sorte que les doigts pointent vers le sol, dos de la main vers l'avant.\n\nExécution : Avec l'autre main, ramener doucement le dos de la main vers soi, coude du bras étiré toujours tendu. Sensation d'étirement sur le dessus de l'avant-bras (extenseurs). C'est souvent la zone la plus raide chez le grimpeur : y aller très progressivement, surtout en cas d'antécédent de douleur au coude.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1469,8 +1326,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter progressivement le temps de maintien\n• Ajouter du poids du corps progressivement sur les rotations en appui",
   "Conseil": "• Progresser doucement, en particulier sur l'appui au sol (position plus exigeante)\n• Arrêter en cas de douleur articulaire vive",
   "Voir aussi": "M11, M12, M13, M14",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 17 — Mobilité des poignets)",
   "Publié": "oui"
@@ -1481,7 +1336,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Descendre doucement le corps (ou avancer le poignet) pour augmenter l'extension du poignet et l'étirement des doigts, en…",
   "Principe": "Position de départ : Debout face à un mur ou devant une table. Main posée à plat sur la surface, doigts tendus et pointés vers le bas (ou vers soi si sur une table), bras tendu.\n\nExécution : Descendre doucement le corps (ou avancer le poignet) pour augmenter l'extension du poignet et l'étirement des doigts, en gardant toute la paume et les doigts en contact avec la surface. Si des doigts se décollent, on force trop. Sensation diffuse dans la paume et l'avant-bras, jamais de pincement dans un doigt précis.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1491,8 +1345,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter légèrement la durée des étirements\n• Ajouter cette routine avant l'échauffement d'une séance de grimpe",
   "Conseil": "• Aucune tension vive dans les poulies (sensation de pincement = arrêt immédiat)\n• À proscrire en cas de douleur ou de suspicion de blessure à une poulie ; consulter un professionnel de santé\n• Rester dans une sensation d'étirement doux uniquement",
   "Voir aussi": "M17, M18, M19, M20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 18 — Mobilité et détente des doigts)",
   "Publié": "oui"
@@ -1503,7 +1355,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avec l'autre main, saisir un seul doigt à la fois et le ramener très délicatement vers l'arrière, doigt par doigt.",
   "Principe": "Position de départ : Assis, avant-bras détendu posé sur la cuisse ou une table, main ouverte devant soi, paume vers le bas.\n\nExécution : Avec l'autre main, saisir un seul doigt à la fois et le ramener très délicatement vers l'arrière, doigt par doigt. Pression extrêmement légère : il s'agit d'un relâchement, pas d'un gain d'amplitude. Aucune sensation de pincement ni de tiraillement à la base du doigt — si c'est le cas, arrêter immédiatement pour ce doigt.",
-  "Participants": "Seul",
   "Matériel": "Une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1513,8 +1364,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter légèrement la durée des étirements\n• Ajouter cette routine avant l'échauffement d'une séance de grimpe",
   "Conseil": "• Aucune tension vive dans les poulies (sensation de pincement = arrêt immédiat)\n• À proscrire en cas de douleur ou de suspicion de blessure à une poulie ; consulter un professionnel de santé\n• Rester dans une sensation d'étirement doux uniquement",
   "Voir aussi": "M16, M18, M19, M20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 18 — Mobilité et détente des doigts)",
   "Publié": "oui"
@@ -1525,7 +1374,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Faire rouler la balle lentement du poignet vers le coude, sur la face intérieure puis sur le dessus de l'avant-bras.",
   "Principe": "Position de départ : Assis, avant-bras posé et relâché sur la cuisse ou une table, paume vers le haut. Une petite balle (massage ou tennis) ou le pouce de l'autre main.\n\nExécution : Faire rouler la balle lentement du poignet vers le coude, sur la face intérieure puis sur le dessus de l'avant-bras. S'arrêter quelques secondes sur les zones tendues en respirant, sans appuyer fort. Le muscle doit rester relâché : si l'avant-bras se contracte pour se défendre, réduire la pression.",
-  "Participants": "Seul",
   "Matériel": "Une balle de massage, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1535,8 +1383,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter légèrement la durée des étirements\n• Ajouter cette routine avant l'échauffement d'une séance de grimpe",
   "Conseil": "• Aucune tension vive dans les poulies (sensation de pincement = arrêt immédiat)\n• À proscrire en cas de douleur ou de suspicion de blessure à une poulie ; consulter un professionnel de santé\n• Rester dans une sensation d'étirement doux uniquement",
   "Voir aussi": "M16, M17, M19, M20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 18 — Mobilité et détente des doigts)",
   "Publié": "oui"
@@ -1547,7 +1393,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Mobiliser doucement chaque doigt dans une amplitude confortable en ouvrant et fermant la main, sans chercher à forcer…",
   "Principe": "Position de départ : Assis, avant-bras relâché, main ouverte devant soi, doigts détendus et légèrement écartés.\n\nExécution : Mobiliser doucement chaque doigt dans une amplitude confortable en ouvrant et fermant la main, sans chercher à forcer l'extension et sans traction. L'objectif est un simple relâchement des tissus, pas un gain de souplesse. À proscrire complètement en cas de douleur ou de suspicion de blessure de poulie : consulter un professionnel de santé.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1557,8 +1402,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter légèrement la durée des étirements\n• Ajouter cette routine avant l'échauffement d'une séance de grimpe",
   "Conseil": "• Aucune tension vive dans les poulies (sensation de pincement = arrêt immédiat)\n• À proscrire en cas de douleur ou de suspicion de blessure à une poulie ; consulter un professionnel de santé\n• Rester dans une sensation d'étirement doux uniquement",
   "Voir aussi": "M16, M17, M18, M20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 18 — Mobilité et détente des doigts)",
   "Publié": "oui"
@@ -1569,7 +1412,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Faire tourner chaque doigt lentement dans son articulation de base, comme pour dessiner un petit cercle dans l'air, dans un…",
   "Principe": "Position de départ : Assis, avant-bras détendu posé sur la cuisse ou une table, main ouverte devant soi, doigts légèrement écartés.\n\nExécution : Faire tourner chaque doigt lentement dans son articulation de base, comme pour dessiner un petit cercle dans l'air, dans un sens puis dans l'autre. Mouvement très doux, amplitude confortable, sans jamais forcer. Peut se faire doigt par doigt ou en mobilisant toute la main en même temps.",
-  "Participants": "Seul",
   "Matériel": "Une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1579,8 +1421,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter légèrement la durée des étirements\n• Ajouter cette routine avant l'échauffement d'une séance de grimpe",
   "Conseil": "• Aucune tension vive dans les poulies (sensation de pincement = arrêt immédiat)\n• À proscrire en cas de douleur ou de suspicion de blessure à une poulie ; consulter un professionnel de santé\n• Rester dans une sensation d'étirement doux uniquement",
   "Voir aussi": "M16, M17, M18, M19",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Doigts et poignets",
   "Auteur": "30 fiches jours sans escalade (fiche 18 — Mobilité et détente des doigts)",
   "Publié": "oui"
@@ -1591,7 +1431,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Laisser le buste descendre entre les bras, dos plat, en allongeant les flancs.",
   "Principe": "Position de départ : Debout face à un mur, mains à plat au-dessus de la tête, bras tendus, pieds reculés d'un pas.\n\nExécution : Laisser le buste descendre entre les bras, dos plat, en allongeant les flancs. Rentrer légèrement les côtes pour ne pas cambrer. Respiration lente, l'étirement se creuse à l'expiration.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1601,8 +1440,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Cette séance peut être répétée à l'identique chaque semaine ; elle sert de \"reset\" plus que de progression technique",
   "Conseil": "• Aucune position ne doit provoquer de douleur\n• Privilégier la régularité de la respiration tout au long de la routine",
   "Voir aussi": "S9, S14, S20, S12",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 19 — Routine globale de récupération (corps entier))",
   "Publié": "oui"
@@ -1613,7 +1450,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Rouler lentement du poignet vers le coude en s'arrêtant sur les zones tendues, puis mobiliser chaque doigt en douceur.",
   "Principe": "Position de départ : Assis, avant-bras relâché sur la cuisse, paume vers le haut, petite balle ou pouce opposé.\n\nExécution : Rouler lentement du poignet vers le coude en s'arrêtant sur les zones tendues, puis mobiliser chaque doigt en douceur. Pression légère, muscle relâché.",
-  "Participants": "Seul",
   "Matériel": "Une balle de massage",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1623,8 +1459,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Cette séance peut être répétée à l'identique chaque semaine ; elle sert de \"reset\" plus que de progression technique",
   "Conseil": "• Aucune position ne doit provoquer de douleur\n• Privilégier la régularité de la respiration tout au long de la routine",
   "Voir aussi": "M21, S9, S14, S20",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 19 — Routine globale de récupération (corps entier))",
   "Publié": "oui"
@@ -1635,7 +1469,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Ouvrir lentement le bras du dessus en le faisant passer au-dessus du corps vers le sol opposé, en suivant la main du regard.",
   "Principe": "Position de départ : Allongé sur le côté, genoux fléchis à 90° et superposés, souvent calés sous un coussin. Bras tendus devant soi, paumes jointes à hauteur d'épaule.\n\nExécution : Ouvrir lentement le bras du dessus en le faisant passer au-dessus du corps vers le sol opposé, en suivant la main du regard. Les genoux restent absolument collés l'un à l'autre et au sol : ce sont eux qui garantissent que la rotation vient du haut du dos et non du bassin. Revenir lentement.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol, un coussin",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1645,8 +1478,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de cycles et la durée des positions\n• Travailler cette fiche en début de journée, la mobilité thoracique répond bien à une pratique fréquente et courte",
   "Conseil": "• Ne jamais placer le rouleau sous le bas du dos ni sous la nuque\n• Rotation douce : aucune douleur ni sensation de blocage vertébral\n• En cas d'antécédent de problème vertébral, demander l'avis d'un professionnel de santé",
   "Voir aussi": "S16, M32, M33",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 20 — Mobilité thoracique)",
   "Publié": "oui"
@@ -1657,7 +1488,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Laisser le haut du dos s'ouvrir par-dessus le rouleau en soutenant bien la tête, respirer 3 à 4 cycles, puis déplacer le…",
   "Principe": "Position de départ : Allongé sur le dos, un rouleau ou une serviette roulée placé en travers du milieu du dos, genoux fléchis pieds au sol, mains derrière la tête pour soutenir la nuque.\n\nExécution : Laisser le haut du dos s'ouvrir par-dessus le rouleau en soutenant bien la tête, respirer 3 à 4 cycles, puis déplacer le rouleau de quelques centimètres vers le haut ou vers le bas et recommencer. Ne jamais placer le rouleau sous le bas du dos. Le bassin reste au sol.",
-  "Participants": "Seul",
   "Matériel": "Une serviette, un rouleau de massage, un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1667,8 +1497,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de cycles et la durée des positions\n• Travailler cette fiche en début de journée, la mobilité thoracique répond bien à une pratique fréquente et courte",
   "Conseil": "• Ne jamais placer le rouleau sous le bas du dos ni sous la nuque\n• Rotation douce : aucune douleur ni sensation de blocage vertébral\n• En cas d'antécédent de problème vertébral, demander l'avis d'un professionnel de santé",
   "Voir aussi": "S16, M31, M33",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 20 — Mobilité thoracique)",
   "Publié": "oui"
@@ -1679,7 +1507,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Incliner tout le buste sur le côté opposé au bras levé, en gardant les hanches stables et orientées vers l'avant.",
   "Principe": "Position de départ : Debout, pieds joints ou légèrement écartés. Lever un bras tendu au-dessus de la tête.\n\nExécution : Incliner tout le buste sur le côté opposé au bras levé, en gardant les hanches stables et orientées vers l'avant. Allonger le flanc et la cage thoracique plutôt que de chercher l'amplitude avec le bras. Respirer lentement, l'étirement se creuse à chaque expiration. Ne pas pencher le buste vers l'avant ni vers l'arrière.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1689,8 +1516,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Augmenter le nombre de cycles et la durée des positions\n• Travailler cette fiche en début de journée, la mobilité thoracique répond bien à une pratique fréquente et courte",
   "Conseil": "• Ne jamais placer le rouleau sous le bas du dos ni sous la nuque\n• Rotation douce : aucune douleur ni sensation de blocage vertébral\n• En cas d'antécédent de problème vertébral, demander l'avis d'un professionnel de santé",
   "Voir aussi": "S16, M31, M32",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Dos",
   "Auteur": "30 fiches jours sans escalade (fiche 20 — Mobilité thoracique)",
   "Publié": "oui"
@@ -1701,7 +1526,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Avancer le genou avant vers le mur en essayant de le toucher, sans jamais décoller le talon du sol.",
   "Principe": "Position de départ : En fente, pied avant à plat au sol, orteils à environ 10 cm du mur. Mains en appui sur le mur, genou arrière au sol ou jambe arrière tendue.\n\nExécution : Avancer le genou avant vers le mur en essayant de le toucher, sans jamais décoller le talon du sol. Le genou avance dans l'axe du deuxième orteil, il ne rentre pas vers l'intérieur. Si le talon décolle, reculer le pied ; si c'est trop facile, l'avancer.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1711,8 +1535,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Avancer le pied progressivement sur la flexion au mur, quelques millimètres par semaine\n• Allonger la durée du maintien en accroupi profond",
   "Conseil": "• Aucune douleur à l'avant de la cheville (sensation de pincement) : reculer le pied si c'est le cas\n• En cas d'entorse récente, demander l'avis d'un professionnel de santé avant de travailler l'amplitude",
   "Voir aussi": "S23, S4, M37, M38",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 21 — Mobilité des chevilles)",
   "Publié": "oui"
@@ -1723,7 +1545,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Tenir la position en respirant calmement, dos le plus droit possible, poids réparti sur tout le pied.",
   "Principe": "Position de départ : Debout, pieds largeur d'épaules, pointes légèrement ouvertes. Descendre en position accroupie complète, talons au sol si possible, coudes à l'intérieur des genoux.\n\nExécution : Tenir la position en respirant calmement, dos le plus droit possible, poids réparti sur tout le pied. Si les talons décollent, glisser un livre ou une cale sous les talons et réduire progressivement la hauteur au fil des semaines. Utiliser un appui (poignée de porte) pour se tenir si l'équilibre manque.\n\nPlus facile : Cale plus haute sous les talons, ou appui des mains à une poignée de porte.\n\nPlus difficile : Talons au sol sans cale, mains jointes devant sans appui.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1733,8 +1554,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Avancer le pied progressivement sur la flexion au mur, quelques millimètres par semaine\n• Allonger la durée du maintien en accroupi profond",
   "Conseil": "• Aucune douleur à l'avant de la cheville (sensation de pincement) : reculer le pied si c'est le cas\n• En cas d'entorse récente, demander l'avis d'un professionnel de santé avant de travailler l'amplitude",
   "Voir aussi": "M34, S23, S4, M38",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 21 — Mobilité des chevilles)",
   "Publié": "oui"
@@ -1745,7 +1564,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Faire rouler lentement la balle sous le pied, du talon vers les orteils, en insistant sur les zones tendues.",
   "Principe": "Position de départ : Assis sur une chaise, ou debout en appui partiel, pied posé sur une balle de massage (ou une balle de tennis).\n\nExécution : Faire rouler lentement la balle sous le pied, du talon vers les orteils, en insistant sur les zones tendues. Augmenter progressivement la pression si toléré, davantage en position debout qu'assise. Respiration calme, sans crispation du pied.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc, une balle de massage",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1755,8 +1573,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Avancer le pied progressivement sur la flexion au mur, quelques millimètres par semaine\n• Allonger la durée du maintien en accroupi profond",
   "Conseil": "• Aucune douleur à l'avant de la cheville (sensation de pincement) : reculer le pied si c'est le cas\n• En cas d'entorse récente, demander l'avis d'un professionnel de santé avant de travailler l'amplitude",
   "Voir aussi": "M34, S23, S4, M37",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 21 — Mobilité des chevilles)",
   "Publié": "oui"
@@ -1767,7 +1583,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Chercher d'abord à allonger le dos en poussant les hanches vers le haut, quitte à garder les genoux fléchis et les talons…",
   "Principe": "Position de départ : À quatre pattes, mains bien écartées, orteils repliés. Pousser les hanches vers le haut et l'arrière pour former un V inversé, bras et jambes tendus.\n\nExécution : Chercher d'abord à allonger le dos en poussant les hanches vers le haut, quitte à garder les genoux fléchis et les talons décollés. Tendre les jambes seulement ensuite, sans arrondir le dos. Pédaler doucement en alternant la flexion des genoux pour étirer les mollets un côté après l'autre.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1777,8 +1592,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Allonger la durée des maintiens jusqu'à 60-90s\n• Tendre les genoux très progressivement au fil des semaines, en gardant le dos long comme critère",
   "Conseil": "• Ne jamais rebondir dans l'étirement\n• Une sensation de tiraillement dans le bas du dos ou derrière le genou indique que l'on force : fléchir davantage les genoux\n• En cas de sciatalgie ou de douleur irradiant dans la jambe, arrêter et consulter un professionnel de santé",
   "Voir aussi": "S24, M41",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 22 — Souplesse de la chaîne postérieure)",
   "Publié": "oui"
@@ -1789,7 +1602,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Incliner le buste vers l'avant à partir des hanches, dos long, en gardant le genou de la jambe tendue bien droit.",
   "Principe": "Position de départ : Debout face à une marche ou un step, talon de la jambe à étirer posé sur le bord, jambe tendue, pointe de pied relevée vers soi. L'autre pied au sol, légèrement en retrait.\n\nExécution : Incliner le buste vers l'avant à partir des hanches, dos long, en gardant le genou de la jambe tendue bien droit. Sentir l'étirement remonter du mollet jusqu'à l'arrière de la cuisse. Pour insister sur le mollet, fléchir légèrement le genou puis le retendre en gardant la pointe de pied relevée.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1799,8 +1611,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Allonger la durée des maintiens jusqu'à 60-90s\n• Tendre les genoux très progressivement au fil des semaines, en gardant le dos long comme critère",
   "Conseil": "• Ne jamais rebondir dans l'étirement\n• Une sensation de tiraillement dans le bas du dos ou derrière le genou indique que l'on force : fléchir davantage les genoux\n• En cas de sciatalgie ou de douleur irradiant dans la jambe, arrêter et consulter un professionnel de santé",
   "Voir aussi": "S24, M40",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Jambes",
   "Auteur": "30 fiches jours sans escalade (fiche 22 — Souplesse de la chaîne postérieure)",
   "Publié": "oui"
@@ -1811,7 +1621,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Dessiner de grands cercles avec le bassin, lentement, dans les deux sens, en gardant les épaules relativement immobiles.",
   "Principe": "Position de départ : Debout, mains sur les hanches, pieds largeur d'épaules, genoux souples.\n\nExécution : Dessiner de grands cercles avec le bassin, lentement, dans les deux sens, en gardant les épaules relativement immobiles. Puis lever un genou et dessiner des cercles avec la hanche, 8 par jambe.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1821,8 +1630,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ne pas chercher à progresser sur cette fiche : la faire souvent est l'objectif\n• Elle peut se faire quotidiennement, y compris les jours de grimpe",
   "Conseil": "• Amplitude confortable uniquement, cette fiche n'est pas un travail de souplesse\n• Si une articulation est douloureuse au réveil, la mobiliser doucement sans forcer",
   "Voir aussi": "M43, M44",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 23 — Réveil articulaire express (10 min))",
   "Publié": "oui"
@@ -1833,7 +1640,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Dessiner de grands cercles complets avec les bras, d'abord vers l'avant puis vers l'arrière, en cherchant l'amplitude…",
   "Principe": "Position de départ : Debout, bras le long du corps, pieds largeur de bassin.\n\nExécution : Dessiner de grands cercles complets avec les bras, d'abord vers l'avant puis vers l'arrière, en cherchant l'amplitude maximale sans forcer. Puis 10 cercles bras tendus sur les côtés.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1843,8 +1649,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ne pas chercher à progresser sur cette fiche : la faire souvent est l'objectif\n• Elle peut se faire quotidiennement, y compris les jours de grimpe",
   "Conseil": "• Amplitude confortable uniquement, cette fiche n'est pas un travail de souplesse\n• Si une articulation est douloureuse au réveil, la mobiliser doucement sans forcer",
   "Voir aussi": "M42, M44",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 23 — Réveil articulaire express (10 min))",
   "Publié": "oui"
@@ -1855,7 +1659,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Dessiner des cercles avec les poignets dans les deux sens, puis ouvrir et fermer largement les mains en écartant bien les…",
   "Principe": "Position de départ : Debout ou assis, mains devant soi, doigts entrelacés puis libres.\n\nExécution : Dessiner des cercles avec les poignets dans les deux sens, puis ouvrir et fermer largement les mains en écartant bien les doigts.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1865,8 +1668,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Ne pas chercher à progresser sur cette fiche : la faire souvent est l'objectif\n• Elle peut se faire quotidiennement, y compris les jours de grimpe",
   "Conseil": "• Amplitude confortable uniquement, cette fiche n'est pas un travail de souplesse\n• Si une articulation est douloureuse au réveil, la mobiliser doucement sans forcer",
   "Voir aussi": "M42, M43",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 23 — Réveil articulaire express (10 min))",
   "Publié": "oui"
@@ -1877,7 +1678,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Incliner doucement la tête vers l'épaule opposée, en laissant le poids de la main faire le travail — ne jamais tirer fort.",
   "Principe": "Position de départ : Assis sur une chaise, dos droit. La main du côté à étirer attrape le bord du siège pour maintenir l'épaule basse. L'autre main est posée sur le dessus de la tête.\n\nExécution : Incliner doucement la tête vers l'épaule opposée, en laissant le poids de la main faire le travail — ne jamais tirer fort. L'épaule du côté étiré reste basse, c'est ce qui crée l'étirement. Respirer lentement, sensation sur le côté du cou.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc, un tapis de sol",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1887,8 +1687,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Cette fiche gagne à être faite souvent et brièvement plutôt qu'une fois longuement\n• Augmenter légèrement la durée des maintiens, sans augmenter l'intensité",
   "Conseil": "• Aucun cercle complet de la tête, aucun mouvement brusque du cou\n• Étirement doux uniquement : la nuque est une zone sensible\n• Vertiges, fourmillements dans les bras ou douleur irradiante : arrêter et consulter un professionnel de santé",
   "Voir aussi": "M46, M47",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 24 — Nuque et cervicales)",
   "Publié": "oui"
@@ -1899,7 +1697,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Tourner lentement la tête d'un côté jusqu'à l'amplitude confortable, tenir 2s, revenir au centre, puis de l'autre côté.",
   "Principe": "Position de départ : Assis ou debout, dos droit, épaules basses et relâchées, regard droit devant.\n\nExécution : Tourner lentement la tête d'un côté jusqu'à l'amplitude confortable, tenir 2s, revenir au centre, puis de l'autre côté. Le buste et les épaules ne bougent pas. Mouvement lent, jamais de rotation rapide ni de cercles complets de la tête.",
-  "Participants": "Seul",
   "Matériel": "Une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1909,8 +1706,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Cette fiche gagne à être faite souvent et brièvement plutôt qu'une fois longuement\n• Augmenter légèrement la durée des maintiens, sans augmenter l'intensité",
   "Conseil": "• Aucun cercle complet de la tête, aucun mouvement brusque du cou\n• Étirement doux uniquement : la nuque est une zone sensible\n• Vertiges, fourmillements dans les bras ou douleur irradiante : arrêter et consulter un professionnel de santé",
   "Voir aussi": "M45, M47",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 24 — Nuque et cervicales)",
   "Publié": "oui"
@@ -1921,7 +1716,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Reculer le menton à l'horizontale, comme pour faire un double menton, sans baisser la tête ni lever le regard.",
   "Principe": "Position de départ : Assis ou debout, dos droit, regard horizontal. Possibilité de s'adosser à un mur pour avoir un repère.\n\nExécution : Reculer le menton à l'horizontale, comme pour faire un double menton, sans baisser la tête ni lever le regard. Tenir 3s puis relâcher. Le mouvement est petit et doit rester horizontal : c'est la translation de la tête vers l'arrière qui compte, pas l'inclinaison.",
-  "Participants": "Seul",
   "Matériel": "Une barre de traction, un mur ou un encadrement de porte",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1931,8 +1725,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Cette fiche gagne à être faite souvent et brièvement plutôt qu'une fois longuement\n• Augmenter légèrement la durée des maintiens, sans augmenter l'intensité",
   "Conseil": "• Aucun cercle complet de la tête, aucun mouvement brusque du cou\n• Étirement doux uniquement : la nuque est une zone sensible\n• Vertiges, fourmillements dans les bras ou douleur irradiante : arrêter et consulter un professionnel de santé",
   "Voir aussi": "M45, M46",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Épaules",
   "Auteur": "30 fiches jours sans escalade (fiche 24 — Nuque et cervicales)",
   "Publié": "oui"
@@ -1943,7 +1735,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Grandir d'abord le buste vers le plafond en poussant les ischions dans le sol, puis incliner le buste vers l'avant à partir…",
   "Principe": "Position de départ : Assis au sol, jambes écartées le plus possible sur les côtés, genoux et pointes de pieds vers le plafond, dos droit, mains posées devant ou sur les côtés.\n\nExécution : Grandir d'abord le buste vers le plafond en poussant les ischions dans le sol, puis incliner le buste vers l'avant à partir des hanches, en gardant le dos long. Ne jamais laisser les genoux basculer vers l'intérieur. S'asseoir sur un coussin pour faciliter le maintien du dos droit si le bassin bascule en arrière.",
-  "Participants": "Seul",
   "Matériel": "Un tapis de sol, un coussin",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1953,8 +1744,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Allonger les maintiens jusqu'à 2 min avant de chercher plus d'amplitude\n• Réduire progressivement la hauteur des coussins et cales utilisés",
   "Conseil": "• Aucune douleur dans l'aine ou à l'intérieur du genou : ces zones sont fragiles en position ouverte\n• Ne jamais rebondir et ne jamais se faire pousser par un partenaire\n• Progression sur plusieurs mois : les gains d'amplitude sont lents et les tentatives de forcer entraînent des blessures d'adducteurs",
   "Voir aussi": "S22, M50, S15, M52",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 25 — Ouverture de bassin avancée)",
   "Publié": "oui"
@@ -1965,7 +1754,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Descendre du côté de la jambe fléchie en gardant les deux pieds à plat et les pointes vers l'avant.",
   "Principe": "Position de départ : Debout, pieds très écartés, pointes de pieds vers l'avant. Fléchir un genou et transférer le poids de ce côté, l'autre jambe restant tendue.\n\nExécution : Descendre du côté de la jambe fléchie en gardant les deux pieds à plat et les pointes vers l'avant. Le genou fléchi reste dans l'axe du pied. Sensation à l'intérieur de la cuisse de la jambe tendue. Se tenir à un appui pour l'équilibre si besoin.",
-  "Participants": "Seul",
   "Matériel": "Aucun",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1975,8 +1763,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Allonger les maintiens jusqu'à 2 min avant de chercher plus d'amplitude\n• Réduire progressivement la hauteur des coussins et cales utilisés",
   "Conseil": "• Aucune douleur dans l'aine ou à l'intérieur du genou : ces zones sont fragiles en position ouverte\n• Ne jamais rebondir et ne jamais se faire pousser par un partenaire\n• Progression sur plusieurs mois : les gains d'amplitude sont lents et les tentatives de forcer entraînent des blessures d'adducteurs",
   "Voir aussi": "S22, M49, S15, M52",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 25 — Ouverture de bassin avancée)",
   "Publié": "oui"
@@ -1987,7 +1773,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Serrer le fessier de la jambe arrière et pousser légèrement le bassin vers l'avant (rétroversion), sans cambrer le bas du…",
   "Principe": "Position de départ : Genou arrière posé au sol près d'un support bas (canapé, chaise, banc), dessus du pied arrière posé sur le support derrière soi, tibia vertical contre le support. Jambe avant fléchie à 90°, pied à plat devant soi. Buste droit.\n\nExécution : Serrer le fessier de la jambe arrière et pousser légèrement le bassin vers l'avant (rétroversion), sans cambrer le bas du dos. Plus le genou arrière est proche du support, plus l'étirement est intense : commencer loin du support et se rapprocher progressivement au fil des semaines. Sensation à l'avant de la cuisse et de la hanche arrière.",
-  "Participants": "Seul",
   "Matériel": "Une chaise ou un banc",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -1997,8 +1782,6 @@ const PREPA_EMBED = [
   "Plus difficile": "• Allonger les maintiens jusqu'à 2 min avant de chercher plus d'amplitude\n• Réduire progressivement la hauteur des coussins et cales utilisés",
   "Conseil": "• Aucune douleur dans l'aine ou à l'intérieur du genou : ces zones sont fragiles en position ouverte\n• Ne jamais rebondir et ne jamais se faire pousser par un partenaire\n• Progression sur plusieurs mois : les gains d'amplitude sont lents et les tentatives de forcer entraînent des blessures d'adducteurs",
   "Voir aussi": "S22, M49, M50, S15",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Hanches et bassin",
   "Auteur": "30 fiches jours sans escalade (fiche 25 — Ouverture de bassin avancée)",
   "Publié": "oui"
@@ -2009,7 +1792,6 @@ const PREPA_EMBED = [
   "Famille": "Mobilité et étirements",
   "Résumé": "Rester passif, jambes complètement relâchées contre le mur.",
   "Principe": "Position de départ : Allongé sur le dos, fesses proches d'un mur, jambes tendues à la verticale le long du mur. Bras relâchés sur les côtés, éventuellement un coussin sous le bassin.\n\nExécution : Rester passif, jambes complètement relâchées contre le mur. Position classique de fin de journée, confortable après une séance debout ou une sortie longue. Écarter les fesses du mur de 10 à 20 cm si les ischio-jambiers tirent trop.",
-  "Participants": "Seul",
   "Matériel": "Un mur ou un encadrement de porte, un tapis de sol, un coussin, une table",
   "Espace": "Un coin dégagé",
   "Durée": "≈ 3 min",
@@ -2019,94 +1801,8 @@ const PREPA_EMBED = [
   "Plus difficile": "• Cette fiche ne se progresse pas : elle se répète à l'identique\n• Allonger les durées si cela reste confortable, jusqu'à en faire une routine de 30 min",
   "Conseil": "• Aucune position ne doit être inconfortable : ajouter des coussins plutôt que de tolérer une gêne\n• Se relever lentement après la position jambes au mur\n• Si une position provoque des fourmillements, en sortir et modifier l'installation",
   "Voir aussi": "S1, S18, S5",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
   "Objectifs (tags)": "Corps entier",
   "Auteur": "30 fiches jours sans escalade (fiche 26 — Routine du soir et respiration)",
-  "Publié": "oui"
- },
- {
-  "Code": "K1",
-  "Titre": "Course à pied — endurance fondamentale",
-  "Famille": "Cardio",
-  "Résumé": "Développer la filière aérobie et favoriser la récupération active, sans ajouter de fatigue significative avant la prochaine…",
-  "Principe": "Échauffement : 5 à 10 min : marche rapide puis footing très léger, augmentation progressive de l'allure.\n\nCorps de séance : 30 à 45 min de course continue à allure d'endurance fondamentale, FC stable en zone 2, terrain plat ou légèrement vallonné.\n\nRetour au calme : 5 à 10 min : marche, puis étirements légers des membres inférieurs (quadriceps, ischios, mollets), 20s chacun.",
-  "Participants": "Seul ou en groupe",
-  "Matériel": "Chaussures de course",
-  "Espace": "Extérieur",
-  "Durée": "≈ 40 à 60 min",
-  "Dosage": "40 à 60 min · RPE 3-4/10",
-  "Muscles ciblés": "Système cardiovasculaire (filière aérobie)",
-  "Objectif": "Développer la filière aérobie et favoriser la récupération active, sans ajouter de fatigue significative avant la prochaine séance de grimpe.",
-  "Plus difficile": "• Augmenter la durée totale de 5 à 10 min toutes les 2 à 3 semaines, avant d'augmenter l'intensité",
-  "Conseil": "• Si l'allure conversationnelle n'est plus tenable ou si l'effort devient nettement plus difficile, ralentir\n• Bien s'hydrater avant, pendant et après la sortie\n• Chaussures adaptées à la course\n\nIntensité facile, RPE 3-4/10, allure conversationnelle : on doit pouvoir parler par phrases complètes sans être essoufflé. La fréquence cardiaque peut compléter ce repère, mais les zones calculées à partir de 220 − âge sont trop approximatives pour être utilisées seules.",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
-  "Objectifs (tags)": "Corps entier",
-  "Auteur": "30 fiches jours sans escalade (fiche 27 — Course à pied — endurance fondamentale)",
-  "Publié": "oui"
- },
- {
-  "Code": "K2",
-  "Titre": "Course à pied — fartlek modéré (variations d'allure)",
-  "Famille": "Cardio",
-  "Résumé": "Apporter de la variété et un léger travail cardiovasculaire plus soutenu, sur une séance courte.",
-  "Principe": "Échauffement : 10 min de footing très léger en zone 1-2.\n\nCorps de séance : 15 à 20 min : alterner 3 min en allure modérée (zone 3, RPE 5-6, essoufflement léger mais phrases courtes possibles) et 3 min en allure très facile (zone 1-2, récupération). Répéter 3 à 4 fois.\n\nRetour au calme : 5 à 10 min de footing très léger puis marche, étirements légers des membres inférieurs.",
-  "Participants": "Seul ou en groupe",
-  "Matériel": "Chaussures de course",
-  "Espace": "Extérieur",
-  "Durée": "≈ 30 à 40 min",
-  "Dosage": "30 à 40 min",
-  "Muscles ciblés": "Système cardiovasculaire (filière aérobie)",
-  "Objectif": "Apporter de la variété et un léger travail cardiovasculaire plus soutenu, sur une séance courte.",
-  "Plus difficile": "• Augmenter le nombre de répétitions (jusqu'à 5-6) avant d'augmenter la durée de chaque bloc soutenu",
-  "Conseil": "• Ne jamais dépasser RPE 6/10 sur cette séance : l'objectif est la variété d'intensité, pas la performance\n• Arrêter la progression d'allure en cas d'essoufflement excessif ou de douleur\n\nAlternance entre effort facile (RPE 3-4) et effort modéré (RPE 5-6). Jamais au-delà : pas de sprint, pas de zone rouge. Cette fiche est une option d'entraînement complémentaire, pas une séance de récupération pure.",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
-  "Objectifs (tags)": "Corps entier",
-  "Auteur": "30 fiches jours sans escalade (fiche 28 — Course à pied — fartlek modéré (variations d'allure))",
-  "Publié": "oui"
- },
- {
-  "Code": "K3",
-  "Titre": "Vélo — sortie endurance",
-  "Famille": "Cardio",
-  "Résumé": "Développer la filière aérobie avec un moindre impact articulaire que la course, utile en variante ou en cas de sensibilité…",
-  "Principe": "Échauffement : 10 min de pédalage très facile, faible résistance, augmentation progressive.\n\nCorps de séance : 30 à 55 min de roulage continu en zone 2, terrain plat ou légèrement vallonné, cadence régulière.\n\nRetour au calme : 5 à 10 min de pédalage très facile puis étirements des quadriceps, ischios, mollets et fléchisseurs de hanche.",
-  "Participants": "Seul ou en groupe",
-  "Matériel": "Un vélo, un casque",
-  "Espace": "Extérieur",
-  "Durée": "≈ 45 à 75 min",
-  "Dosage": "45 à 75 min · RPE 3-4/10",
-  "Muscles ciblés": "Système cardiovasculaire (filière aérobie)",
-  "Objectif": "Développer la filière aérobie avec un moindre impact articulaire que la course, utile en variante ou en cas de sensibilité des membres inférieurs.",
-  "Plus difficile": "• Augmenter la durée avant l'intensité\n• Ajouter progressivement du dénivelé",
-  "Conseil": "• Port du casque et équipement de sécurité\n• Vérifier l'état du vélo avant de partir\n• Adapter le parcours et l'horaire à la météo et à la visibilité\n\nIntensité facile, RPE 3-4/10, allure conversationnelle. La cadence doit rester confortable et régulière ; il n'est pas nécessaire de viser une valeur précise de tours/minute.",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
-  "Objectifs (tags)": "Corps entier",
-  "Auteur": "30 fiches jours sans escalade (fiche 29 — Vélo — sortie endurance)",
-  "Publié": "oui"
- },
- {
-  "Code": "K4",
-  "Titre": "Vélo — home-trainer / intervalles modérés",
-  "Famille": "Cardio",
-  "Résumé": "Séance courte et modérément intense, réalisable en intérieur, en variante des sorties extérieures.",
-  "Principe": "Échauffement : 10 min de pédalage facile, résistance faible, augmentation progressive de la cadence.\n\nCorps de séance : 15 à 20 min : alterner 3 min à effort modéré (zone 3, RPE 5-6) et 2 min à effort très facile (zone 1-2, récupération). Répéter 3 à 4 fois.\n\nRetour au calme : 5 à 10 min de pédalage très facile, puis étirements des membres inférieurs.",
-  "Participants": "Seul ou en groupe",
-  "Matériel": "Un vélo, un casque",
-  "Espace": "Extérieur ou home-trainer",
-  "Durée": "≈ 30 à 45 min",
-  "Dosage": "30 à 45 min",
-  "Muscles ciblés": "Système cardiovasculaire (filière aérobie)",
-  "Objectif": "Séance courte et modérément intense, réalisable en intérieur, en variante des sorties extérieures.",
-  "Plus difficile": "• Augmenter le nombre de blocs soutenus avant d'augmenter leur durée\n• Pour chercher par besoin plutôt que par numéro : quelles fiches travaillent telle zone.\n• Adducteurs  →  fiches 16, 25\n• Articulation du poignet  →  fiches 17\n• Articulation gléno-humérale  →  fiches 15\n• Articulation talo-crurale  →  fiches 21\n• Brachial et biceps brachial  →  fiches 8\n• Capsule postérieure  →  fiches 15\n• Carré des lombes  →  fiches 11\n• Ceinture scapulaire et bras  →  fiches 13\n• Chaîne postérieure et hanches  →  fiches 26\n• Deltoïde antérieur  →  fiches 6\n• Deltoïde et coiffe des rotateurs  →  fiches 12\n• Deltoïde postérieur  →  fiches 1\n• Dentelé antérieur  →  fiches 2, 7\n• Diaphragme  →  fiches 26\n• Ensemble des articulations  →  fiches 23\n• Ensemble du corps  →  fiches 19, 26\n• Érecteurs du rachis  →  fiches 10\n• Érecteurs du rachis et multifides  →  fiches 4\n• Extenseurs communs des doigts  →  fiches 3, 9\n• Extenseurs du carpe  →  fiches 9\n• Extenseurs radiaux et ulnaire du carpe  →  fiches 3\n• Fascia plantaire  →  fiches 21\n• Fessiers (moyen et grand)  →  fiches 5\n• Fessiers et bas du dos  →  fiches 22\n• Fessiers et rotateurs de hanche  →  fiches 16\n• Fléchisseurs de hanche (psoas)  →  fiches 16, 25\n• Fléchisseurs et extenseurs de l'avant-bras  →  fiches 8, 14, 17\n• Fléchisseurs et extenseurs des doigts  →  fiches 18\n• Fléchisseurs profonds du cou  →  fiches 24\n• Gainage du tronc  →  fiches 12\n• Grand dorsal  →  fiches 20\n• Grand dorsal (portion basse)  →  fiches 7\n• Grand fessier  →  fiches 10\n• Grand pectoral  →  fiches 6\n• Infra-épineux et petit rond  →  fiches 1\n• Ischio-jambiers  →  fiches 5, 10, 22\n• Membres inférieurs  →  fiches 13\n• Mollets (gastrocnémiens et soléaire)  →  fiches 5, 21, 22\n• Muscles intercostaux et paravertébraux  →  fiches 20\n• Muscles intrinsèques de la main  →  fiches 9\n• Muscles sous-occipitaux  →  fiches 24\n• Obliques internes et externes  →  fiches 4, 11\n• Pectoraux et grand dorsal  →  fiches 15\n• Poulies digitales  →  fiches 18\n• Quadriceps  →  fiches 5\n• Quadriceps et ischio-jambiers  →  fiches 14\n• Rachis thoracique  →  fiches 20\n• Rhomboïdes (grand et petit)  →  fiches 2\n• Rotateurs externes de hanche  →  fiches 25\n• Structures tendineuses du coude et de l'épaule  →  fiches 14\n• Supinateurs et pronateurs  →  fiches 8\n• Transverse de l'abdomen  →  fiches 4, 11\n• Trapèze inférieur  →  fiches 7\n• Trapèze inférieur et dentelé antérieur  →  fiches 12\n• Trapèze moyen et inférieur  →  fiches 2\n• Trapèze supérieur  →  fiches 24\n• Triceps brachial  →  fiches 6\n• Tronc  →  fiches 13\n• Une page à imprimer ou dupliquer pour tracer les séances réalisées au fil des semaines.\n• Un muscle peut produire une tension de trois façons différentes. Les distinguer aide à comprendre pourquoi certains exercices du document sont volontairement lents ou immobiles, plutôt que par manque d'aller plus loin.\n• Annexes\n• Explications complémentaires sur des mécanismes évoqués dans les fiches. Cette section a vocation à s'enrichir au fil du temps.",
-  "Conseil": "• Bien s'hydrater et ventiler la pièce (l'échauffement corporel est plus rapide en intérieur)\n• Ne pas dépasser RPE 6/10\n\nAlternance effort facile (RPE 3-4) / effort modéré (RPE 5-6). Jamais au-delà. Cette fiche est une option d'entraînement complémentaire et non une récupération pure.",
-  "Effectif court": "Seul",
-  "Intensité": "Calme",
-  "Objectifs (tags)": "Corps entier",
-  "Auteur": "30 fiches jours sans escalade (fiche 30 — Vélo — home-trainer / intervalles modérés)",
   "Publié": "oui"
  }
 ];

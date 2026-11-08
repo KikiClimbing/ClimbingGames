@@ -26,8 +26,8 @@ const FAMS = {
 /* Prépa physique : trois familles (la couleur et la lettre du code, comme pour les jeux d'escalade) */
 Object.assign(FAMS, {
   Renforcement: { k: "R", l: "#E0F1F1", m: "#B6DFDF", d: "#1F7A7A", a: "#6BBFBF" },
+  Poutre: { k: "H", l: "#E6E9F7", m: "#C4CBEC", d: "#3B4A9C", a: "#8A97DB" },
   "Mobilité et étirements": { k: "M", l: "#F8E2EE", m: "#EDBAD6", d: "#9C3269", a: "#DE8DB8" },
-  Cardio: { k: "K", l: "#FDF3D3", m: "#F3DF9E", d: "#8A6D12", a: "#E3C463" },
 });
 const OBJS = ["Échauffement", "Équilibre", "Coopération", "Vitesse", "Observation"];
 /* zones travaillées (prépa physique) : sert d'« objectifs » des exercices */
@@ -52,7 +52,7 @@ const DISCIPLINES = {
   prepa: {
     nom: "Prépa physique",
     titre: "Prépa physique",
-    fams: ["Renforcement", "Mobilité et étirements", "Cardio"],
+    fams: ["Renforcement", "Poutre", "Mobilité et étirements"],
   },
 };
 let DISC = (() => {

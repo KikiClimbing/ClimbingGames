@@ -1,13 +1,18 @@
 /* Catalogue : listes de jeux (toutes, par famille, par objectif…) et vignettes */
 /* vignette : image de la carte pour les jeux intégrés, sinon carte générée automatiquement
    (famille, code, titre, résumé, schéma s'il existe, durée / effectif / intensité) */
+/* pastille « Antagoniste » (prépa physique, exercices de renforcement des muscles opposés à ceux de la grimpe) */
+function typePill(g) {
+  if (!g || g.Type !== "Antagoniste") return "";
+  return `<span class="tpill" style="background:#FDE7C8;color:#8A4B00;font-weight:700" title="Muscles opposés à ceux de la grimpe">Antagoniste</span>`;
+}
 function thumb(g) {
   if (isEmb(g)) return `<img loading="lazy" src="cartes/${esc(g.Code)}.jpg" alt="${esc(g.Titre)}">`;
   const s = driveImg(g["Schéma (lien)"] || g["Schéma"]);
-  const puces = [g["Durée"], g["Effectif court"] || g.Participants, g["Intensité"]]
+  const puces = (DISC === "prepa" ? [g["Durée"]] : [g["Durée"], g["Effectif court"] || g.Participants, g["Intensité"]])
     .filter(Boolean)
     .map(x => `<span>${esc(x)}</span>`)
-    .join("");
+    .join("") + typePill(g);
   return `<div class="auto"><div class="ah"><div class="af">${esc((g.Famille || "").toUpperCase())}</div><div class="ac">${esc(g.Code || "★")}</div><div class="at">${esc(g.Titre)}</div><div class="ar">${esc(g["Résumé"])}</div></div>${s ? `<div class="ai"><img loading="lazy" src="${esc(s)}" alt="" onerror="this.parentNode.remove()"></div>` : ""}<div class="ap">${puces}</div></div>`;
 }
 function viewTitle(v) {
@@ -21,7 +26,7 @@ function viewTitle(v) {
     return DISC === "prepa"
       ? [
           "Tous les exercices",
-          "Renforcement, mobilité et cardio : des exercices à faire les jours sans escalade ou en complément des séances.",
+          "Renforcement, poutre et mobilité : des exercices à faire les jours sans escalade ou en complément des séances.",
         ]
       : [
           "Tous les jeux",
@@ -73,7 +78,7 @@ function parCode(a, b) {
   const p = g => {
     const m = String(g.Code || "").match(/^([A-Za-zÀ-ÿ]*)(\d*)/);
     const l = m[1].toUpperCase() || "\uffff";
-    /* Prépa physique : renforcement, mobilité, puis cardio */
+    /* Prépa physique : renforcement, puis mobilité */
     return [DISC === "prepa" && "RMK".includes(l) ? "RMK".indexOf(l) + "" : l, +m[2] || 0];
   };
   const x = p(a),
@@ -89,10 +94,14 @@ function gridHTML(L) {
     return '<div class="empty">Aucun jeu ne correspond. Essayez d\'enlever un filtre.</div>';
   if (S.mode === "list")
     return (
-      `<table class="lst"><thead><tr><th>CODE</th><th>JEU</th><th>DURÉE</th><th class="hm">EFFECTIF</th><th class="hm">MATÉRIEL</th><th>INTENSITÉ</th></tr></thead><tbody>` +
+      (DISC === "prepa"
+        ? `<table class="lst"><thead><tr><th>CODE</th><th>EXERCICE</th><th>TYPE</th><th>DURÉE</th><th class="hm">MATÉRIEL</th></tr></thead><tbody>`
+        : `<table class="lst"><thead><tr><th>CODE</th><th>JEU</th><th>DURÉE</th><th class="hm">EFFECTIF</th><th class="hm">MATÉRIEL</th><th>INTENSITÉ</th></tr></thead><tbody>`) +
       L.map(
         g =>
-          `<tr class="r" data-jeu="${esc(key(g))}" style="${style(g)}"><td>${esc(g.Code || "★")} ${favEtoile(g)}</td><td><b>${esc(g.Titre)}</b><br><span style="color:#6B7280">${esc(g["Résumé"])}</span></td><td>${esc(g["Durée"])}</td><td class="hm">${esc(g["Effectif court"] || g.Participants)}</td><td class="hm">${esc(g["Matériel"])}</td><td>${esc(g["Intensité"])}</td></tr>`
+          DISC === "prepa"
+            ? `<tr class="r" data-jeu="${esc(key(g))}" style="${style(g)}"><td>${esc(g.Code || "★")} ${favEtoile(g)}</td><td><b>${esc(g.Titre)}</b><br><span style="color:#6B7280">${esc(g["Résumé"])}</span></td><td>${typePill(g)}</td><td>${esc(g["Durée"])}</td><td class="hm">${esc(g["Matériel"])}</td></tr>`
+            : `<tr class="r" data-jeu="${esc(key(g))}" style="${style(g)}"><td>${esc(g.Code || "★")} ${favEtoile(g)}</td><td><b>${esc(g.Titre)}</b><br><span style="color:#6B7280">${esc(g["Résumé"])}</span></td><td>${esc(g["Durée"])}</td><td class="hm">${esc(g["Effectif court"] || g.Participants)}</td><td class="hm">${esc(g["Matériel"])}</td><td>${esc(g["Intensité"])}</td></tr>`
       ).join("") +
       "</tbody></table>"
     );
@@ -111,7 +120,7 @@ function listView(v) {
   return `<h2 class="pt">${esc(t)}</h2><p class="lead">${esc(l)}</p><p class="warn" id="warn"></p>
   <div class="tools"><input class="search grow" id="q" type="search" placeholder="Rechercher dans cette liste…" value="${esc(S.q)}" autocomplete="off">
   <div class="seg"><button data-mode="grid" class="${S.mode === "grid" ? "on" : ""}">Galerie</button><button data-mode="list" class="${S.mode === "list" ? "on" : ""}">Liste</button></div></div>
-  <div class="chips" style="margin-bottom:14px"><span style="align-self:center;font-size:11px;letter-spacing:1px;color:#7a8497;font-weight:700">INTENSITÉ</span>${["Calme", "Modérée", "Intense"].map(i => `<button class="chip ${S.int === i ? "on" : ""}" data-int="${i}">${i}</button>`).join("")}</div>
+  ${DISC === "prepa" ? "" : `<div class="chips" style="margin-bottom:14px"><span style="align-self:center;font-size:11px;letter-spacing:1px;color:#7a8497;font-weight:700">INTENSITÉ</span>${["Calme", "Modérée", "Intense"].map(i => `<button class="chip ${S.int === i ? "on" : ""}" data-int="${i}">${i}</button>`).join("")}</div>`}
   <p class="count" id="cnt">${L.length} jeu${L.length > 1 ? "x" : ""}</p><div id="res">${gridHTML(L)}</div>`;
 }
 

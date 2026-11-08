@@ -54,6 +54,7 @@ function seanceView() {
     bar +
     `<div class="box noprint"><b>Informations de la séance</b>${crepsChoixHTML()}
    <div class="smg">${inp("titre", "Cycle et séance", "Ex. Cycle 1 — Séance 4")}${inp("periode", "Période", "Ex. octobre")}${inp("theme", "Thème", "Ex. Pose de pieds & transfert de poids")}${inp("educ", "Éducateurs", "Prénoms")}${inp("objectif", "Objectif général", "Ce que la séance doit permettre d'apprendre", 1)}${inp("dates", "Dates", "Ex. 7 & 10 octobre")}</div>
+   <p class="noprint" style="font-size:12px;color:#6B7280;margin:6px 0 0">Rappel RGPD : n'écris ni nom de famille, ni information de santé sur les participants (des prénoms suffisent). Ces textes sont enregistrés avec ta séance.</p>
    <div class="grps">${M.G.map(g => `<div class="grp"><label class="sml" style="${colf(0, g.c)}">Groupe ${g.i + 1}<input data-gm="nom" data-gi="${g.i}" value="${esc(S.groups[g.i].nom)}" placeholder="Groupe ${g.i + 1}"></label>${num(`data-gm="acc" data-n="1" data-gi="${g.i}"`, "Accueil (min)", g.acc, g.c)}${two ? `<a class="chip" data-grm="${g.i}" title="Retirer ce groupe" style="cursor:pointer">✕</a>` : ""}</div>`).join("")}${M.G.length < GMAX ? `<a class="chip" id="gAdd" style="cursor:pointer;align-self:flex-start">＋ Ajouter un groupe</a>` : ""}</div></div>
   <div class="box noprint" style="border-left:6px solid #7FCB8F"><label class="fl" style="margin:0 0 8px"><input type="checkbox" id="seEchOn" ${E.on ? "checked" : ""}> <b>Échauffement</b></label>
    ${

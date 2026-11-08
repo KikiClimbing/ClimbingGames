@@ -1,6 +1,22 @@
 /* Mon cycle de formation : tableau de planification, séances prises dans la bibliothèque, enregistrement, impression, Word.
    Stockage : même onglet « Séances » de la feuille que les séances, avec un identifiant qui commence par « cy ». */
 const CY_LS = "monCycle";
+/* en prépa physique, un « cycle de formation » s'appelle un « programme » */
+const cyS = s =>
+  DISC === "prepa"
+    ? String(s)
+        .replace(/Créer un cycle de formation/g, "Créer un programme")
+        .replace(/[Cc]ycles de formation/g, m => (m[0] === "C" ? "Programmes" : "programmes"))
+        .replace(/[Cc]ycle de formation/g, m => (m[0] === "C" ? "Programme" : "programme"))
+        .replace(/Cycles/g, "Programmes")
+        .replace(/cycles/g, "programmes")
+        .replace(/Cycle/g, "Programme")
+        .replace(/cycle/g, "programme")
+        .replace(/CYCLES/g, "PROGRAMMES")
+        .replace(/CYCLE/g, "PROGRAMME")
+    : String(s);
+/* idem pour le texte d'un morceau de HTML (les attributs et les balises ne sont pas touchés) */
+const cyH = h => (DISC === "prepa" ? String(h).replace(/>([^<>]+)</g, (m, t) => ">" + cyS(t) + "<") : h);
 let CY = null,
   CYUID = 1,
   CYPICK = false,
@@ -66,6 +82,9 @@ const cyCodeCouleur = c => {
 };
 /* feuille imprimable (aussi utilisée comme aperçu) */
 function cycleSheetHTML(cy) {
+  return cyH(cycleSheetHTML0(cy));
+}
+function cycleSheetHTML0(cy) {
   const ph = t => `<i style="color:#8A93A3">${t}</i>`;
   const v = (x, p) => (x ? esc(x) : ph(p));
   const meta = [
@@ -117,6 +136,9 @@ function cyPicker() {
   }</div></div>`;
 }
 function cycleView() {
+  return cyH(cycleView0());
+}
+function cycleView0() {
   const head = gsec(
     "Créer un cycle de formation",
     "Planifiez un cycle : ajoutez les séances de la bibliothèque, complétez le tableau, enregistrez et exportez.",
@@ -164,7 +186,7 @@ function cyCompHTML() {
 }
 const cyMsg = t => {
   const m = $("#cyMsg");
-  if (m) m.textContent = t;
+  if (m) m.textContent = cyS(t);
 };
 async function cyEnregistrer() {
   if (compteRequis()) return;
@@ -172,7 +194,7 @@ async function cyEnregistrer() {
     cyMsg("Donnez un titre au cycle.");
     return;
   }
-  if (!CY.id) CY.id = "cy" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  if (!CY.id) CY.id = (DISC === "prepa" ? "cy-p" : "cy") + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const data = JSON.stringify({ cycle: CY });
   if (data.length > 45000) {
     cyMsg("Cycle trop volumineux pour être enregistré.");
@@ -219,6 +241,8 @@ function cyAll() {
     .filter(r => String(r.id).startsWith("cy"))
     .map(r => ({ rec: r }));
 }
+/* les programmes de prépa ont un identifiant « cy-p… » (ou « cymod-… » pour les modèles) */
+const cyPrepa = r => /^cy(-p|mod-)/.test(String(r.id));
 /* contenu complet d'un cycle (absent tant qu'il n'a pas été chargé) */
 function cyData(rec) {
   try {
@@ -228,8 +252,11 @@ function cyData(rec) {
   }
 }
 function cyListeHTML() {
+  return cyH(cyListeHTML0());
+}
+function cyListeHTML0() {
   if (compteOn() && !AUTH.user) return compteInvite("pour voir et enregistrer vos cycles");
-  const L = cyAll();
+  const L = cyAll().filter(x => cyPrepa(x.rec) === (DISC === "prepa"));
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     ({ rec }) =>
@@ -461,7 +488,7 @@ registerNav({
   html: () =>
     navBtn(
       "cycle",
-      `Créer un cycle<span class="n">${CY.lignes.length || ""}</span>`,
+      `${cyS("Créer un cycle")}<span class="n">${CY.lignes.length || ""}</span>`,
       '<span class="ic">⟳</span>'
     ),
 });
@@ -504,6 +531,7 @@ registerView({
     const id = decodeURIComponent(v.slice(3));
     const x = cyAll().find(c => c.rec.id === id);
     const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer" data-bt="cycles">← Bibliothèque</a></div>`;
+    const cyOut = h => cyH(h);
     if (x && !x.rec.data && !SB_ECHEC[id]) {
       sbCharger(id)
         .then(() => VIEW.startsWith("cy/") && render())
@@ -511,17 +539,17 @@ registerView({
           SB_ECHEC[id] = 1;
           VIEW.startsWith("cy/") && render();
         });
-      return back + `<div class="box">Chargement du cycle…</div>`;
+      return back + `<div class="box">${cyS("Chargement du cycle…")}</div>`;
     }
     const cy = x && cyData(x.rec);
     if (!cy) {
       CYVU = null;
-      return back + `<div class="box">Ce cycle est introuvable ou illisible.</div>`;
+      return back + `<div class="box">${cyS("Ce cycle est introuvable ou illisible.")}</div>`;
     }
     x.cy = cy;
     CYVU = { id, cy };
     const mien = compteMien(x.rec);
-    return `${back}<div class="tools noprint">${cyBtn("vprint", "Imprimer / PDF", "#26364D")}${cyBtn("vword", "Télécharger en Word", "#2B5A9E")}${cyBtn("vedit", mien ? "✎ Modifier ce cycle" : "Utiliser comme modèle (copie)", "#2E7D4F")}${mien ? cyBtn("vdel", "🗑 Supprimer", "#fff", "#B2263A", "border:1px solid #E8B4BC;") : ""}<span id="cyMsg" style="font-weight:700;color:#2E7D4F"></span></div>${partageBloc(x.rec)}${cycleSheetHTML(x.cy)}`;
+    return cyH(`${back}<div class="tools noprint">${cyBtn("vprint", "Imprimer / PDF", "#26364D")}${cyBtn("vword", "Télécharger en Word", "#2B5A9E")}${cyBtn("vedit", mien ? "✎ Modifier ce cycle" : "Utiliser comme modèle (copie)", "#2E7D4F")}${mien ? cyBtn("vdel", "🗑 Supprimer", "#fff", "#B2263A", "border:1px solid #E8B4BC;") : ""}<span id="cyMsg" style="font-weight:700;color:#2E7D4F"></span></div>${partageBloc(x.rec)}${cycleSheetHTML(x.cy)}`);
   },
 });
 registerClick(e => {

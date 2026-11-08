@@ -13,7 +13,7 @@ function homeView() {
     .reverse();
   return `<p class="warn" id="warn"></p><div class="hero">${
     prepa
-      ? `<h2>Prépa physique : renforcer, assouplir, récupérer</h2><p>${nb} fiches d'exercices pour compléter l'escalade : renforcement des muscles peu sollicités, mobilité et cardio, avec le dosage, les points de vigilance et des progressions.</p>`
+      ? `<h2>Prépa physique : renforcer, assouplir, récupérer</h2><p>${nb} fiches d'exercices pour compléter l'escalade : renforcement des muscles peu sollicités, poutre et mobilité, avec le dosage, les points de vigilance et des progressions.</p>`
       : `<h2>Les jeux d'escalade, prêts à animer</h2><p>${nb} fiches d'exercices pédagogiques sous forme de jeux, avec schéma, variantes et conseils de sécurité, pour apprendre à grimper à tous les âges : enfants, ados et adultes.</p>`
   }<input class="search" id="hq" type="search" placeholder="${prepa ? "Rechercher un exercice, un muscle, un matériel…" : "Rechercher un jeu, un matériel, un mot…"}" autocomplete="off"></div>
   <div class="sh">CHOISIR UNE FAMILLE</div><div class="tiles">${tiles}</div>
