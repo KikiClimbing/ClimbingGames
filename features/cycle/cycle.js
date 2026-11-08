@@ -124,7 +124,7 @@ function cyPicker() {
   const q = norm(CYQ);
   const dans = new Set(CY.lignes.map(l => l.sid));
   const L = sbAll().filter(
-    r => !q || norm([r.titre, r.theme, r.dates, r.objectif, r.jeux].join(" ")).includes(q)
+    r => (((sbParse(r) || {}).meta || {}).disc || "escalade") === DISC && (!q || norm([r.titre, r.theme, r.dates, r.objectif, r.jeux].join(" ")).includes(q))
   );
   return `<div class="box" style="background:#F7F9FD"><b>Séances de la bibliothèque</b> <a class="chip" data-cya="pickoff" style="cursor:pointer;float:right">Fermer</a>
   <input class="search" id="cyq" type="search" placeholder="Rechercher une séance…" value="${esc(CYQ)}" style="max-width:360px;display:block;margin:8px 0">
