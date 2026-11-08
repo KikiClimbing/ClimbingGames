@@ -41,6 +41,11 @@ function viewTitle(v) {
       "Objectif : " + decodeURIComponent(v.slice(4)),
       "Les jeux qui travaillent cet objectif.",
     ];
+  if (v.startsWith("comp/")) {
+    const n = decodeURIComponent(v.slice(5)),
+      c = COMPETENCES.find(x => x[0] === n);
+    return ["Compétence : " + n, c ? c[1] : "Les jeux qui travaillent cette compétence."];
+  }
   if (v === "anniv")
     return [
       LBL_SANS_EXP,
@@ -61,6 +66,9 @@ function filterGames(v) {
         .map(s => s.trim())
         .includes(o)
     );
+  } else if (v.startsWith("comp/")) {
+    const c = decodeURIComponent(v.slice(5));
+    L = L.filter(g => compDe(g).includes(c));
   } else if (v === "fav") L = L.filter(isFav);
   else if (v === "anniv") L = L.filter(isAnniv);
   else if (v === "nomat") L = L.filter(noMat);
@@ -149,16 +157,44 @@ registerNav({
     );
   },
 });
+/* menu « Compétences » (escalade) : 7 entrées repliables, ouvertes par défaut */
+function compOuvert() {
+  if (VIEW.startsWith("comp/")) return true;
+  try {
+    return localStorage.getItem("navComp") !== "0";
+  } catch (e) {
+    return true;
+  }
+}
+function compMenuHTML() {
+  if (DISC === "prepa") return "";
+  const ouvert = compOuvert();
+  return (
+    `<button class="nav" data-navcomp="1" aria-expanded="${ouvert}"><span class="ic">${ouvert ? "▾" : "▸"}</span>Compétences</button>` +
+    (ouvert ? COMP_NOMS.map(c => navBtn("comp/" + c, c, '<span class="ic">›</span>')).join("") : "")
+  );
+}
+registerClick(e => {
+  if (!e.target.closest("[data-navcomp]")) return;
+  const o = !compOuvert();
+  try {
+    localStorage.setItem("navComp", o ? "1" : "0");
+  } catch (er) {}
+  if (!o && VIEW.startsWith("comp/")) go("all");
+  else buildNav();
+  return true;
+});
 registerNav({
   sec: "PARCOURIR",
   secOrder: 20,
   order: 0,
   html: () =>
-    (DISC === "prepa" ? "" : navBtn("anniv", LBL_SANS_EXP, '<span class="ic">★</span>')) +
-    navBtn("nomat", "Sans matériel", '<span class="ic">○</span>') +
+    compMenuHTML() +
     objsDisc()
-      .map(o => navBtn("obj/" + o, o, '<span class="ic">›</span>'))
-      .join(""),
+      .map(o => navBtn("obj/" + o, o, `<span class="ic">${DISC === "prepa" ? "›" : "☀"}</span>`))
+      .join("") +
+    (DISC === "prepa" ? "" : navBtn("anniv", LBL_SANS_EXP, '<span class="ic">★</span>')) +
+    navBtn("nomat", "Sans matériel", '<span class="ic">○</span>'),
 });
 registerView({
   fallback: true,
@@ -168,7 +204,8 @@ registerView({
     v === "anniv" ||
     v === "nomat" ||
     v.startsWith("fam/") ||
-    v.startsWith("obj/"),
+    v.startsWith("obj/") ||
+    v.startsWith("comp/"),
   html: v => listView(v),
   bind: () => {
     const q = $("#q");

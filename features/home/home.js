@@ -17,8 +17,9 @@ function homeView() {
       : `<h2>Les jeux d'escalade, prêts à animer</h2><p>${nb} fiches d'exercices pédagogiques sous forme de jeux, avec schéma, variantes et conseils de sécurité, pour apprendre à grimper à tous les âges : enfants, ados et adultes.</p>`
   }<input class="search" id="hq" type="search" placeholder="${prepa ? "Rechercher un exercice, un muscle, un matériel…" : "Rechercher un jeu, un matériel, un mot…"}" autocomplete="off"></div>
   <div class="sh">CHOISIR UNE FAMILLE</div><div class="tiles">${tiles}</div>
-  <div class="sh">ACCÈS RAPIDE</div><div class="chips">${prepa ? "" : `<button class="chip" data-go="anniv">★ ${LBL_SANS_EXP}</button>`}<button class="chip" data-go="nomat">○ Sans matériel</button>${objsDisc()
-    .map(o => `<button class="chip" data-go="obj/${o}">${o}</button>`)
+  <div class="sh">ACCÈS RAPIDE</div><div class="chips">${prepa ? "" : `<button class="chip" data-go="anniv">★ ${LBL_SANS_EXP}</button>`}<button class="chip" data-go="nomat">○ Sans matériel</button>${(prepa ? [] : COMP_NOMS.map(c => ["comp/" + c, c]))
+    .concat(objsDisc().map(o => ["obj/" + o, o]))
+    .map(([r, o]) => `<button class="chip" data-go="${r}">${o}</button>`)
     .join(
       ""
     )}<button class="chip" id="rnd">🎲 ${prepa ? "Un exercice" : "Un jeu"} au hasard</button></div>
@@ -90,6 +91,7 @@ function setDisc(d) {
   if (
     (fam && discDeFamille(fam) !== d) ||
     v.startsWith("obj/") ||
+    v.startsWith("comp/") ||
     v === "anniv" ||
     v.startsWith("g/")
   )

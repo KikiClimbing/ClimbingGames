@@ -29,7 +29,7 @@ Object.assign(FAMS, {
   Poutre: { k: "H", l: "#E6E9F7", m: "#C4CBEC", d: "#3B4A9C", a: "#8A97DB" },
   "Mobilité et étirements": { k: "M", l: "#F8E2EE", m: "#EDBAD6", d: "#9C3269", a: "#DE8DB8" },
 });
-const OBJS = ["Échauffement", "Équilibre", "Coopération", "Vitesse", "Observation"];
+const OBJS = ["Échauffement"]; /* les anciens objectifs (équilibre, vitesse, observation, coopération) sont devenus des compétences */
 /* zones travaillées (prépa physique) : sert d'« objectifs » des exercices */
 const MUSCLES = [
   "Épaules",

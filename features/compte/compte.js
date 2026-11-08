@@ -204,7 +204,7 @@ function invitPanneau(m) {
     <div class="tools"><a class="btn" href="${gmail}" target="_blank" rel="noopener" style="background:#26364D;color:#fff;${btn}">✉ Ouvrir dans Gmail</a><a class="btn" href="${mailto}" style="background:#EEF1F8;color:#26364D;${btn}">Autre messagerie</a><a class="btn" data-inv="copy" role="button" tabindex="0" style="background:#EEF1F8;color:#26364D;${btn}">Copier le message</a><span id="invMsg" style="color:#2E7D4F;font-weight:700"></span></div>
     <p style="margin:12px 0 4px"><b>Destinataires (en copie cachée)</b> : ${m.adresses.map(esc).join(", ")}</p>
     <p style="margin:4px 0"><b>Objet</b> : ${esc(m.sujet)}</p>
-    <pre style="white-space:pre-wrap;font:inherit;background:#F7F9FD;border:1px solid #E3E8F2;border-radius:8px;padding:10px 12px;margin:6px 0 0">${esc(m.corps)}</pre>`,
+    <pre style="white-space:pre-wrap;font:inherit;background:#F7F9FD;border:1px solid #E3E8F2;border-radius:8px;padding:10px 12px;margin:6px 0 0">${esc(m.corps).replace(/https?:\/\/[^\s<]*[^\s<.,;:!?)»]/g, u => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`)}</pre>`,
     640
   );
 }

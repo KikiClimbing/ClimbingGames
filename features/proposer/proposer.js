@@ -120,7 +120,7 @@ function propFormHTML(v, d, at, atTag, opt = {}) {
   const prepa = d === "prepa";
   const champ = f => {
     const val = v[f.k] || "";
-    const lab = `${esc((prepa && f.k === "Objectifs (tags)" ? "Zone travaillée" : f.lab) || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
+    const lab = `${esc((f.k === "Objectifs (tags)" ? (prepa ? "Zone travaillée" : "Échauffement") : f.lab) || f.k)}${f.req ? ' <span style="color:#B2263A">*</span>' : ""}${f.aide ? `<span style="font-weight:400;color:#6B7280"> — ${esc(f.aide)}</span>` : ""}`;
     if (f.k === "Famille") {
       const fams = [...new Set([...famsDisc(d), v.Famille].filter(Boolean))];
       return `<label class="sml">${lab}<select ${at(f.k)}>${fams.map(o => `<option ${val === o ? "selected" : ""}>${esc(o)}</option>`).join("")}</select></label>`;
