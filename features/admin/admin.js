@@ -107,7 +107,7 @@ async function admCharger() {
   render();
   try {
     const j = await admPost("admin_liste", { tous: ADM.tous });
-    ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre, codeAvant: g.valeurs.Code || "" }));
+    ADM.list = j.jeux.map(g => ({ ...g, orig: g.valeurs.Titre, codeAvant: g.valeurs.Code || "" })).sort((a, b) => (+b.ligne || 0) - (+a.ligne || 0)); /* du plus récent au plus ancien */
     /* compétences : on affiche le classement de départ des jeux de base tant que la colonne est vide */
     ADM.list.forEach(g => {
       if (!g.valeurs["Compétences"] && typeof compDe === "function")

@@ -249,3 +249,28 @@ function seSwitch() {
   SE = null;
   seLoad();
 }
+
+/* modifications non enregistrées ? (le bouton d'enregistrement se grise tant qu'il n'y a rien à sauvegarder) */
+function seSig() {
+  const s = { ...SE },
+    m = { ...SMETA };
+  delete s.saveSig;
+  delete m.logo;
+  return JSON.stringify([s, m]);
+}
+function seSale() {
+  if (SEPOP) return !!SEPOP.dirty;
+  if (SE.saveSig) return SE.saveSig !== seSig();
+  return nbExercices() > 0 || !!(SMETA.titre || "").trim();
+}
+function seBoutonSauve() {
+  const b = $("#sSave");
+  if (!b) return;
+  const sale = seSale();
+  b.classList.toggle("off", !sale);
+  b.style.opacity = sale ? "" : ".45";
+  b.style.cursor = sale ? "pointer" : "default";
+  b.title = sale ? "" : "Rien à enregistrer : aucune modification depuis le dernier enregistrement";
+  const m = $("#sSaved");
+  if (m) m.style.display = sale ? "none" : "";
+}

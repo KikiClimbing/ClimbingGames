@@ -35,6 +35,9 @@ function rxApercuHTML() {
 function rxOuvrir(subId) {
   RX.sub = subId;
   RX.sel = "";
+  /* échauffement : l'objectif « Échauffement » est présélectionné */
+  if (subId === "ech") GLF.obj = "Échauffement";
+  else if (GLF.obj === "Échauffement") GLF.obj = "";
   modal(
     "🔍 Chercher un exercice",
     `<div class="rx"><div class="rxl">${glFiltresHTML()}<input class="search" id="rxq" type="search" placeholder="Code, nom, mot-clé…" value="${esc(RX.q)}" style="margin:6px 0;width:100%"><div id="rxliste">${rxItemsHTML()}</div></div><div class="rxr" id="rxap">${rxApercuHTML()}</div></div>`,

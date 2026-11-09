@@ -21,7 +21,7 @@ const PROP_CHAMPS = [
   { k: "Matériel", req: 1, aide: "« Aucun » si rien." },
   { k: "Espace", aide: "Ex. : pan de mur, traversée basse." },
   { k: "Durée", req: 1, aide: "Ex. : 10 min." },
-  { k: "Objectif", aide: "Ce que le jeu fait travailler, en quelques mots." },
+  { k: "Objectif", t: "area", rows: 3, aide: "Ce que le jeu fait travailler, en quelques mots." },
   { k: "But", t: "area", aide: "Ce que les pratiquants doivent réussir." },
   {
     k: "Comportements attendus",
@@ -145,7 +145,7 @@ function propFormHTML(v, d, at, atTag, opt = {}) {
         .join("")}</div></div>`;
     }
     if (f.t === "area")
-      return `<label class="sml" style="grid-column:1/-1">${lab}<textarea rows="${f.rows || 3}" ${at(f.k)}>${esc(val)}</textarea></label>`;
+      return `<label class="sml" style="grid-column:1/-1">${lab}<textarea rows="${f.rows || 3}" style="resize:vertical" ${at(f.k)}>${esc(val)}</textarea></label>`;
     return `<label class="sml">${lab}<input ${at(f.k)} value="${esc(val)}"></label>`;
   };
   const theme = propTheme(v, d);
@@ -195,7 +195,7 @@ function propView() {
       `<div class="box" style="border-left:6px solid #2E7D4F"><b>Merci !</b> Votre jeu a été envoyé. Il sera relu avant d'apparaître sur le site.<div class="tools" style="margin-top:10px"><a class="btn" data-pr="again" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Proposer un autre jeu</a></div></div>`
     );
   const v = PROP.v;
-  if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.nom;
+  if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.pseudo || AUTH.user.nom;
   const prepa = DISC === "prepa";
   const lien = v["Schéma (lien)"] || "";
   const prev = lien

@@ -221,8 +221,12 @@ async function enregistrerSeance0(meta0, se0, nouvelle) {
     const h = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
     SB_MSG = {
       id: rec.id,
-      txt: (nouvelle ? "✓ Nouvelle séance créée à " : "✓ Séance enregistrée à ") + h + " — pas besoin de recliquer.",
+      txt: (nouvelle ? "✓ Nouvelle séance créée à " : "✓ Séance enregistrée à ") + h + ".",
     };
+    if (!meta0 && !SEPOP) {
+      SE.saveSig = seSig();
+      seSave();
+    }
     toast(SB_MSG.txt);
   } catch (e) {
     toast("Échec de l'enregistrement (" + e.message + "). La séance reste dans ce navigateur.");
@@ -261,11 +265,11 @@ function seancesListeHTML() {
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
     r =>
-      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme, String(r.id).startsWith("mod-"))}${cel(r.educ)}${cel(r.dates)}${celChip(r.theme)}${cel(r.obj)}${celDate(r.ts)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right"><a class="chip" data-sbdup="${esc(r.id)}" title="Dupliquer : préparer une nouvelle séance à partir de celle-ci" style="cursor:pointer">⧉</a> ${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
+      `<tr class="r" data-go="sb/${esc(r.id)}">${celTitre(r.titre, r.theme, String(r.id).startsWith("mod-"))}${celChip(r.theme)}${cel(r.obj)}${cel(r.dates)}${celDate(r.ts)}${compteOn() ? celPar(r.mien, r.par) : ""}<td style="text-align:right"><a class="chip" data-sbdup="${esc(r.id)}" title="Dupliquer : préparer une nouvelle séance à partir de celle-ci" style="cursor:pointer">⧉</a> ${r.mien ? `<a class="chip" data-sbdel="${esc(r.id)}" title="Supprimer cette séance" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px">${DISC === "prepa" && typeof PREPA_SEANCES !== "undefined" ? `<select id="sbmod" style="margin-left:8px"><option value="">Toutes les séances</option><option value="mod"${SBMOD === "mod" ? " selected" : ""}>Séances modèles</option><option value="mes"${SBMOD === "mes" ? " selected" : ""}>Mes séances</option></select>` : ""}</div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>ÉDUCATEURS</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th class="c-mod">MODIFIÉ</th>${compteOn() ? '<th class="c-par">AUTEUR</th>' : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th>DATE</th><th class="c-mod">MODIFIÉ</th>${compteOn() ? '<th class="c-par">AUTEUR</th>' : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "",
@@ -400,6 +404,7 @@ registerClick(e => {
   const k = b.dataset.sb;
   if (k === "print") imprimerSeance();
   else if (k === "word") seanceWord(SBCUR);
+  else if (k === "envoi") envoiOuvrir(SBCUR.meta, SBCUR.se, SBID);
   else if (k === "del") {
     sbSupprimer(SBID);
   } else if (k === "edit") sepopOuvrir(SBCUR, SBID);

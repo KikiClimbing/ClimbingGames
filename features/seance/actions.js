@@ -1,5 +1,28 @@
 /* Ma séance — ajout à la bibliothèque, boutons et clics */
-function seToLib(id) {
+/* choix de la famille dans un menu (pas de saisie libre : pas d'erreur de frappe possible) */
+function choisirFamille(def) {
+  const L = Object.keys(FAMS).filter(f => typeof discDeFamille !== "function" || discDeFamille(f) === (DISC || "escalade"));
+  return new Promise(res => {
+    let fait = false;
+    const fin = v => {
+      if (fait) return;
+      fait = true;
+      res(v);
+    };
+    const p = modal(
+      "Famille du jeu",
+      `<p style="margin-top:0">Dans quelle famille range-t-on ce jeu ?</p><select id="famChoix" style="width:100%;padding:8px">${L.map(f => `<option ${f === def ? "selected" : ""}>${esc(f)}</option>`).join("")}</select><div class="tools" style="margin-top:12px"><a class="btn" id="famOk" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Valider</a></div>`,
+      420,
+      { fin: () => fin("") }
+    );
+    $("#famOk").addEventListener("click", () => {
+      const v = $("#famChoix").value;
+      fin(v);
+      modalFermer("mpop", true);
+    });
+  });
+}
+async function seToLib(id) {
   const f = seFind(id);
   if (!f) return;
   const it = f.s.items[f.i],
@@ -14,13 +37,10 @@ function seToLib(id) {
     alert("Renseignez au moins le nom de l'exercice et la consigne.");
     return;
   }
-  const fam = prompt(
-    "Famille du jeu : Exploration, Coopération, Défis ou Animation ?",
-    it.fam || "Coopération"
-  );
+  const fam = await choisirFamille(it.fam || "Coopération");
   if (!fam) return;
   it.fam = fam;
-  const auteur = SMETA.educ || prompt("Votre prénom (auteur de la fiche) ?") || "";
+  const auteur = (typeof AUTH !== "undefined" && AUTH.user && (AUTH.user.pseudo || AUTH.user.nom)) || prompt("Votre prénom (auteur de la fiche) ?") || "";
   const jeu = {
     Titre: it.titre,
     Famille: fam,
@@ -75,6 +95,7 @@ function seanceBind() {
     if (s) s.innerHTML = sheetHTML();
     const c = $("#seControle");
     if (c) c.innerHTML = seControleInner();
+    seBoutonSauve();
   };
   bilanBind(upd);
   const tb = $("#sTerrain");
@@ -281,10 +302,15 @@ function seanceBind() {
   const sv = $("#sSave");
   if (sv)
     sv.addEventListener("click", async () => {
+      if (!seSale()) {
+        toast("Rien à enregistrer : aucune modification depuis le dernier enregistrement.");
+        return;
+      }
       sv.textContent = "Enregistrement…";
       await enregistrerSeance();
       render();
     });
+  seBoutonSauve();
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-sa]");
