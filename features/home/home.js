@@ -86,17 +86,9 @@ function setDisc(d) {
   GLF.comp = "";
   if (typeof seSwitch === "function") seSwitch();
   buildNav();
-  const v = VIEW;
-  const fam = v.startsWith("fam/") ? decodeURIComponent(v.slice(4)) : "";
-  if (
-    (fam && discDeFamille(fam) !== d) ||
-    v.startsWith("obj/") ||
-    v.startsWith("comp/") ||
-    v === "anniv" ||
-    v.startsWith("g/")
-  )
-    go("home");
-  else render();
+  /* changer de discipline ramène toujours à l'accueil */
+  if (VIEW === "home") render();
+  else go("home");
 }
 registerNav({
   sec: "",

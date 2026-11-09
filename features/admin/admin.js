@@ -97,6 +97,7 @@ registerLoader(async () => {
   if (!compteOn() || !compteAdmin() || AUTH.reel) return;
   try {
     ADM_ATT = (await admPost("admin_attente")).n || 0;
+    doublonsBanniere();
     buildNav();
   } catch (e) {}
 });
@@ -450,6 +451,19 @@ registerClick(e => {
       return true;
     if (a === "pub" && !g.valeurs.Code && !confirm("Ce jeu n'a pas de code. Publier quand même ?"))
       return true;
+    if (a === "pub" || a === "save") {
+      const c = String(g.valeurs.Code || "").trim().toLowerCase();
+      const pris = c && [...DATA, ...PREPA_EMBED, ...JEUX_EXTRA].find(x => String(x.Code || "").toLowerCase() === c && norm(x.Titre) !== norm(g.valeurs.Titre) && norm(x.Titre) !== norm(g.orig || ""));
+      const autre = c && (ADM.list || []).find(x => x !== g && x.publie && String(x.valeurs.Code || "").toLowerCase() === c);
+      if (pris || autre) {
+        const nom = (pris || autre.valeurs).Titre;
+        const nv = admCodeSuggere(g.valeurs.Famille);
+        g.valeurs.Code = nv;
+        alert("Le code " + c.toUpperCase() + " est déjà utilisé par « " + nom + " ». Un autre code a été mis : " + nv + ". Vérifie-le, puis publie à nouveau.");
+        render();
+        return true;
+      }
+    }
     ADM.busy = true;
     const orig = g.orig;
     const req =

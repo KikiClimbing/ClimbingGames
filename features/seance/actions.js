@@ -112,6 +112,33 @@ function seanceBind() {
       }
     })
   );
+  const bascule = (it, cle, v, coche) => {
+    const L = Array.isArray(it[cle]) ? it[cle].slice() : [];
+    const j = L.indexOf(v);
+    if (coche && j >= 0) L.splice(j, 1);
+    if (!coche && j < 0) L.push(v);
+    it[cle] = L;
+  };
+  document.querySelectorAll("[data-ipn]").forEach(i =>
+    i.addEventListener("change", () => {
+      const f = seFind(+i.dataset.id);
+      if (f) {
+        bascule(f.s.items[f.i], "pn", +i.dataset.ipn, i.checked);
+        seSave();
+        upd();
+      }
+    })
+  );
+  document.querySelectorAll("[data-ivn]").forEach(i =>
+    i.addEventListener("change", () => {
+      const f = seFind(+i.dataset.id);
+      if (f) {
+        bascule(f.s.items[f.i], "vn", i.dataset.ivn, i.checked);
+        seSave();
+        upd();
+      }
+    })
+  );
   document.querySelectorAll("[data-sa-set]").forEach(i =>
     i.addEventListener("change", e => {
       const s = sub(i.dataset.sub);
@@ -226,7 +253,8 @@ function seanceBind() {
   if (sc)
     sc.addEventListener("click", async () => {
       delete SE.id;
-      await enregistrerSeance();
+      sc.textContent = "Enregistrement…";
+      await enregistrerSeance(undefined, undefined, true);
       render();
     });
   const lg = $("#sLogo");
@@ -253,6 +281,7 @@ function seanceBind() {
   const sv = $("#sSave");
   if (sv)
     sv.addEventListener("click", async () => {
+      sv.textContent = "Enregistrement…";
       await enregistrerSeance();
       render();
     });
@@ -271,6 +300,15 @@ document.addEventListener("click", e => {
   if (a === "modele") {
     SMETA.modele = b.dataset.m === "creps" ? "creps" : "std";
     saveMeta();
+  } else if (a === "schestd") {
+    SMETA.schemaStd = !SMETA.schemaStd;
+    saveMeta();
+  } else if (a === "txtreset") {
+    const f = seFind(id);
+    if (f) {
+      delete f.s.items[f.i].txt;
+      delete f.s.items[f.i].pn;
+    }
   } else if (a === "schemode") {
     SMETA.schemaMode = b.dataset.m === "sous" ? "sous" : "page";
     saveMeta();

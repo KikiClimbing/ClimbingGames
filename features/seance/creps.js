@@ -5,25 +5,25 @@
    l'échauffement (SE.ech.cp_*) ; s'ils sont vides, on reprend la fiche du jeu (résumé, principe, matériel, variantes…). */
 const CREPS_COLS = [
   ["SITUATION", "", "#26364D", "#F4F6FA", 9],
+  ["CONSIGNES et RÈGLES DU JEU", "À donner aux pratiquants", "#4E9A5B", "#E9F4EB", 20],
   [
     "OBJECTIF de la situation",
     "Ce que l'éducateur veut que ses pratiquants soient capables de faire / quelle transformation visée ?",
     "#2B5A9E",
     "#E7EFFA",
-    12,
+    11,
   ],
-  ["BUT à atteindre pour les pratiquants", "", "#3A8FB0", "#E6F3F8", 10],
-  ["CONSIGNES et RÈGLES DU JEU", "À donner aux pratiquants", "#4E9A5B", "#E9F4EB", 18],
+  ["BUT à atteindre pour les pratiquants", "", "#3A8FB0", "#E6F3F8", 9],
   ["CRITÈRES de réussite", "Les élèves savent qu'ils ont réussi quand…", "#B2263A", "#FBE9EC", 12],
   [
     "COMPORTEMENTS ATTENDUS",
     "Quels comportements j'attends de mes pratiquants pour qu'ils soient en réussite ? (critères techniques / tactiques de réalisation)",
     "#8A55B5",
     "#F1EAF7",
-    15,
+    14,
   ],
   ["VARIANTES", "Plus difficile si réussite · plus facile si échec", "#E8662F", "#FDEFE7", 13],
-  ["ORGANISATION", "Matériel, espace, durée…", "#5B6B82", "#EDF0F4", 11],
+  ["ORGANISATION", "Matériel, espace, durée…", "#5B6B82", "#EDF0F4", 12],
 ];
 const isCreps = () => SMETA && SMETA.modele === "creps";
 /* schémas : « page » = sur une page à part (défaut) ; « sous » = sous chaque situation */
@@ -46,7 +46,13 @@ function crepsLignes(M) {
       src: E,
       obj: E.cp_obj || "",
       but: E.cp_but || "",
-      cons: E.cp_cons || cons || "",
+      cons:
+        E.cp_cons ||
+        [cons]
+          .concat(M.echViews.map(x => "• " + x.name + (x.v.code ? " (" + x.v.code + ")" : "") + " : " + String(x.v.desc || "").replace(/\s*\n+\s*/g, " ")))
+          .filter(Boolean)
+          .join("\n") ||
+        "",
       crit: E.cp_crit || "",
       comp: E.cp_comp || "",
       plus: E.cp_plus || "",
@@ -70,7 +76,7 @@ function crepsLignes(M) {
         src: it,
         obj: it.cp_obj || (g && g.Objectif) || "",
         but: it.cp_but || (g && g.But) || v.resume || "",
-        cons: it.cp_cons || v.desc || "",
+        cons: (typeof it.txt === "string" ? it.txt : it.cp_cons) || v.desc || "",
         crit: v.crit || "",
         comp: it.cp_comp || (g && g["Comportements attendus"]) || "",
         plus: v.plus || "",
@@ -126,7 +132,7 @@ function crepsHTML() {
     h += `<tr style="page-break-inside:avoid">${td(
       0,
       `<b>${esc(r.nom)}</b>${r.titre ? `<div style="margin-top:3px">${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${esc(r.titre)}</a>` : esc(r.titre)}</div>` : ""}${r.sub ? `<div style="color:#6B7280;font-size:10px;font-style:italic">${esc(r.sub)}</div>` : ""}`
-    )}${td(1, bloc(r.obj))}${td(2, bloc(r.but))}${td(3, bloc(r.cons, "▸", C1))}${td(4, bloc(r.crit, "✓", "#2E6F3E"))}${td(5, bloc(r.comp, "•", "#8A55B5"))}${td(6, `${r.plus ? `<div style="margin-bottom:4px"><b style="color:${C2}">+ Plus difficile</b>${bloc(r.plus, "", "")}</div>` : ""}${r.moins ? `<div><b style="color:#2E6F3E">– Plus facile</b>${bloc(r.moins, "", "")}</div>` : ""}${r.plus || r.moins ? "" : ph("—")}`)}${td(7, `<div>${durs}</div>${bloc(r.orga, "", "")}`)}</tr>`;
+    )}${td(1, bloc(r.cons, "▸", C1))}${td(2, bloc(r.obj))}${td(3, bloc(r.but))}${td(4, bloc(r.crit, "✓", "#2E6F3E"))}${td(5, bloc(r.comp, "•", "#8A55B5"))}${td(6, `${r.plus ? `<div style="margin-bottom:4px"><b style="color:${C2}">+ Plus difficile</b>${bloc(r.plus, "", "")}</div>` : ""}${r.moins ? `<div><b style="color:#2E6F3E">– Plus facile</b>${bloc(r.moins, "", "")}</div>` : ""}${r.plus || r.moins ? "" : ph("—")}`)}${td(7, `<div>${durs}</div>${bloc(r.orga, "", "")}`)}</tr>`;
     if (schemaSous() && crepsImgRow(r)) {
       const img = crepsImgRow(r);
       h += `<tr style="page-break-inside:avoid"><td colspan="8" style="border:1px solid #D5DAE5;padding:0"><div style="display:flex;align-items:stretch;min-height:120px"><div style="background:#F4F6FA;font-size:10px;color:#5B6B82;font-weight:700;padding:6px 8px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center">SCHÉMA</div><div style="display:flex;align-items:center;justify-content:center;padding:6px;width:34%;min-width:230px"><img src="${esc(img)}" alt="Schéma" onerror="this.closest('tr').remove()" style="max-width:100%;max-height:200px;object-fit:contain"></div><div style="flex:1;border-left:1px dashed #D5DAE5"></div></div></td></tr>`;
@@ -151,7 +157,7 @@ function crepsChoixHTML() {
   return `<div class="tools" style="margin:8px 0 4px"><span style="font-weight:700">Modèle de fiche :</span><div class="seg">${b("std", "Fiche simplifiée")}${b("creps", "Fiche complète")}</div><span style="color:#6B7280;font-size:13px">Même séance, autre présentation (tableau à 8 colonnes).</span></div>${
     isCreps()
       ? `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schemode" data-m="page" class="${schemaSous() ? "" : "on"}">Sur une page à part</button><button data-sa="schemode" data-m="sous" class="${schemaSous() ? "on" : ""}">Sous chaque situation</button></div></div>`
-      : ""
+      : `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schestd" class="${schemaStd() ? "on" : ""}">${schemaStd() ? "✓ Schémas dans la fiche" : "Ajouter les schémas des jeux"}</button></div></div>`
   }`;
 }
 /* champs propres au modèle CREPS d'une situation (r : ligne de crepsLignes) — placés dans le cadre de l'exercice lui-même */
@@ -175,7 +181,6 @@ function crepsChampsHTML(r) {
   return `<div class="cpbox" style="margin-top:10px;border:1px dashed #8A55B5;border-radius:8px;padding:8px 10px;background:#FAF7FD"><b style="color:#8A55B5;font-size:13px">Autres champs de la fiche complète</b> <span class="hint" style="font-size:12px">— les champs vides reprennent la fiche du jeu (texte grisé)</span><div class="smg" style="margin-top:6px">
     ${f(r, "cp_obj", "Objectif de la situation", "Quelle transformation visée ?", (g && g.Objectif) || "")}
     ${f(r, "cp_but", "But à atteindre pour les pratiquants", "Ce que les pratiquants doivent réussir", r.src.id && r.but)}
-    ${r.src.t === "free" ? "" : f(r, "cp_cons", "Consignes et règles du jeu", "À donner aux pratiquants", r.cons)}
     ${f(r, "cp_comp", "Comportements attendus", "Critères techniques / tactiques de réalisation")}
     ${f(r, "cp_orga", "Organisation", "Matériel, espace, durée…", r.orga)}
     </div>${sch}</div>`;
@@ -239,7 +244,7 @@ function buildCrepsDoc(logo) {
       margins: { top: 60, bottom: 60, left: 90, right: 90 },
       borders: B("FFFFFF"),
     });
-  const W = [1300, 1900, 1500, 2900, 1900, 2300, 2200, 1838];
+  const W = [1300, 2900, 1900, 1500, 1900, 2300, 2200, 1838];
   const CW = W.reduce((a, b) => a + b, 0);
   const tbl = (rows, w) =>
     new Table({
@@ -341,9 +346,9 @@ function buildCrepsDoc(logo) {
             W[0],
             hex(CREPS_COLS[0][3])
           ),
-          cell(lg(r.obj), W[1], hex(CREPS_COLS[1][3])),
-          cell(lg(r.but), W[2], hex(CREPS_COLS[2][3])),
-          cell(lg(r.cons, "▸", "3A8FB0"), W[3], hex(CREPS_COLS[3][3])),
+          cell(lg(r.cons, "▸", "3A8FB0"), W[1], hex(CREPS_COLS[1][3])),
+          cell(lg(r.obj), W[2], hex(CREPS_COLS[2][3])),
+          cell(lg(r.but), W[3], hex(CREPS_COLS[3][3])),
           cell(lg(r.crit, "✓", "2E6F3E"), W[4], hex(CREPS_COLS[4][3])),
           cell(lg(r.comp, "•", "8A55B5"), W[5], hex(CREPS_COLS[5][3])),
           cell(

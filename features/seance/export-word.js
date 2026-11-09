@@ -202,7 +202,7 @@ function buildSeanceDoc(logo) {
         .split("\n")
         .map(l => l.replace(/^\s*[•\-–▸]\s*/, "").trim())
         .filter(Boolean);
-      return (L.length ? L : [null]).map(l =>
+      return (L.length ? L : M.echViews.length ? [] : [null]).map(l =>
         P(
           [
             R("▸ ", { c, b: true, size: 18 }),
@@ -218,6 +218,18 @@ function buildSeanceDoc(logo) {
         out.push(...etapes(M.ech.gtxt[g.i], g.c.slice(1)));
       });
     else out.push(...etapes(M.ech.txt, BLUE));
+    M.echViews.forEach(x => {
+      out.push(
+        P(
+          [
+            R("▸ ", { c: BLUE, b: true, size: 18 }),
+            R(x.name + (x.v.code ? " (" + x.v.code + ")" : "") + " : ", { b: true, size: 18 }),
+            R(String(x.v.desc || "").replace(/\s*\n+\s*/g, " "), { size: 18 }),
+          ],
+          { af: 30 }
+        )
+      );
+    });
     out.push(sp());
   }
   out.push(...band(tg(M.c, M.all), "CORPS DE SÉANCE", "E3EEF8", "2B5A9E"));
@@ -390,15 +402,7 @@ function buildSeanceDoc(logo) {
           fc(
             "MATÉRIEL",
             M.mats.length
-              ? M.mats.map(m =>
-                  P(
-                    [
-                      R("☐ " + capf(m.t), { size: 17 }),
-                      R("  " + m.c.join(", "), { c: "8A93A3", size: 15 }),
-                    ],
-                    { af: 10 }
-                  )
-                )
+              ? [P([R(M.mats.map(m => capf(m.t)).join(" · "), { size: 17 })])]
               : [P([R("Aucun matériel particulier.", { size: 17 })])],
             F[1]
           ),

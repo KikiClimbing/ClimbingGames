@@ -530,7 +530,7 @@ registerView({
   html: v => {
     const id = decodeURIComponent(v.slice(3));
     const x = cyAll().find(c => c.rec.id === id);
-    const back = `<div class="tools noprint"><a class="chip" data-go="biblio" style="cursor:pointer" data-bt="cycles">← Bibliothèque</a></div>`;
+    const back = `<div class="tools noprint"><a class="chip" data-bgo="cycles" style="cursor:pointer">← Bibliothèque</a></div>`;
     const cyOut = h => cyH(h);
     if (x && !x.rec.data && !SB_ECHEC[id]) {
       sbCharger(id)

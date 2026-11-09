@@ -78,6 +78,15 @@ registerView({
   },
 });
 registerClick(e => {
+  const bg = e.target.closest("[data-bgo]");
+  if (bg) {
+    BTAB = bg.dataset.bgo;
+    try {
+      localStorage.setItem("biblioTab", BTAB);
+    } catch (x) {}
+    go("biblio");
+    return true;
+  }
   const bt = e.target.closest("[data-bt]");
   if (bt) {
     BTAB = bt.dataset.bt;

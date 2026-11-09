@@ -156,8 +156,19 @@ const nbExercices = () => SE.subs.reduce((a, s) => a + s.items.length, 0);
 /* enregistre une séance dans la base (nouvel enregistrement, ou mise à jour si déjà enregistrée).
    Sans paramètre : la séance en cours (« Créer une séance » ou fenêtre de modification) ;
    sinon (meta, se) : une autre séance, par exemple celle du mode terrain. */
-async function enregistrerSeance(meta0, se0) {
+let SB_SAUV = false;
+let SB_MSG = { id: "", txt: "" };
+async function enregistrerSeance(meta0, se0, nouvelle) {
   if (compteRequis()) return;
+  if (SB_SAUV) return;
+  SB_SAUV = true;
+  try {
+    await enregistrerSeance0(meta0, se0, nouvelle);
+  } finally {
+    SB_SAUV = false;
+  }
+}
+async function enregistrerSeance0(meta0, se0, nouvelle) {
   const rec = withSeance(meta0 || SMETA, se0 || SE, () => {
     seDefaults();
     if (!SE.id) SE.id = "s" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -207,7 +218,12 @@ async function enregistrerSeance(meta0, se0) {
   try {
     await serveurSeance("seance", { seance: rec });
     if (compteOn()) await loadSeances();
-    toast("✓ Séance enregistrée dans la bibliothèque de séances.");
+    const h = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    SB_MSG = {
+      id: rec.id,
+      txt: (nouvelle ? "✓ Nouvelle séance créée à " : "✓ Séance enregistrée à ") + h + " — pas besoin de recliquer.",
+    };
+    toast(SB_MSG.txt);
   } catch (e) {
     toast("Échec de l'enregistrement (" + e.message + "). La séance reste dans ce navigateur.");
   }
@@ -285,6 +301,23 @@ async function sbSupprimer(id) {
   const r = sbAll().find(x => x.id === id);
   const d = r && sbParse(r);
   const nom = (d && d.meta.titre) || (r && r.titre) || "cette séance";
+  /* une séance rangée dans un cycle ne se supprime pas : il faut d'abord l'en retirer */
+  try {
+    await Promise.all(cyAll().map(x => sbCharger(x.rec.id).catch(() => null)));
+  } catch (e) {}
+  const cycles = cyAll()
+    .map(x => cyData(sbAll().find(r => r.id === x.rec.id) || x.rec))
+    .filter(c => c && (c.lignes || []).some(l => l.sid === id));
+  if (cycles.length) {
+    alert(
+      "Cette séance fait partie " +
+        (cycles.length > 1 ? "des cycles" : "du cycle") +
+        " « " +
+        cycles.map(c => c.titre || "sans titre").join(" », « ") +
+        " ». Retire-la d'abord du cycle (✕ sur sa ligne), puis supprime-la."
+    );
+    return false;
+  }
   if (!confirm("Supprimer définitivement la séance « " + nom + " » ?")) return false;
   sbMemo(LS_DEL, [...sbSupprimees(), id]);
   sbMemo(
@@ -295,7 +328,8 @@ async function sbSupprimer(id) {
     delete SE.id;
     seSave();
   }
-  render();
+  if (VIEW.startsWith("sb/")) go("biblio");
+  else render();
   if (CONFIG.GAME_ADD_URL) {
     try {
       await serveurSeance("seance_suppr", { id });
@@ -331,7 +365,7 @@ function seanceFicheView(id) {
   SBID = id;
   const mien = compteMien(rec);
   const sheet = withSeance(d.meta, d.se, () => sheetHTML());
-  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="terrain" style="background:#E8A33D;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">▶ Mode terrain</a><a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">⧉ Dupliquer cette séance</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
+  return `${back}<div class="tools noprint"><a class="btn" data-sb="print" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Imprimer / PDF</a><a class="btn" data-sb="word" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Télécharger en Word</a>${mien ? '<a class="btn" data-sb="edit" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">✎ Modifier cette séance</a>' : ""}<a class="btn" data-sb="terrain" style="background:#E8A33D;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">▶ Mode terrain</a><a class="btn" data-sb="envoi" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">📨 Envoyer</a><a class="btn" data-sb="copy" style="background:#EEF1F8;color:#26364D;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">⧉ Dupliquer cette séance</a>${mien ? '<a class="btn" data-sb="del" style="background:#fff;color:#B2263A;border:1px solid #E8B4BC;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">🗑 Supprimer</a>' : ""}<span id="sMsg" style="color:#2E7D4F;font-weight:700"></span></div>${partageBloc(rec)}
   <div id="sheet" style="border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.12)">${sheet}</div>`;
 }
 registerView({
@@ -367,7 +401,7 @@ registerClick(e => {
   if (k === "print") imprimerSeance();
   else if (k === "word") seanceWord(SBCUR);
   else if (k === "del") {
-    sbSupprimer(SBID).then(ok => ok && go("biblio"));
+    sbSupprimer(SBID);
   } else if (k === "edit") sepopOuvrir(SBCUR, SBID);
   else if (k === "copy") sepopOuvrir(SBCUR, "", true);
   else if (k === "terrain") {

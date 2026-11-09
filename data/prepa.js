@@ -25,4 +25,11 @@ PREPA_EMBED.forEach(g => {
       get: () => (typeof edSvgUrl === "function" ? edSvgUrl(PREPA_SCH[g.Code]) : ""),
     });
 });
-const avecPrepa = L => L.concat(PREPA_EMBED.filter(p => !L.some(g => g.Code === p.Code)));
+JEUX_EXTRA.forEach(g => {
+  if (JEUX_EXTRA_SCH[g.Code])
+    Object.defineProperty(g, "Schéma (lien)", {
+      enumerable: true,
+      get: () => (typeof edSvgUrl === "function" ? edSvgUrl(JEUX_EXTRA_SCH[g.Code]) : ""),
+    });
+});
+const avecPrepa = L => L.concat(PREPA_EMBED.concat(JEUX_EXTRA).filter(p => !L.some(g => g.Code === p.Code)));

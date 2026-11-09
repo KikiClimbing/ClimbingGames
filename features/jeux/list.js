@@ -41,6 +41,11 @@ function viewTitle(v) {
       "Objectif : " + decodeURIComponent(v.slice(4)),
       "Les jeux qui travaillent cet objectif.",
     ];
+  if (v.startsWith("pcat/")) {
+    const n = decodeURIComponent(v.slice(5)),
+      c = POUTRE_CATS.find(x => x[0] === n);
+    return ["Poutre : " + n, c ? c[1] : "Les exercices de poutre de cette filière."];
+  }
   if (v.startsWith("comp/")) {
     const n = decodeURIComponent(v.slice(5)),
       c = COMPETENCES.find(x => x[0] === n);
@@ -58,7 +63,10 @@ function filterGames(v) {
   /* la discipline choisie (menu) limite les listes générales ; une famille ou les favoris montrent tout */
   let L = DATA.filter(g => v.startsWith("fam/") || v === "fav" || discDe(g) === DISC);
   if (v.startsWith("fam/")) L = L.filter(g => g.Famille === decodeURIComponent(v.slice(4)));
-  else if (v.startsWith("obj/")) {
+  else if (v.startsWith("pcat/")) {
+    const c = decodeURIComponent(v.slice(5));
+    L = L.filter(g => g.Famille === "Poutre" && g["Catégorie"] === c);
+  } else if (v.startsWith("obj/")) {
     const o = decodeURIComponent(v.slice(4));
     L = L.filter(g =>
       (g["Objectifs (tags)"] || "")
@@ -166,8 +174,35 @@ function compOuvert() {
     return true;
   }
 }
+/* menu « Poutre par filière » (prépa) */
+function poutreOuvert() {
+  if (VIEW.startsWith("pcat/") || VIEW === "fam/Poutre") return true;
+  try {
+    return localStorage.getItem("navPoutre") === "1";
+  } catch (e) {
+    return false;
+  }
+}
+function poutreMenuHTML() {
+  if (DISC !== "prepa") return "";
+  const ouvert = poutreOuvert();
+  return (
+    `<button class="nav" data-navpoutre="1" aria-expanded="${ouvert}"><span class="ic">${ouvert ? "▾" : "▸"}</span>Poutre par filière</button>` +
+    (ouvert ? POUTRE_CATS.map(c => navBtn("pcat/" + c[0], c[0], '<span class="ic">›</span>')).join("") : "")
+  );
+}
+registerClick(e => {
+  if (!e.target.closest("[data-navpoutre]")) return;
+  const o = !poutreOuvert();
+  try {
+    localStorage.setItem("navPoutre", o ? "1" : "0");
+  } catch (er) {}
+  if (!o && (VIEW.startsWith("pcat/") || VIEW === "fam/Poutre")) go("all");
+  else buildNav();
+  return true;
+});
 function compMenuHTML() {
-  if (DISC === "prepa") return "";
+  if (DISC === "prepa") return poutreMenuHTML();
   const ouvert = compOuvert();
   return (
     `<button class="nav" data-navcomp="1" aria-expanded="${ouvert}"><span class="ic">${ouvert ? "▾" : "▸"}</span>Compétences</button>` +
@@ -205,7 +240,8 @@ registerView({
     v === "nomat" ||
     v.startsWith("fam/") ||
     v.startsWith("obj/") ||
-    v.startsWith("comp/"),
+    v.startsWith("comp/") ||
+    v.startsWith("pcat/"),
   html: v => listView(v),
   bind: () => {
     const q = $("#q");

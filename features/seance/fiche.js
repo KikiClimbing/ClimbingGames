@@ -1,14 +1,46 @@
 /* Ma séance — vue normalisée d'un exercice et aperçu de la fiche (HTML) */
+/* parties du texte d'un jeu (paragraphes) : un jeu qui en compte plusieurs peut n'en garder que certaines */
+const principeParties = g =>
+  String((g && g["Principe"]) || "")
+    .split(/\n\s*\n/)
+    .map(x => x.trim())
+    .filter(Boolean);
+/* intitulé court d'une partie : son titre (« Jacadi du mur : … ») sinon ses premiers mots */
+const partieNom = t => {
+  const m = t.match(/^([^:\n]{2,50}?) :\s/);
+  return m ? m[1] : t.replace(/\s+/g, " ").slice(0, 40) + (t.length > 40 ? "…" : "");
+};
+/* variantes (plus difficile / plus facile) : une ligne = une variante, numérotées p0, p1… et m0, m1… */
+const variantesJeu = g => {
+  const L = t => lines(t || "");
+  return L(g && g["Plus difficile"])
+    .map((t, i) => ({ k: "p" + i, t, sg: "+" }))
+    .concat(L(g && g["Plus facile"]).map((t, i) => ({ k: "m" + i, t, sg: "–" })));
+};
+/* texte du jeu pour cette séance : texte modifié à la main, sinon parties retenues, sinon texte du jeu */
+function itemDesc(it, g) {
+  if (typeof it.txt === "string") return it.txt;
+  const P = principeParties(g);
+  if (P.length > 1 && Array.isArray(it.pn) && it.pn.length)
+    return P.filter((_, i) => !it.pn.includes(i)).join("\n\n");
+  return g["Principe"] || g["Résumé"] || "";
+}
 /* vue normalisée d'un jeu (bibliothèque ou libre) */
 function itemView(it) {
   if (it.t === "lib") {
     const g = DATA.find(x => key(x) === it.k);
     if (!g) return null;
+    const off = Array.isArray(it.vn) ? it.vn : [];
+    const vt = sg =>
+      variantesJeu(g)
+        .filter(v => v.sg === sg && !off.includes(v.k))
+        .map(v => "• " + v.t)
+        .join("\n");
     return {
       titre: g.Titre,
       code: g.Code || "",
       url: gameUrl(key(g)),
-      desc: g["Principe"] || g["Résumé"] || "",
+      desc: itemDesc(it, g),
       meta: [
         g["Participants"],
         g["Espace"],
@@ -17,10 +49,11 @@ function itemView(it) {
       ]
         .filter(Boolean)
         .join(" · "),
-      plus: g["Plus difficile"],
-      moins: g["Plus facile"],
+      plus: vt("+"),
+      moins: vt("–"),
       crit: it.crit,
-      img: g["Schéma (lien)"] || "",
+      img: (it.sch && typeof edSvgUrl === "function" && edSvgUrl(it.sch)) || g["Schéma (lien)"] || "",
+      imgJeu: (typeof crepsImg === "function" && crepsImg(g)) || "",
       mat: g["Matériel"],
       noMat: noMat(g),
       resume: g["Résumé"] || "",
@@ -67,8 +100,14 @@ function seModel() {
       x.steps = stepsOf(x.v, x.it);
     });
   });
+  const echViews = (SE.ech.items || [])
+    .map(i => ({ it: i, v: itemView(i) }))
+    .filter(x => x.v)
+    .map(x => ({ ...x, name: (x.it.nom || "").trim() || x.v.titre }));
   const mats = {};
-  subs.forEach(s =>
+  subs
+    .concat([{ views: echViews }])
+    .forEach(s =>
     s.views.forEach(({ v }) => {
       if (v.noMat || !v.mat) return;
       String(v.mat)
@@ -89,10 +128,11 @@ function seModel() {
     two: G.length > 1,
     subs,
     ech,
+    echViews,
     mats: Object.values(mats),
     c,
     tot: G.map((g, i) => (+g.acc || 0) + (ech.on ? +ech.d[i] || 0 : 0) + c[i]),
-    nGames: subs.reduce((a, s) => a + s.views.length, 0),
+    nGames: subs.reduce((a, s) => a + s.views.length, 0) + echViews.length,
   };
 }
 /* « A », « A et B », « A, B et C » */
@@ -101,6 +141,8 @@ const nomsGroupes = (M, idx) => {
   return n.length > 1 ? n.slice(0, -1).join(", ") + " et " + n[n.length - 1] : n[0] || "";
 };
 /* étiquettes de durée pour les groupes de idx : [{t:"15'",c:couleur}] */
+/* fiche simplifiée : schémas des jeux sous chaque exercice (option « Schémas ») */
+const schemaStd = () => !!(SMETA && SMETA.schemaStd);
 const tgs = (M, d, idx) => idx.map(i => ({ t: (+d[i] || 0) + "'", c: M.G[i].c }));
 function sheetHTML() {
   if (typeof isCreps === "function" && isCreps()) return crepsHTML();
@@ -163,12 +205,29 @@ function sheetHTML() {
     "#FDF3D3",
     "#8A6D12"
   );
+  /* lien vers la fiche : s'ouvre en fenêtre (on reste sur la page) */
+  const lk = (v, inner) =>
+    v.code
+      ? `<a data-jeu="${esc(v.code)}" style="cursor:pointer;color:inherit;text-decoration:underline dotted">${inner}</a>`
+      : v.url
+        ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${inner}</a>`
+        : inner;
   const echLignes = (txt, c) =>
     lines(txt).length
       ? lines(txt)
           .map(l => `<div><span style="color:${c};font-weight:700">▸</span> ${esc(l)}</div>`)
           .join("")
-      : `<div>${ph("▸ [Décrire le déroulé : qui fait quoi, combien de temps]")}</div>`;
+      : M.echViews.length
+        ? ""
+        : `<div>${ph("▸ [Décrire le déroulé : qui fait quoi, combien de temps]")}</div>`;
+  /* jeux choisis pour l'échauffement : titre cliquable, consigne, matériel */
+  const echJeux = () =>
+    M.echViews
+      .map(
+        x =>
+          `<div style="margin:3px 0"><b style="color:${C1}">▸</b> ${lk(x.v, `<b>${esc(x.name)}</b>`)}${x.v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(x.v.code)})</span>` : ""}<div style="white-space:pre-line;margin-left:12px">${esc(x.v.desc)}</div>${x.v.meta ? `<div style="margin-left:12px;color:#6B7280;font-size:11px;font-style:italic">${esc(x.v.meta)}</div>` : ""}${schemaStd() && x.v.img ? `<div style="margin:4px 0 0 12px"><img src="${esc(x.v.img)}" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain"></div>` : ""}</div>`
+      )
+      .join("");
   if (M.ech.on)
     h += band(
       tgs(M, M.ech.d, M.all),
@@ -182,19 +241,13 @@ function sheetHTML() {
                 `<div style="margin-bottom:3px"><b style="color:${g.c};font-size:11px">■ ${esc(g.nom)}</b>${echLignes(M.ech.gtxt[g.i], g.c)}</div>`
             ).join("")
           : echLignes(M.ech.txt, C1)
-      }</div>`
+      }${echJeux()}</div>`
     );
   h += band(tgs(M, M.c, M.all), "CORPS DE SÉANCE", "#E3EEF8", "#2B5A9E");
   const th = (t, c, f) =>
     `<div style="background:${f};color:${c};font-weight:700;font-size:11px;padding:5px 10px;border-bottom:1px solid #D5DAE5">${t}</div>`;
-  /* lien vers la fiche : s'ouvre en fenêtre (on reste sur la page) */
-  const lk = (v, inner) =>
-    v.code
-      ? `<a data-jeu="${esc(v.code)}" style="cursor:pointer;color:inherit;text-decoration:underline dotted">${inner}</a>`
-      : v.url
-        ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${inner}</a>`
-        : inner;
   const schema = (SMETA.disc || DISC) === "prepa";
+  const avecSchema = !schema && schemaStd();
   const exo = (x, n) => {
     const v = x.v,
       L = lines;
@@ -212,7 +265,7 @@ function sheetHTML() {
       ? `<div style="margin:0 0 3px">${x.steps.map(l => `<div><b style="color:${C1}">▸</b> ${esc(l)}</div>`).join("")}</div>`
       : `<b style="color:${C1}">▸</b> ${lk(v, `<b>${n}. ${nm}</b>`)}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}<div style="margin:2px 0;white-space:pre-line">${esc(v.desc)}</div>`;
     return (
-      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? lk(v, `Fiche ${esc(v.code)} ↗`) + " · " : ""}${esc(v.meta)}</div></div>` +
+      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? lk(v, `Fiche ${esc(v.code)} ↗`) + " · " : ""}${esc(v.meta)}</div>${avecSchema && (v.img || v.imgJeu) ? `<div style="margin-top:6px;text-align:center"><img src="${esc(v.img || v.imgJeu)}" onerror="this.remove()" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain"></div>` : ""}</div>` +
       (schema ? "" : col(v.plus, C2, "+", "#FDF3F2")) +
       (schema ? "" : col(v.moins, "#2E6F3E", "–", "#F1F8F2")) +
       (schema
@@ -249,6 +302,6 @@ function sheetHTML() {
   }
   const fb = (t, b, bg = "#F2F3F5") =>
     `<div style="background:${bg};padding:8px 12px;font-size:12px;border-left:3px solid #fff"><b style="font-size:11px">${t}</b><br>${b}</div>`;
-  h += `<div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.1fr 1.4fr;margin-top:12px">${fb("OBJECTIF COLLECTIF", S.objCol ? esc(S.objCol).replace(/\n/g, "<br>") : ph("[ce que le groupe doit réussir]"))}${fb("MATÉRIEL", M.mats.length ? M.mats.map(m => `☐ ${esc(capf(m.t))} <span style="color:#8A93A3;font-size:10px">${m.c.map(esc).join(", ")}</span>`).join("<br>") : "Aucun matériel particulier.")}${fb("SÉCURITÉ", S.secu ? esc(S.secu).replace(/\n/g, "<br>") : ph("[rappels : hauteur, tapis, pas de saut…]"))}${fb("RETOUR AU CALME", M.G.map(g => `<b style="color:${g.c}">${esc(g.nom)} :</b> ${v(g.rc, "[étirements, bilan…]")}`).join("<br>"))}</div></div>`;
+  h += `<div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.1fr 1.4fr;margin-top:12px">${fb("OBJECTIF COLLECTIF", S.objCol ? esc(S.objCol).replace(/\n/g, "<br>") : ph("[ce que le groupe doit réussir]"))}${fb("MATÉRIEL", M.mats.length ? M.mats.map(m => esc(capf(m.t))).join(" · ") : "Aucun matériel particulier.")}${fb("SÉCURITÉ", S.secu ? esc(S.secu).replace(/\n/g, "<br>") : ph("[rappels : hauteur, tapis, pas de saut…]"))}${fb("RETOUR AU CALME", M.G.map(g => `<b style="color:${g.c}">${esc(g.nom)} :</b> ${v(g.rc, "[étirements, bilan…]")}`).join("<br>"))}</div></div>`;
   return h + bilanFicheHTML();
 }

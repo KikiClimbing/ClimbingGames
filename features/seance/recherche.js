@@ -23,7 +23,7 @@ function rxApercuHTML() {
   if (!g)
     return `<div class="empty" style="margin-top:30px">Cliquez un jeu pour voir sa fiche.</div>`;
   const k = key(g),
-    sub = SE.subs.find(s => s.id === RX.sub),
+    sub = RX.sub === "ech" ? { titre: "Échauffement" } : SE.subs.find(s => s.id === RX.sub),
     img = typeof crepsImg === "function" ? crepsImg(g) : "";
   const ligne = (t, v) => (v ? `<div><b>${t} :</b> ${esc(v)}</div>` : "");
   return `<div style="border-top:6px solid ${famOf(g).d};padding-top:8px"><h3 style="margin:0 0 4px">${esc(g.Code ? g.Code + " · " : "")}${esc(g.Titre)}</h3><div style="color:#6B7280;margin-bottom:6px">${esc(g.Famille || "")}</div>
@@ -55,7 +55,7 @@ function rxOuvrir(subId) {
 registerClick(e => {
   const o = e.target.closest("[data-sa=rxopen]");
   if (o) {
-    rxOuvrir(+o.dataset.sub);
+    rxOuvrir(o.dataset.sub === "ech" ? "ech" : +o.dataset.sub);
     return true;
   }
   const b = e.target.closest("[data-rx]");
