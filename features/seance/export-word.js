@@ -287,7 +287,7 @@ function buildSeanceDoc(logo) {
             [
               P([
                 ...runs,
-                R(s.titre || "Sous-section " + (k + 1), { b: true, c: "5B4BA8", size: 17 }),
+                R(subLabel(s, k), { b: true, c: "5B4BA8", size: 17 }),
                 ...(s.idx.length < M.G.length
                   ? [
                       R("  · " + nomsGroupes(M, s.idx) + " seulement", {

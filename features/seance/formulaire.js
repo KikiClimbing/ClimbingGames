@@ -41,16 +41,14 @@ function seanceView() {
             P = principeParties(g);
           const parts =
             !mod && P.length > 1
-              ? `<div class="sml" style="margin-top:4px">Parties du jeu à garder dans la fiche<div class="gchk">${P.map((p, i) => `<label class="fl"><input type="checkbox" data-ipn="${i}" data-id="${it2.id}" ${(it2.pn || []).includes(i) ? "" : "checked"}> ${esc(partieNom(p))}</label>`).join("")}</div></div>`
+              ? `<div class="sml" style="margin-top:4px">Variantes du jeu (dans la consigne) à garder dans la fiche<div class="gchk">${P.map((p, i) => `<label class="fl"><input type="checkbox" data-ipn="${i}" data-id="${it2.id}" ${(it2.pn || []).includes(i) ? "" : "checked"}> ${esc(partieNom(p))}</label>`).join("")}</div></div>`
               : "";
           return `<label class="sml" style="margin-top:8px"><b>${cl("Consigne / règle du jeu", "Consignes et règles du jeu")}</b> <span style="font-weight:400">(texte de cette séance seulement — le jeu de la bibliothèque n'est pas modifié)</span><textarea rows="4" data-si="txt" data-id="${it2.id}">${esc(itemDesc(it2, g))}</textarea></label>${mod ? `<div style="margin-top:2px"><a class="chip" data-sa="txtreset" data-id="${it2.id}" style="cursor:pointer">↺ Revenir au texte du jeu</a></div>` : ""}${parts}`;
         };
         const varf = it2 => {
-          const g = DATA.find(x => key(x) === it2.k),
-            V = g ? variantesJeu(g) : [];
-          if (!V.length) return "";
-          const off = it2.vn || [];
-          return `<div class="sml" style="margin-top:8px">Variantes à mettre dans la fiche <span style="font-weight:400">(décochez celles à ne pas garder)</span>${V.map(x => `<label class="fl" style="display:flex;gap:6px;align-items:flex-start;margin:2px 0"><input type="checkbox" data-ivn="${x.k}" data-id="${it2.id}" ${off.includes(x.k) ? "" : "checked"}><span>${esc(x.sg)} ${esc(x.t)}</span></label>`).join("")}</div>`;
+          const v2 = itemView(it2);
+          if (!v2) return "";
+          return `<label class="sml" style="margin-top:8px"><b>+ Variantes plus difficiles</b> <span style="font-weight:400">(une par ligne, toujours dans la fiche)</span><textarea rows="3" data-si="vp" data-id="${it2.id}">${esc(v2.plus || "")}</textarea></label><label class="sml" style="margin-top:6px"><b>– Variantes plus faciles</b> <span style="font-weight:400">(une par ligne, toujours dans la fiche)</span><textarea rows="3" data-si="vm" data-id="${it2.id}">${esc(v2.moins || "")}</textarea></label>`;
         };
         const nmf = `<label class="sml">${cl("Nom dans la fiche", "Situation : nom dans la fiche")} <span style="font-weight:400">(par défaut : ${esc(vw ? vw.def : v.titre)})</span><input data-si="nom" data-id="${it.id}" value="${esc(it.nom || "")}" placeholder="${esc(vw ? vw.def : v.titre)}"></label>`;
         if (it.t === "lib")

@@ -25,15 +25,22 @@ function itemDesc(it, g) {
     return P.filter((_, i) => !it.pn.includes(i)).join("\n\n");
   return g["Principe"] || g["Résumé"] || "";
 }
+/* intitulé d'une sous-section dans la fiche : titre — nom du ou des jeux (sauf si identique au titre) */
+function subLabel(s, k) {
+  const t = s.titre || "Sous-section " + (k + 1);
+  const n = (s.views || [])
+    .map(x => x.v.titre)
+    .filter((x, i, a) => x && norm(x) !== norm(s.titre || "") && a.indexOf(x) === i);
+  return n.length ? t + " — " + n.join(", ") : t;
+}
 /* vue normalisée d'un jeu (bibliothèque ou libre) */
 function itemView(it) {
   if (it.t === "lib") {
     const g = DATA.find(x => key(x) === it.k);
     if (!g) return null;
-    const off = Array.isArray(it.vn) ? it.vn : [];
     const vt = sg =>
       variantesJeu(g)
-        .filter(v => v.sg === sg && !off.includes(v.k))
+        .filter(v => v.sg === sg)
         .map(v => "• " + v.t)
         .join("\n");
     return {
@@ -49,8 +56,8 @@ function itemView(it) {
       ]
         .filter(Boolean)
         .join(" · "),
-      plus: vt("+"),
-      moins: vt("–"),
+      plus: typeof it.vp === "string" ? it.vp : vt("+"),
+      moins: typeof it.vm === "string" ? it.vm : vt("–"),
       crit: it.crit,
       img: (it.sch && typeof edSvgUrl === "function" && edSvgUrl(it.sch)) || g["Schéma (lien)"] || "",
       imgJeu: (typeof crepsImg === "function" && crepsImg(g)) || "",
@@ -292,7 +299,7 @@ function sheetHTML() {
         )
         .join(
           ""
-        )} &nbsp;${esc(s.titre || "Sous-section " + (k + 1))}${who}</div>${schema ? "" : '<div style="background:#FDF3F2"></div><div style="background:#F1F8F2"></div>'}<div style="background:#FDF3F2"></div>`;
+        )} &nbsp;${esc(subLabel(s, k))}${who}</div>${schema ? "" : '<div style="background:#FDF3F2"></div><div style="background:#F1F8F2"></div>'}<div style="background:#FDF3F2"></div>`;
       s.views.forEach(x => {
         if (!x.same) n++;
         h += exo(x, n);

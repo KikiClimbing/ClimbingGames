@@ -262,7 +262,7 @@ function cyListeHTML0() {
     ({ rec }) =>
       `<tr class="r" data-go="cy/${esc(rec.id)}">${celTitre(rec.titre, rec.theme)}${celChip(rec.theme)}${cel(rec.dates)}${celChip((+rec.nb || 0) + " séance" + (+rec.nb > 1 ? "s" : ""))}${compteOn() ? celPar(compteMien(rec), rec.ownerNom || rec.owner) : ""}<td style="text-align:right"><a class="chip" data-cydup="${esc(rec.id)}" title="Dupliquer : préparer un nouveau cycle à partir de celui-ci" style="cursor:pointer">⧉</a> ${compteMien(rec) ? `<a class="chip" data-cydel="${esc(rec.id)}" title="Supprimer ce cycle" style="cursor:pointer">🗑</a>` : ""}</td></tr>`
   ).join("");
-  return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>PAR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
+  return `<p class="count">${L.length} cycle${L.length > 1 ? "s" : ""}</p>${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE</th><th>PUBLIC</th><th>PÉRIODE</th><th>SÉANCES</th>${compteOn() ? "<th>AUTEUR</th>" : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucun cycle enregistré. Créez-en un dans « Mon cycle ».</div>'}`;
 }
 /* duplique un cycle dans « Créer un cycle » */
 async function cyDupliquer(id) {

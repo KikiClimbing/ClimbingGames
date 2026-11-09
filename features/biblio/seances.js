@@ -249,14 +249,14 @@ function seancesListeHTML() {
         jeux: r.jeux || "",
         ts: r.ts || "",
         mien: compteMien(r),
-        par: compteMien(r) ? "" : r.ownerNom || r.owner,
+        par: r.ownerNom || r.owner || (compteMien(r) && typeof AUTH !== "undefined" && AUTH.user ? AUTH.user.nom || "" : ""),
       };
     })
     .filter(r => r.disc === DISC)
     .filter(r => !/^mod-P\d/.test(String(r.id))) /* séances des programmes : visibles dans le programme */
     .filter(r => !SBMOD || (SBMOD === "mod") === String(r.id).startsWith("mod-"))
     .filter(
-      r => !q || norm([r.titre, r.theme, r.educ, r.dates, r.obj, r.jeux].join(" ")).includes(q)
+      r => !q || norm([r.titre, r.theme, r.educ, r.par, r.dates, r.obj, r.jeux].join(" ")).includes(q)
     );
   const cel = t => `<td title="${esc(t)}">${esc(t)}</td>`;
   const rows = L.map(
@@ -265,7 +265,7 @@ function seancesListeHTML() {
   ).join("");
   return `<div class="tools"><input class="search" id="sbq" type="search" placeholder="Rechercher une séance, un thème, un éducateur…" value="${esc(SBQ)}" style="max-width:420px">${DISC === "prepa" && typeof PREPA_SEANCES !== "undefined" ? `<select id="sbmod" style="margin-left:8px"><option value="">Toutes les séances</option><option value="mod"${SBMOD === "mod" ? " selected" : ""}>Séances modèles</option><option value="mes"${SBMOD === "mes" ? " selected" : ""}>Mes séances</option></select>` : ""}</div>
   <p class="count" id="sbcnt">${L.length} séance${L.length > 1 ? "s" : ""}</p>
-  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>AUTEUR</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th class="c-mod">MODIFIÉ</th>${compteOn() ? '<th class="c-par">PAR</th>' : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
+  ${L.length ? `<div style="overflow-x:auto"><table class="lst sbl colo"><thead><tr><th>CYCLE ET SÉANCE</th><th>ÉDUCATEURS</th><th>DATE</th><th>THÈME</th><th>OBJECTIF GÉNÉRAL</th><th class="c-mod">MODIFIÉ</th>${compteOn() ? '<th class="c-par">AUTEUR</th>' : ""}<th></th></tr></thead><tbody>${rows}</tbody></table></div>` : '<div class="empty">Aucune séance enregistrée pour le moment. Dans « Créer une séance », cliquez sur « Enregistrer dans la bibliothèque de séances ».</div>'}
   <p style="color:#6B7280;font-size:14px">Cliquez sur une ligne pour ouvrir la séance. Les modifications publiées dans la feuille Google peuvent mettre quelques minutes à apparaître.</p>`;
 }
 let SBQ = "",
@@ -296,7 +296,7 @@ const celChip = t => `<td title="${esc(t)}">${t ? sbPastille(t) : ""}</td>`;
 const celTitre = (titre, theme, modele) =>
   `<td title="${esc(titre)}" style="font-weight:700;border-left:6px solid ${theme ? sbCouleur(theme)[0] : "#C9D1DE"}">${modele ? '<span class="tchip" style="color:#7A4FA3;background:#EEE5F6;margin-right:6px">Modèle</span>' : ""}${esc(titre)}</td>`;
 const celPar = (mien, par) =>
-  `<td>${mien ? sbPastille("Moi", ["#2E7D4F", "#E0F1E7"]) : par ? sbPastille(par, ["#2B5A9E", "#E1EBF8"]) : ""}</td>`;
+  `<td>${mien ? sbPastille(par || "Moi", ["#2E7D4F", "#E0F1E7"]) : par ? sbPastille(par, ["#2B5A9E", "#E1EBF8"]) : ""}</td>`;
 async function sbSupprimer(id) {
   const r = sbAll().find(x => x.id === id);
   const d = r && sbParse(r);

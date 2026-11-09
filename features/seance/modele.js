@@ -159,11 +159,12 @@ function seDefaults() {
     secu: "",
   };
   /* sécurité préremplie à la création d'une séance d'escalade (modifiable) */
-  const neuve = S.secu === undefined;
+  const neuve = S.secuInit === undefined && !S.secu;
   Object.keys(d).forEach(k => {
     if (S[k] === undefined) S[k] = d[k];
   });
   if (neuve && DISC !== "prepa" && S.disc !== "prepa") S.secu = SECU_DEFAUT;
+  S.secuInit = 1;
   if (!Array.isArray(S.groups) || !S.groups.length) {
     const g = (nom, acc, rc) => ({
       nom,
