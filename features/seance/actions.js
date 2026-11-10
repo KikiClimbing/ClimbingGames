@@ -22,71 +22,119 @@ function choisirFamille(def) {
     });
   });
 }
-async function seToLib(id) {
+/* Ajouter un exercice libre à la bibliothèque : formulaire complet dans une fenêtre, prérempli avec ce qui est déjà saisi */
+let STL = null;
+function seToLib(id) {
   const f = seFind(id);
   if (!f) return;
-  const it = f.s.items[f.i],
-    m = {
-      set textContent(t) {
-        toast(t);
-        const e = $("#sMsg");
-        if (e) e.textContent = t;
-      },
-    };
+  const it = f.s.items[f.i];
   if (!it.titre || !it.desc) {
     alert("Renseignez au moins le nom de l'exercice et la consigne.");
     return;
   }
-  const fam = await choisirFamille(it.fam || "Coopération");
-  if (!fam) return;
-  it.fam = fam;
-  const auteur = (typeof AUTH !== "undefined" && AUTH.user && (AUTH.user.pseudo || AUTH.user.nom)) || prompt("Votre prénom (auteur de la fiche) ?") || "";
-  const jeu = {
+  const d = SMETA.disc || DISC || "escalade";
+  const auteur = (typeof AUTH !== "undefined" && AUTH.user && (AUTH.user.pseudo || AUTH.user.nom)) || "";
+  const v = {
     Titre: it.titre,
-    Famille: fam,
+    Famille: it.fam || "",
     Résumé: it.desc.split(/[.\n]/)[0].slice(0, 140),
     Principe: it.desc,
-    Participants: it.part || "—",
+    Participants: it.part || "",
     Matériel: it.mat || "Aucun",
-    Durée: ((f.s.d && f.s.d[0]) || "") + " min",
+    Durée: f.s.d && f.s.d[0] ? f.s.d[0] + " min" : "",
     "Plus facile": puces(it.moins),
     "Plus difficile": puces(it.plus),
     Auteur: auteur,
-    /* compléments de la fiche complète, s'ils sont renseignés */
     Objectif: it.cp_obj || "",
     But: it.cp_but || "",
     "Comportements attendus": it.cp_comp || "",
     Organisation: it.cp_orga || "",
     "Critères de réussite": puces(it.crit),
   };
+  STL = { id, d, v };
+  stlAfficher();
+}
+function stlAfficher() {
+  const { v, d } = STL;
+  modal(
+    "＋ Ajouter « " + esc(v.Titre) + " » à la bibliothèque",
+    `<p class="hint" style="margin:0 0 8px">Complète la fiche : elle sera relue avant d'apparaître dans la bibliothèque.</p><div class="pform">${propFormHTML(v, d, k => `data-stl-f="${esc(k)}"`, k => `data-stl-t="${esc(k)}"`, {})}<div class="tools" style="margin-top:12px"><a class="btn" data-stl="send" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:10px 20px;font-weight:700;cursor:pointer">Envoyer à la bibliothèque</a><a class="chip" data-modal="fermer" data-mid="mpop">Annuler</a><span id="stlMsg" style="font-weight:700"></span></div></div>`,
+    980,
+    { fond: false }
+  );
+  document.querySelectorAll("[data-stl-f]").forEach(i => {
+    i.addEventListener("input", () => {
+      STL.v[i.dataset.stlF] = i.value;
+    });
+    if (i.dataset.stlF === "Famille") i.addEventListener("change", () => (STL.v.Famille = i.value));
+  });
+  document.querySelectorAll("[data-stl-t]").forEach(i =>
+    i.addEventListener("change", () => {
+      STL.v[i.dataset.stlT] = [...document.querySelectorAll(`[data-stl-t="${CSS.escape(i.dataset.stlT)}"]`)]
+        .filter(x => x.checked)
+        .map(x => x.value)
+        .join(", ");
+    })
+  );
+}
+registerClick(e => {
+  const b = e.target.closest("[data-stl]");
+  if (!b || !STL) return;
+  const v = STL.v,
+    msg = t => {
+      const m = $("#stlMsg");
+      if (m) {
+        m.style.color = "#B2263A";
+        m.textContent = t;
+      }
+    };
+  PROP_CHAMPS.forEach(c => {
+    if (c.t === "select" && !c.vide && !v[c.k]) v[c.k] = c.opts()[0];
+  });
+  const manque = PROP_CHAMPS.filter(c => c.req && !(STL.d === "prepa" && c.k === "Participants") && !String(v[c.k] || "").trim()).map(c => c.k);
+  if (manque.length) {
+    msg("À compléter : " + manque.join(", ") + ".");
+    return true;
+  }
+  if (v["Remplace le jeu"]) v["Remplace le jeu"] = v["Remplace le jeu"].split(" · ")[0];
+  const jeu = { ...v };
+  const ok = () => {
+    const f = seFind(STL.id);
+    if (f) {
+      f.s.items[f.i].sent = true;
+      f.s.items[f.i].fam = jeu.Famille;
+      seSave();
+    }
+    modalFermer("mpop", true);
+    toast("✓ Exercice envoyé : il apparaîtra dans la bibliothèque après relecture.");
+    STL = null;
+    render();
+  };
   if (CONFIG.GAME_ADD_URL) {
-    m.textContent = "Envoi de l'exercice en cours…";
+    msg("Envoi en cours…");
+    $("#stlMsg").style.color = "#6B7280";
     fetch(CONFIG.GAME_ADD_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", jeu }),
+      body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "jeu", jeu }),
     })
       .then(r => r.json())
       .then(j => {
         if (!j.ok) throw new Error(j.error || "refusé");
-        it.sent = true;
-        seSave();
-        m.textContent = "✓ Exercice envoyé : il apparaîtra dans la bibliothèque après relecture.";
+        ok();
       })
-      .catch(e => {
-        m.textContent = "Échec de l'envoi (" + e.message + ").";
-      });
+      .catch(er => msg("Échec de l'envoi (" + er.message + ")."));
   } else {
-    const txt = Object.entries(jeu)
-      .map(([k, v]) => k + " : " + v)
-      .join("\n");
+    const txt = Object.entries(jeu).map(([k, x]) => k + " : " + x).join("\n");
     try {
       navigator.clipboard.writeText(txt).catch(() => {});
-    } catch (e) {}
-    m.textContent = "Fiche copiée : collez-la dans le formulaire « Proposer un jeu ».";
+    } catch (er) {}
+    toast("Fiche copiée : collez-la dans le formulaire « Proposer un jeu ».");
     if (CONFIG.FORM_URL) window.open(CONFIG.FORM_URL, "_blank");
+    modalFermer("mpop", true);
   }
-}
+  return true;
+});
 /* ---------- actions ---------- */
 function seanceBind() {
   if (typeof glBind === "function") glBind();

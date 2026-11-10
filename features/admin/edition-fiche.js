@@ -23,7 +23,7 @@ function feAfficher() {
   const v = FE.v;
   modal(
     "✎ Modifier « " + esc(v.Titre) + " »",
-    `<div class="pform"><div class="smg">${propFormHTML(v, discDeFamille(v.Famille) || "escalade", k => `data-fe-f="${esc(k)}"`, k => `data-fe-t="${esc(k)}"`, {})}</div><div class="tools" style="margin-top:12px"><a class="btn" data-fe="save" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer</a><span id="feMsg" style="color:#2E7D4F;font-weight:700"></span></div></div>`,
+    `<div class="pform">${propFormHTML(v, discDeFamille(v.Famille) || "escalade", k => `data-fe-f="${esc(k)}"`, k => `data-fe-t="${esc(k)}"`, {})}<div class="tools" style="margin-top:12px"><a class="btn" data-fe="save" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer</a><span id="feMsg" style="color:#2E7D4F;font-weight:700"></span></div></div>`,
     980,
     { fond: false }
   );

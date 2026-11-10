@@ -2,7 +2,7 @@
 function boldTitles(s) {
   return esc(s).replace(/^([^:\n<]{2,48}) : /gm, "<b>$1 :</b> ");
 }
-/* champs de la fiche complète (CREPS) : objectif, but, comportements attendus, organisation, critères */
+/* champs de l'onglet « Détails » (CREPS) : objectif, but, comportements attendus, organisation, critères */
 function fichePleine(g) {
   const bloc = (t, v, liste) =>
     v ? `<div class="tip" style="margin-bottom:10px"><b>${t}</b><br>${liste ? puceHTML(v) : esc(v).replace(/\n/g, "<br>")}</div>` : "";
@@ -33,9 +33,9 @@ function openFiche(code) {
   $("#fiche").setAttribute("style", style(g));
   $("#fiche").innerHTML =
     `<div class="fh"><div class="code">${esc(g.Code || "★")}</div><div class="tt"><div class="fam">${esc((g.Famille || "").toUpperCase())}${isAnniv(g) ? " · " + LBL_SANS_EXP.toUpperCase() : ""}</div><h2>${esc(g.Titre)}</h2>${typePill(g) ? `<div style="margin:2px 0 4px">${typePill(g)}</div>` : ""}<div class="br">${esc(g["Résumé"])}</div></div><button class="x" aria-label="Fermer">×</button></div>
-  <div class="tabs"><button class="tab on" data-p="p1">Principe</button><button class="tab" data-p="p2">Pratique</button>${fichePleine(g) ? '<button class="tab" data-p="p5">Fiche complète</button>' : ""}<button class="tab" data-p="p3">Variantes</button><button class="tab" data-p="p4">Conseils</button></div>
+  <div class="tabs"><button class="tab on" data-p="p1">Principe</button>${fichePleine(g) ? '<button class="tab" data-p="p5">Détails</button>' : ""}<button class="tab" data-p="p3">Variantes</button><button class="tab" data-p="p2">Pratique</button><button class="tab" data-p="p4">Conseils</button></div>
   <div class="pane on" id="p1"><p>${boldTitles(g.Principe)}</p>${img ? `<img src="${img}" alt="Schéma : ${esc(g.Titre)}" onerror="this.remove()">` : ""}</div>
-  <div class="pane" id="p2">${typeof routineBoutonHTML === "function" ? routineBoutonHTML(g) : ""}<div class="facts">${fact("PARTICIPANTS", g.Participants)}${fact("MATÉRIEL", g["Matériel"])}${fact("ESPACE", g.Espace)}${fact("DOSAGE", g.Dosage)}${fact("DURÉE", g["Durée"])}${g.Objectif ? `<div class="fact obj"><b>OBJECTIF</b>${esc(g.Objectif)}</div>` : ""}${fact("INTENSITÉ", g["Intensité"])}${fact(discDe(g) === "prepa" ? "ZONE TRAVAILLÉE" : "OBJECTIFS TRAVAILLÉS", g["Objectifs (tags)"])}${discDe(g) === "prepa" ? "" : fact("COMPÉTENCES", compDe(g).join(", "))}${g["Muscles ciblés"] ? `<div class="fact obj"><b>MUSCLES CIBLÉS</b>${esc(g["Muscles ciblés"])}</div>` : ""}${fact("BUT À ATTEINDRE", g.But)}${fact("COMPORTEMENTS ATTENDUS", g["Comportements attendus"])}${fact("ORGANISATION", g.Organisation)}</div></div>
+  <div class="pane" id="p2">${typeof routineBoutonHTML === "function" ? routineBoutonHTML(g) : ""}<div class="facts">${fact("PARTICIPANTS", g.Participants)}${fact("MATÉRIEL", g["Matériel"])}${fact("ESPACE", g.Espace)}${fact("DOSAGE", g.Dosage)}${fact("DURÉE", g["Durée"])}${fact("INTENSITÉ", g["Intensité"])}${fact(discDe(g) === "prepa" ? "ZONE TRAVAILLÉE" : "OBJECTIFS TRAVAILLÉS", g["Objectifs (tags)"])}${discDe(g) === "prepa" ? "" : fact("COMPÉTENCES", compDe(g).join(", "))}${g["Muscles ciblés"] ? `<div class="fact obj"><b>MUSCLES CIBLÉS</b>${esc(g["Muscles ciblés"])}</div>` : ""}</div></div>
   ${fichePleine(g) ? `<div class="pane" id="p5">${fichePleine(g)}</div>` : ""}
   <div class="pane" id="p3">${g["Variantes"] ? `<div class="tip" style="margin-bottom:10px"><b>VARIER SUR LA SEMAINE</b><br>${esc(g["Variantes"]).replace(/\n/g, "<br>")}</div>` : ""}<div class="var"><div><h4>− PLUS FACILE</h4>${puceHTML(g["Plus facile"])}</div><div><h4>+ PLUS DIFFICILE</h4>${puceHTML(g["Plus difficile"])}</div></div></div>
   <div class="pane" id="p4">${g.Conseil ? `<div class="tip"><b>CONSEIL</b> ${esc(g.Conseil)}</div>` : ""}${g["Compléments"] ? `<div class="comp">${esc(g["Compléments"])}</div>` : ""}${voir ? `<p class="voir" style="margin-top:14px"><b style="font-size:11px;letter-spacing:1px;color:var(--muted)">VOIR AUSSI</b><br>${voir}</p>` : ""}${retoursHTML(g)}${!g.Conseil && !g["Compléments"] && !voir && !retoursHTML(g) ? "<p>Pas de conseil particulier pour ce jeu.</p>" : ""}</div>
