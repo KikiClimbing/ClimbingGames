@@ -12,12 +12,12 @@ function sepopOuvrir(d, id, copie) {
   else delete SE.id;
   if (copie === true) SMETA.titre = (SMETA.titre || "Séance") + " (copie)";
   let mx = 0;
-  SE.subs.forEach(s => {
+  seDefaults();
+  seToutesSubs().forEach(s => {
     mx = Math.max(mx, s.id || 0);
     s.items.forEach(i => (mx = Math.max(mx, i.id || 0)));
   });
   SEUID = mx + 1;
-  seDefaults();
   SEPOP.dirty = !!copie;
   document.body.classList.add("pp");
   modal(

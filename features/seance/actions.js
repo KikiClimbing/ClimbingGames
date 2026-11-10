@@ -100,7 +100,7 @@ function seanceBind() {
   bilanBind(upd);
   const tb = $("#sTerrain");
   if (tb) tb.addEventListener("click", () => terrainOuvrir());
-  const sub = id => SE.subs.find(x => x.id === +id);
+  const sub = id => seSubFind(id);
   document.querySelectorAll("[data-sm]").forEach(i =>
     i.addEventListener("input", e => {
       SMETA[i.dataset.sm] = i.dataset.n ? Math.max(0, +e.target.value || 0) : e.target.value;
@@ -178,7 +178,7 @@ function seanceBind() {
   );
   document.querySelectorAll("[data-gd]").forEach(i =>
     i.addEventListener("input", e => {
-      const t = i.dataset.gd === "ech" ? SE.ech : sub(i.dataset.sub);
+      const t = sub(i.dataset.sub);
       t.d[+i.dataset.gi] = num(i, e);
       seSave();
       upd();
@@ -338,24 +338,27 @@ document.addEventListener("click", e => {
   } else if (a === "schemode") {
     SMETA.schemaMode = b.dataset.m === "sous" ? "sous" : "page";
     saveMeta();
-  } else if (a === "addsub")
+  } else if (a === "addech")
+    SE.ech.subs.push({ id: SEUID++, titre: "", gs: null, d: SMETA.groups.map(() => 10), items: [] });
+  else if (a === "addsub")
     SE.subs.push({ id: SEUID++, titre: "", gs: null, d: SMETA.groups.map(() => 10), items: [] });
   else if (a === "srm") {
     if (
-      SE.subs.find(s => s.id === sid).items.length &&
+      seSubFind(sid).items.length &&
       !confirm("Supprimer cette sous-section et ses jeux ?")
     )
       return;
-    SE.subs = SE.subs.filter(s => s.id !== sid);
-  } else if (a === "sup" || a === "sdn")
+    if (SE.ech.subs.some(s => s.id === sid)) SE.ech.subs = SE.ech.subs.filter(s => s.id !== sid);
+    else SE.subs = SE.subs.filter(s => s.id !== sid);
+  } else if (a === "sup" || a === "sdn") {
+    const L = SE.ech.subs.some(s => s.id === sid) ? SE.ech.subs : SE.subs;
     mvArr(
-      SE.subs,
-      SE.subs.findIndex(s => s.id === sid),
+      L,
+      L.findIndex(s => s.id === sid),
       a === "sup" ? -1 : 1
     );
-  else if (a === "addfree")
-    SE.subs
-      .find(s => s.id === sid)
+  } else if (a === "addfree")
+    seSubFind(sid)
       .items.push({
         id: SEUID++,
         t: "free",
@@ -379,7 +382,7 @@ document.addEventListener("click", e => {
       inp.style.borderColor = "#E0485A";
       return;
     }
-    const s = SE.subs.find(x => x.id === sid);
+    const s = seSubFind(sid);
     s.items.push({ id: SEUID++, t: "lib", k: key(g), crit: "" });
   } else if (a === "edsch") {
     edPopup("item:" + id);

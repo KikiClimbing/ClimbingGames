@@ -33,34 +33,31 @@ const crepsJeu = it => (it.t === "lib" ? DATA.find(x => key(x) === it.k) : null)
 /* lignes de la table : échauffement puis chaque exercice = une situation */
 function crepsLignes(M) {
   const rows = [];
-  const E = SE.ech;
-  if (M.ech.on) {
-    const cons = M.ech.per
-      ? M.G.map(g => (M.ech.gtxt[g.i] ? g.nom + " :\n" + M.ech.gtxt[g.i] : ""))
-          .filter(Boolean)
-          .join("\n")
-      : M.ech.txt;
-    rows.push({
-      nom: "Échauffement / mise en train" + (M.ech.nom ? " — " + M.ech.nom : ""),
-      fx: "ech",
-      src: E,
-      obj: E.cp_obj || "",
-      but: E.cp_but || "",
-      cons:
-        E.cp_cons ||
-        [cons]
-          .concat(M.echViews.map(x => "• " + x.name + (x.v.code ? " (" + x.v.code + ")" : "") + " : " + String(x.v.desc || "").replace(/\s*\n+\s*/g, " ")))
-          .filter(Boolean)
-          .join("\n") ||
-        "",
-      crit: E.cp_crit || "",
-      comp: E.cp_comp || "",
-      plus: E.cp_plus || "",
-      moins: E.cp_moins || "",
-      orga: E.cp_orga || "",
-      dur: tgs(M, M.ech.d, M.all),
-    });
-  }
+  /* échauffement : une ligne par jeu ou exercice libre de chaque bloc */
+  const ligne = (s, x, nom) => {
+    const v = x.v,
+      it = x.it,
+      g = crepsJeu(it);
+    return {
+      nom,
+      titre: x.name + (v.code ? " (" + v.code + ")" : ""),
+      sub: s.titre || "",
+      fx: "it",
+      src: it,
+      obj: it.cp_obj || (g && g.Objectif) || "",
+      but: it.cp_but || (g && g.But) || v.resume || "",
+      cons: (typeof it.txt === "string" ? it.txt : it.cp_cons) || v.desc || "",
+      crit: v.crit || "",
+      comp: it.cp_comp || (g && g["Comportements attendus"]) || "",
+      plus: v.plus || "",
+      moins: v.moins || "",
+      orga: it.cp_orga || (g && g.Organisation) || v.meta || "",
+      dur: tgs(M, s.d, s.idx),
+      g,
+      url: v.url,
+    };
+  };
+  if (M.ech.on) M.echSubs.forEach(s => s.views.forEach(x => rows.push(ligne(s, x, "Échauffement"))));
   let n = 0;
   M.subs.forEach((s, k) =>
     s.views.forEach(x => {
@@ -193,9 +190,7 @@ function crepsItemHTML(it, L) {
 }
 /* dans le cadre de l'échauffement */
 function crepsEchHTML() {
-  if (!isCreps() || !SE.ech.on) return "";
-  const r = crepsLignes(seModel()).find(x => x.fx === "ech");
-  return r ? crepsChampsHTML(r) : "";
+  return "";
 }
 /* ---- Word ---- */
 function buildCrepsDoc(logo) {

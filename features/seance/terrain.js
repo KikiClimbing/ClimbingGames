@@ -86,19 +86,22 @@ function terrainCartes0(gi) {
       couleur: "#E3C463",
       steps: [],
     });
-  if (M.ech.on) {
-    const E = M.ech;
-    c.push({
-      type: "info",
-      titre: E.nom || "Échauffement",
-      sec: "ÉCHAUFFEMENT",
-      bg: "#E6F2E6",
-      fg: "#2E6F3E",
-      dur: +E.d[gi] || 0,
-      couleur: "#7FCB8F",
-      steps: lines(E.per ? E.gtxt[gi] : E.txt),
+  if (M.ech.on)
+    M.echSubs.forEach((s, k) => {
+      if (!s.idx.includes(gi)) return;
+      const many = s.views.length > 1;
+      c.push({
+        type: "info",
+        titre: subLabel(s, k, "") || "Échauffement",
+        jeu: s.views.length === 1 && !s.views[0].same ? s.views[0].v.titre : "",
+        sec: "ÉCHAUFFEMENT",
+        bg: "#E6F2E6",
+        fg: "#2E6F3E",
+        dur: +s.d[gi] || 0,
+        couleur: "#7FCB8F",
+        steps: s.views.flatMap(x => (many ? ["• " + x.name + " :"] : []).concat(x.steps)),
+      });
     });
-  }
   M.subs.forEach(s => {
     if (!s.idx.includes(gi)) return;
     s.views.forEach(x =>

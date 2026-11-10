@@ -14,7 +14,7 @@ function envoiTexte(meta, se, id) {
     L.push("");
     if (M.ech.on) {
       const j = M.echViews.map(nom).join(", ");
-      L.push("Échauffement" + (j ? " : " + j : (M.ech.txt ? " : " + M.ech.txt.split("\n")[0] : "")));
+      L.push("Échauffement" + (j ? " : " + j : ""));
     }
     M.subs.forEach(s => {
       const j = s.views.map(nom).join(", ");

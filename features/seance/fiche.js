@@ -26,12 +26,12 @@ function itemDesc(it, g) {
   return g["Principe"] || g["Résumé"] || "";
 }
 /* intitulé d'une sous-section dans la fiche : titre — nom du ou des jeux (sauf si identique au titre) */
-function subLabel(s, k) {
-  const t = s.titre || "Sous-section " + (k + 1);
+function subLabel(s, k, def) {
+  const t = s.titre || (def !== undefined ? def : "Sous-section " + (k + 1));
   const n = (s.views || [])
     .map(x => x.v.titre)
     .filter((x, i, a) => x && norm(x) !== norm(s.titre || "") && a.indexOf(x) === i);
-  return n.length ? t + " — " + n.join(", ") : t;
+  return n.length ? (t ? t + " — " : "") + n.join(", ") : t;
 }
 /* vue normalisée d'un jeu (bibliothèque ou libre) */
 function itemView(it) {
@@ -92,25 +92,27 @@ function seModel() {
     c: GCOL[i],
   }));
   const all = G.map(g => g.i);
-  const subs = SE.subs.map(s => ({
-    ...s,
-    idx: s.gs || all,
-    views: s.items.map(i => ({ it: i, v: itemView(i) })).filter(x => x.v),
-  }));
-  subs.forEach(s => {
-    const many = s.views.length > 1;
-    s.views.forEach(x => {
-      const def = !many && s.titre ? s.titre : x.v.titre;
-      x.def = def;
-      x.name = (x.it.nom || "").trim() || def;
-      x.same = !!s.titre && norm(x.name) === norm(s.titre);
-      x.steps = stepsOf(x.v, x.it);
+  const mapSubs = L => {
+    const R = L.map(s => ({
+      ...s,
+      idx: s.gs || all,
+      views: s.items.map(i => ({ it: i, v: itemView(i) })).filter(x => x.v),
+    }));
+    R.forEach(s => {
+      const many = s.views.length > 1;
+      s.views.forEach(x => {
+        const def = !many && s.titre ? s.titre : x.v.titre;
+        x.def = def;
+        x.name = (x.it.nom || "").trim() || def;
+        x.same = !!s.titre && norm(x.name) === norm(s.titre);
+        x.steps = stepsOf(x.v, x.it);
+      });
     });
-  });
-  const echViews = (SE.ech.items || [])
-    .map(i => ({ it: i, v: itemView(i) }))
-    .filter(x => x.v)
-    .map(x => ({ ...x, name: (x.it.nom || "").trim() || x.v.titre }));
+    return R;
+  };
+  const subs = mapSubs(SE.subs);
+  const echSubs = mapSubs(seEchSubs());
+  const echViews = echSubs.flatMap(s => s.views);
   const mats = {};
   subs
     .concat([{ views: echViews }])
@@ -128,7 +130,9 @@ function seModel() {
     })
   );
   const ech = SE.ech;
-  const c = G.map(g => subs.reduce((a, s) => a + (s.idx.includes(g.i) ? +s.d[g.i] || 0 : 0), 0));
+  const somme = L => G.map(g => L.reduce((a, s) => a + (s.idx.includes(g.i) ? +s.d[g.i] || 0 : 0), 0));
+  const c = somme(subs);
+  const ce = somme(echSubs);
   return {
     G,
     all,
@@ -136,9 +140,11 @@ function seModel() {
     subs,
     ech,
     echViews,
+    echSubs,
+    ce,
     mats: Object.values(mats),
     c,
-    tot: G.map((g, i) => (+g.acc || 0) + (ech.on ? +ech.d[i] || 0 : 0) + c[i]),
+    tot: G.map((g, i) => (+g.acc || 0) + (ech.on ? ce[i] || 0 : 0) + c[i]),
     nGames: subs.reduce((a, s) => a + s.views.length, 0) + echViews.length,
   };
 }
@@ -219,37 +225,33 @@ function sheetHTML() {
       : v.url
         ? `<a href="${esc(v.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline dotted">${inner}</a>`
         : inner;
-  const echLignes = (txt, c) =>
-    lines(txt).length
-      ? lines(txt)
-          .map(l => `<div><span style="color:${c};font-weight:700">▸</span> ${esc(l)}</div>`)
-          .join("")
-      : M.echViews.length
-        ? ""
-        : `<div>${ph("▸ [Décrire le déroulé : qui fait quoi, combien de temps]")}</div>`;
-  /* jeux choisis pour l'échauffement : titre cliquable, consigne, matériel */
-  const echJeux = () =>
-    M.echViews
-      .map(
-        x =>
-          `<div style="margin:3px 0"><b style="color:${C1}">▸</b> ${lk(x.v, `<b>${esc(x.name)}</b>`)}${x.v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(x.v.code)})</span>` : ""}<div style="white-space:pre-line;margin-left:12px">${esc(x.v.desc)}</div>${x.v.meta ? `<div style="margin-left:12px;color:#6B7280;font-size:11px;font-style:italic">${esc(x.v.meta)}</div>` : ""}${schemaStd() && x.v.img ? `<div style="margin:4px 0 0 12px"><img src="${esc(x.v.img)}" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain"></div>` : ""}</div>`
-      )
-      .join("");
-  if (M.ech.on)
-    h += band(
-      tgs(M, M.ech.d, M.all),
-      "ÉCHAUFFEMENT" + (M.ech.nom ? " — " + esc(M.ech.nom) : ""),
-      "#E6F2E6",
-      "#2E6F3E",
-      `<div style="padding:4px 10px;font-size:12px">${
-        M.ech.per
-          ? M.G.map(
-              g =>
-                `<div style="margin-bottom:3px"><b style="color:${g.c};font-size:11px">■ ${esc(g.nom)}</b>${echLignes(M.ech.gtxt[g.i], g.c)}</div>`
-            ).join("")
-          : echLignes(M.ech.txt, C1)
-      }${echJeux()}</div>`
-    );
+  /* échauffement : une sous-section par jeu ou exercice libre, avec ses groupes et sa durée (fond vert) */
+  const echItem = x => {
+    const v = x.v;
+    const img = schemaStd() && (v.img || v.imgJeu) ? `<div style="margin:4px 0 0 12px"><img src="${esc(v.img || v.imgJeu)}" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain" onerror="this.remove()"></div>` : "";
+    const tete = x.same
+      ? ""
+      : `<b style="color:${C1}">▸</b> ${lk(v, `<b>${esc(x.name)}</b>`)}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}`;
+    const corps = lines(v.desc).length
+      ? `<div style="white-space:pre-line;${x.same ? "" : "margin-left:12px"}">${esc(v.desc)}</div>`
+      : `<div style="margin-left:12px">${ph("[Décrire le déroulé : qui fait quoi, combien de temps]")}</div>`;
+    return `<div style="margin:3px 0">${tete}${corps}${v.meta ? `<div style="margin-left:12px;color:#6B7280;font-size:11px;font-style:italic">${esc(v.meta)}</div>` : ""}${img}</div>`;
+  };
+  if (M.ech.on) {
+    h += band(tgs(M, M.ce, M.all), "ÉCHAUFFEMENT", "#E6F2E6", "#2E6F3E");
+    M.echSubs.forEach((s, k) => {
+      const who =
+        s.idx.length < M.G.length
+          ? ` <span style="font-weight:400">· ${esc(nomsGroupes(M, s.idx))} seulement</span>`
+          : "";
+      h += `<div style="background:#DDF0DB;padding:4px 10px;font-size:12px;font-weight:700;color:#2E6F3E;margin-top:2px">${tgs(M, s.d, s.idx)
+        .map(
+          x =>
+            `<span style="display:inline-block;background:#fff;color:${x.c};border:1px solid ${x.c};padding:0 6px;margin-right:4px;min-width:26px;text-align:center">${x.t}</span>`
+        )
+        .join("")} &nbsp;${esc(subLabel(s, k, "") || "Échauffement")}${who}</div><div style="padding:4px 10px;font-size:12px;background:#F4FAF3">${s.views.map(echItem).join("") || `<div>${ph("▸ [Ajouter un jeu ou un exercice]")}</div>`}</div>`;
+    });
+  }
   h += band(tgs(M, M.c, M.all), "CORPS DE SÉANCE", "#E3EEF8", "#2B5A9E");
   const th = (t, c, f) =>
     `<div style="background:${f};color:${c};font-weight:700;font-size:11px;padding:5px 10px;border-bottom:1px solid #D5DAE5">${t}</div>`;

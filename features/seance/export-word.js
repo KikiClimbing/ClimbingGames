@@ -13,6 +13,11 @@ function loadDocx() {
 function buildSeanceDoc(logo) {
   if (typeof isCreps === "function" && isCreps()) return buildCrepsDoc(logo);
   const D = window.docx;
+  const imgPar = v => {
+    const u = SMETA.schemaStd && v && (v.img || v.imgJeu);
+    const r = u && typeof crepsImgRun === "function" && crepsImgRun(D, u, 420, 150);
+    return r ? [new D.Paragraph({ children: [r], spacing: { after: 60 } })] : [];
+  };
   const {
     Document,
     Paragraph,
@@ -189,46 +194,62 @@ function buildSeanceDoc(logo) {
     )
   );
   if (M.ech.on) {
-    out.push(
-      ...band(
-        tg(M.ech.d, M.all),
-        "ÉCHAUFFEMENT" + (M.ech.nom ? " — " + M.ech.nom : ""),
-        "E6F2E6",
-        "2E6F3E"
-      )
-    );
-    const etapes = (txt, c) => {
-      const L = String(txt || "")
-        .split("\n")
-        .map(l => l.replace(/^\s*[•\-–▸]\s*/, "").trim())
-        .filter(Boolean);
-      return (L.length ? L : M.echViews.length ? [] : [null]).map(l =>
-        P(
-          [
-            R("▸ ", { c, b: true, size: 18 }),
-            l ? R(l, { size: 18 }) : ph("[Décrire le déroulé : qui fait quoi, combien de temps]"),
-          ],
-          { af: 30 }
+    out.push(...band(tg(M.ce, M.all), "ÉCHAUFFEMENT", "E6F2E6", "2E6F3E"));
+    M.echSubs.forEach((s, k) => {
+      const runs = [];
+      tg(s.d, s.idx).forEach(x =>
+        runs.push(
+          new TextRun({
+            text: "\u00A0" + x.t + "\u00A0",
+            font: FONT,
+            size: 17,
+            bold: true,
+            color: x.c,
+            shading: { type: ShadingType.CLEAR, fill: "FFFFFF", color: "auto" },
+            border: { style: BorderStyle.SINGLE, size: 4, color: x.c, space: 0 },
+          }),
+          R("  ")
         )
       );
-    };
-    if (M.ech.per)
-      M.G.forEach(g => {
-        out.push(P([R("■ " + g.nom, { c: g.c.slice(1), b: true, size: 17 })], { af: 10 }));
-        out.push(...etapes(M.ech.gtxt[g.i], g.c.slice(1)));
-      });
-    else out.push(...etapes(M.ech.txt, BLUE));
-    M.echViews.forEach(x => {
       out.push(
         P(
           [
-            R("▸ ", { c: BLUE, b: true, size: 18 }),
-            R(x.name + (x.v.code ? " (" + x.v.code + ")" : "") + " : ", { b: true, size: 18 }),
-            R(String(x.v.desc || "").replace(/\s*\n+\s*/g, " "), { size: 18 }),
+            ...runs,
+            R(subLabel(s, k, "") || "Échauffement", { b: true, c: "2E6F3E", size: 17 }),
+            ...(s.idx.length < M.G.length
+              ? [R("  · " + nomsGroupes(M, s.idx) + " seulement", { c: "2E6F3E", size: 16 })]
+              : []),
           ],
-          { af: 30 }
+          { af: 20 }
         )
       );
+      if (!s.views.length)
+        out.push(P([R("▸ ", { c: BLUE, b: true, size: 18 }), ph("[Ajouter un jeu ou un exercice]")], { af: 30 }));
+      s.views.forEach(x => {
+        const L = lines(x.v.desc);
+        if (!x.same)
+          out.push(
+            P(
+              [
+                R("▸ ", { c: BLUE, b: true, size: 18 }),
+                R(x.name + (x.v.code ? " (" + x.v.code + ")" : ""), { b: true, size: 18 }),
+              ],
+              { af: 10 }
+            )
+          );
+        (L.length ? L : [null]).forEach(l =>
+          out.push(
+            P(
+              [
+                R(x.same ? "▸ " : "    ", { c: BLUE, b: true, size: 18 }),
+                l ? R(l, { size: 18 }) : ph("[Décrire le déroulé : qui fait quoi, combien de temps]"),
+              ],
+              { af: 30 }
+            )
+          )
+        );
+        out.push(...imgPar(x.v));
+      });
     });
     out.push(sp());
   }
@@ -335,6 +356,7 @@ function buildSeanceDoc(logo) {
                 .filter(Boolean)
                 .map(l => P([R(l, { size: 17 })], { af: 30 })),
             ];
+        main.push(...imgPar(v));
         if (v.meta || (x.same && v.code))
           main.push(
             P([
@@ -471,6 +493,26 @@ async function seanceWord(rec) {
     if (meta.modele === "creps" && typeof crepsPreload === "function") {
       msg("Récupération des schémas…");
       manque = await crepsPreload(rec);
+    } else if (meta.schemaStd && typeof crepsImgPng === "function") {
+      msg("Récupération des schémas…");
+      const get = () => {
+        const M = seModel();
+        return [...M.echSubs, ...M.subs].flatMap(s => s.views.map(x => x.v && (x.v.img || x.v.imgJeu)));
+      };
+      const urls = [...new Set((rec ? withSeance(rec.meta, rec.se, get) : get()).filter(Boolean))];
+      await Promise.all(
+        urls.map(async u => {
+          if (CREPS_IMGS[u]) return;
+          try {
+            CREPS_IMGS[u] = await Promise.race([
+              crepsImgPng(u),
+              new Promise((_, ko) => setTimeout(() => ko(new Error("délai")), 8000)),
+            ]);
+          } catch (e) {
+            manque++;
+          }
+        })
+      );
     }
     const doc = rec
       ? withSeance(rec.meta, rec.se, () => buildSeanceDoc(logo))

@@ -28,7 +28,7 @@ function seControleInner() {
     }
   /* éléments manquants */
   if (!M.ech.on) w.push("Pas d'échauffement dans la séance");
-  else if (!M.ech.per && !lines(M.ech.txt).length) w.push("Échauffement sans déroulé");
+  else if (!M.echViews.length) w.push("Échauffement sans jeu ni exercice");
   if (!M.nGames) w.push("Aucun exercice dans le corps de séance");
   if (!S.secu || !S.secu.trim()) w.push("Rappels de sécurité non renseignés");
   if (M.G.every(g => !g.rc || !g.rc.trim())) w.push("Retour au calme non décrit");

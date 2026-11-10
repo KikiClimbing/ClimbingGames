@@ -10,7 +10,7 @@ const SECU_DEFAUT =
 let SE = null;
 let SEUID = 1;
 const seNew = () => ({
-  ech: { on: true, nom: "", d: [10, 10], txt: "", per: false, gtxt: [], items: [] },
+  ech: { on: true, subs: [{ id: SEUID++, titre: "", gs: null, d: [10, 10], items: [] }] },
   subs: [{ id: SEUID++, titre: "", gs: null, d: [15, 15], items: [] }],
 });
 function seLoad() {
@@ -29,6 +29,7 @@ function seLoad() {
         c2 = SEL.filter(s => s.ph === "c2" && g(s));
       const m2 = s => (s.min2 === undefined ? s.min : s.min2);
       if (ech.length) {
+        delete SE.ech.subs;
         SE.ech.txt = ech
           .map(
             s =>
@@ -55,23 +56,65 @@ function seLoad() {
     }
   }
   let mx = 0;
-  if (!SE.ech) SE.ech = seNew().ech;
-  if (!Array.isArray(SE.ech.items)) SE.ech.items = [];
-  SE.subs.forEach(s => {
+  if (!SE.ech) SE.ech = { on: true };
+  const tous = () => (Array.isArray(SE.ech.subs) ? SE.ech.subs : []).concat(SE.subs);
+  tous().forEach(s => {
     mx = Math.max(mx, s.id || 0);
     s.items.forEach(i => (mx = Math.max(mx, i.id || 0)));
   });
-  SE.ech.items.forEach(i => (mx = Math.max(mx, i.id || 0)));
+  (SE.ech.items || []).forEach(i => (mx = Math.max(mx, i.id || 0)));
   SEUID = mx + 1;
-  SE.subs.forEach(s => {
+  (SE.ech.items || []).forEach(i => {
+    if (!i.id) i.id = SEUID++;
+  });
+  tous().forEach(s => {
     if (!s.id) s.id = SEUID++;
     s.items.forEach(i => {
       if (!i.id) i.id = SEUID++;
     });
   });
-  SE.ech.items.forEach(i => {
-    if (!i.id) i.id = SEUID++;
+}
+/* sous-sections de l'échauffement (blocs : jeu ou exercice libre, groupes et durées) puis du corps de séance */
+const seEchSubs = () => (SE && SE.ech && Array.isArray(SE.ech.subs) ? SE.ech.subs : []);
+const seToutesSubs = () => seEchSubs().concat(SE.subs);
+const seSubFind = id => seToutesSubs().find(x => x.id === +id);
+/* anciennes séances : échauffement à texte unique / par groupe + jeux → blocs */
+function echMigrer() {
+  const E = SE.ech;
+  if (Array.isArray(E.subs)) return;
+  const n = (SMETA.groups || []).length || 1;
+  const dd = fit(E.d, n, 10);
+  const mk = (titre, gs, items) => ({ id: SEUID++, titre, gs, d: dd.slice(), items });
+  const libre = (txt, nom) => ({
+    id: SEUID++,
+    t: "free",
+    nom: "",
+    titre: nom || "Échauffement",
+    desc: txt,
+    part: "",
+    mat: "",
+    plus: "",
+    moins: "",
+    crit: "",
   });
+  const subs = [];
+  if (E.per && Array.isArray(E.gtxt) && E.gtxt.some(x => x))
+    E.gtxt.forEach((t, i) => {
+      if (t && i < n) subs.push(mk(E.nom || "", n > 1 ? [i] : null, [libre(t, E.nom)]));
+    });
+  else if (String(E.txt || "").trim()) subs.push(mk(E.nom || "", null, [libre(E.txt, E.nom)]));
+  const jeux = Array.isArray(E.items) ? E.items : [];
+  if (jeux.length) {
+    if (subs.length === 1 && !subs[0].gs) subs[0].items.push(...jeux);
+    else {
+      const b = mk("", null, jeux);
+      if (subs.length) b.d = b.d.map(() => 0); /* la durée est déjà comptée dans les blocs précédents */
+      subs.push(b);
+    }
+  }
+  if (!subs.length) subs.push(mk(E.nom || "", null, []));
+  E.subs = subs;
+  ["nom", "d", "txt", "per", "gtxt", "items"].forEach(k => delete E[k]);
 }
 const seSave = () => {
   if (SEPOP) {
@@ -83,19 +126,11 @@ const seSave = () => {
   } catch (e) {}
 };
 const selCount = () => (SE ? SE.subs.reduce((a, s) => a + s.items.length, 0) : 0);
-const seHas = c =>
-  SE.subs.some(s => s.items.some(i => i.t === "lib" && i.k === c)) ||
-  (SE.ech.items || []).some(i => i.t === "lib" && i.k === c);
+const seHas = c => seToutesSubs().some(s => s.items.some(i => i.t === "lib" && i.k === c));
 function seAdd(c, subId) {
   const g = DATA.find(x => key(x) === c);
   if (!g || seHas(c)) return;
-  if (subId === "ech") {
-    SE.ech.items = SE.ech.items || [];
-    SE.ech.items.push({ id: SEUID++, t: "lib", k: c });
-    seSave();
-    return;
-  }
-  let s = SE.subs.find(x => x.id === subId) || SE.subs[SE.subs.length - 1];
+  let s = seSubFind(subId) || SE.subs[SE.subs.length - 1];
   if (!s) {
     s = { id: SEUID++, titre: "", gs: null, d: [15, 15], items: [] };
     SE.subs.push(s);
@@ -106,9 +141,7 @@ function seAdd(c, subId) {
   if (e) e.textContent = selCount();
 }
 function seFind(id) {
-  const e = (SE.ech.items || []).findIndex(x => x.id === id);
-  if (e >= 0) return { s: SE.ech, i: e };
-  for (const s of SE.subs) {
+  for (const s of seToutesSubs()) {
     const i = s.items.findIndex(x => x.id === id);
     if (i >= 0) return { s, i };
   }
@@ -190,11 +223,8 @@ function seDefaults() {
     delete E.d1;
     delete E.d2;
   }
-  E.d = fit(E.d, n, 10);
-  E.gtxt = Array.isArray(E.gtxt) ? E.gtxt.slice(0, n) : [];
-  while (E.gtxt.length < n) E.gtxt.push("");
-  E.per = !!E.per && n > 1;
-  SE.subs.forEach(s => {
+  echMigrer();
+  seToutesSubs().forEach(s => {
     if (s.d1 !== undefined || s.d2 !== undefined) {
       s.d = [s.d1 === undefined ? 15 : s.d1, s.d2 === undefined ? 15 : s.d2];
       delete s.d1;
@@ -204,7 +234,7 @@ function seDefaults() {
       s.gs = s.g === "1" ? [0] : s.g === "2" ? [Math.min(1, n - 1)] : null;
       delete s.g;
     }
-    s.d = fit(s.d, n, 15);
+    s.d = fit(s.d, n, E.subs.includes(s) ? 10 : 15);
     if (Array.isArray(s.gs)) {
       s.gs = s.gs.filter(i => i >= 0 && i < n);
       if (!s.gs.length || s.gs.length === n) s.gs = null;
@@ -214,9 +244,7 @@ function seDefaults() {
 /* retire un groupe de toute la séance */
 function seDropGroup(i) {
   SMETA.groups.splice(i, 1);
-  SE.ech.d.splice(i, 1);
-  SE.ech.gtxt.splice(i, 1);
-  SE.subs.forEach(s => {
+  seToutesSubs().forEach(s => {
     s.d.splice(i, 1);
     if (s.gs) s.gs = s.gs.filter(x => x !== i).map(x => (x > i ? x - 1 : x));
   });
