@@ -47,7 +47,7 @@ function seLoad() {
         titre: t,
         gs: null,
         d: [one(arr, "min"), arr.reduce((a, s) => a + (+m2(s) || 0), 0)],
-        items: arr.map(s => ({ id: SEUID++, t: "lib", k: s.k, crit: "" })),
+        items: arr.map(s => ({ id: SEUID++, t: "lib", k: s.k, crit: critDefaut(s.k) })),
       });
       SE.subs = [];
       if (c1.length) SE.subs.push(mk(c1, SMETA.bloc1 || ""));
@@ -135,7 +135,7 @@ function seAdd(c, subId) {
     s = { id: SEUID++, titre: "", gs: null, d: [15, 15], items: [] };
     SE.subs.push(s);
   }
-  s.items.push({ id: SEUID++, t: "lib", k: c, crit: "" });
+  s.items.push({ id: SEUID++, t: "lib", k: c, crit: critDefaut(c) });
   seSave();
   const e = $("#selcount");
   if (e) e.textContent = selCount();
@@ -306,3 +306,11 @@ function seBoutonSauve() {
     m.style.display = ok ? "" : "none";
   }
 }
+
+/* critères de réussite du jeu de la bibliothèque, repris à l'ajout dans la séance (modifiables ensuite) */
+/* critères effectifs : ceux saisis dans la séance (même vidés), sinon ceux de la fiche du jeu (lus à l'affichage : suit les mises à jour de la bibliothèque) */
+const critEff = it => (it.critEd ? it.crit || "" : it.crit || critDefaut(it.k));
+const critDefaut = k => {
+  const g = DATA.find(x => key(x) === k);
+  return (g && String(g["Critères de réussite"] || "").trim()) || "";
+};

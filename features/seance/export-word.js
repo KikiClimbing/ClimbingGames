@@ -113,7 +113,7 @@ function buildSeanceDoc(logo) {
     });
   const l1 = [];
   if (S.titre) l1.push(R(S.titre, { b: true, c: "FFFFFF", size: 26 }));
-  if (S.periode) l1.push(R((S.titre ? "  " : "") + S.periode, { c: "C9D1DE", size: 22 }));
+  if (S.periode) l1.push(R((S.titre ? "  " : "") + "[" + S.periode + "]", { c: "C9D1DE", size: 22 }));
   const lignesMain = [];
   if (l1.length) lignesMain.push(P(l1));
   if (S.theme) lignesMain.push(P([R("Thème : ", { b: true, c: "FFFFFF" }), gris(S.theme)]));

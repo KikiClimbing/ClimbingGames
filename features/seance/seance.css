@@ -418,3 +418,7 @@ body.trOn > *:not(#terrain):not(#trImg):not(#hors):not(#trStop) {
 @media (max-width: 860px) {
   .sbar { top: 50px; }
 }
+
+.stabs{display:flex;gap:4px;flex-basis:100%;overflow-x:auto}
+.stab-b{border:1px solid #D5DAE5;background:#fff;color:#26364D;border-radius:8px 8px 0 0;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.stab-b.on{background:#26364D;color:#fff;border-color:#26364D}

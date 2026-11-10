@@ -49,7 +49,7 @@ function seToLib(id) {
     But: it.cp_but || "",
     "Comportements attendus": it.cp_comp || "",
     Organisation: it.cp_orga || "",
-    "Critères de réussite": puces(it.crit),
+    "Critères de réussite": puces(critEff(it)),
   };
   STL = { id, d, v };
   stlAfficher();
@@ -143,6 +143,7 @@ function seanceBind() {
     if (s) s.innerHTML = sheetHTML();
     const c = $("#seControle");
     if (c) c.innerHTML = seControleInner();
+    seCtlMaj();
     seBoutonSauve();
   };
   bilanBind(upd);
@@ -176,6 +177,7 @@ function seanceBind() {
       const f = seFind(+i.dataset.id);
       if (f) {
         f.s.items[f.i][i.dataset.si] = e.target.value;
+        if (i.dataset.si === "crit") f.s.items[f.i].critEd = true;
         seSave();
         upd();
       }
@@ -369,6 +371,8 @@ function seanceBind() {
       render();
     });
   seBoutonSauve();
+  seCtlMaj();
+  seTabAppliquer();
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-sa]");
@@ -442,7 +446,7 @@ document.addEventListener("click", e => {
       return;
     }
     const s = seSubFind(sid);
-    s.items.push({ id: SEUID++, t: "lib", k: key(g), crit: "" });
+    s.items.push({ id: SEUID++, t: "lib", k: key(g), crit: critDefaut(key(g)) });
   } else if (a === "edsch") {
     edPopup("item:" + id);
     re = false;

@@ -4,7 +4,14 @@ function envoiTexte(meta, se, id) {
   return withSeance(meta, se, () => {
     const M = seModel(),
       S = SMETA;
-    const nom = x => x.name + (x.v.code ? " (" + x.v.code + ")" : "");
+    const n = t => String(t || "").trim().toLowerCase();
+    /* nom du jeu (bibliothèque) + code ; si le nom saisi dans la fiche diffère à la fois du jeu et du titre de la section, on garde les deux */
+    const nom = (x, tsec) => {
+      const jeu = x.v.titre || x.name,
+        code = x.v.code ? " (" + x.v.code + ")" : "";
+      const perso = x.name && n(x.name) !== n(jeu) && n(x.name) !== n(tsec);
+      return (perso ? x.name + " — " : "") + jeu + code;
+    };
     const L = [];
     L.push("Séance : " + (S.titre || "sans titre"));
     if (S.dates) L.push("Date : " + S.dates);
@@ -12,17 +19,17 @@ function envoiTexte(meta, se, id) {
     if (S.objectif) L.push("Objectif : " + S.objectif);
     if (S.educ) L.push("Éducateur : " + S.educ);
     L.push("");
-    if (M.ech.on) {
-      const j = M.echViews.map(nom).join(", ");
-      L.push("Échauffement" + (j ? " : " + j : ""));
+    const bloc = (L2, titre0) =>
+      L2.forEach(s => {
+        const j = s.views.map(x => nom(x, s.titre)).join(", ");
+        if (s.titre || j) L.push("• " + (s.titre || titre0) + (j ? " : " + j : ""));
+      });
+    if (M.ech.on && M.echSubs.some(x => x.titre || x.views.length)) {
+      L.push("Échauffement :");
+      bloc(M.echSubs, "Échauffement");
     }
-    M.subs.forEach(s => {
-      const j = s.views.map(nom).join(", ");
-      if (s.titre || j) L.push("• " + (s.titre || "Situation") + (j && j !== s.titre ? " : " + j : ""));
-    });
-    if (S.secu) L.push("", "Sécurité : " + S.secu);
-    const rc = S.groups.map(g => g.rc).filter(Boolean);
-    if (rc.length) L.push("Retour au calme : " + [...new Set(rc)].join(" / "));
+    L.push("Corps de séance :");
+    bloc(M.subs, "Situation");
     if (id && typeof compteOn === "function" && compteOn())
       L.push("", "Fiche complète : " + location.origin + location.pathname + "#/sb/" + encodeURIComponent(id));
     return L.join("\n");

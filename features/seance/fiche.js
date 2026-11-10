@@ -36,6 +36,8 @@ function subLabel(s, k, def) {
 /* schéma de cet exercice dans la fiche : choix propre à l'exercice (it.schOn), sinon réglage général de la séance */
 const itemSchOn = it =>
   typeof it.schOn === "boolean" ? it.schOn : typeof isCreps === "function" && isCreps() ? true : !!(SMETA && SMETA.schemaStd);
+/* durée fixe du retour au calme, comptée pour tous les groupes */
+const RC_MIN = 5;
 /* vue normalisée d'un jeu (bibliothèque ou libre) */
 function itemView(it) {
   if (it.t === "lib") {
@@ -54,19 +56,19 @@ function itemView(it) {
       meta: [
         g["Participants"],
         g["Espace"],
-        g["Matériel"] && "Matériel : " + g["Matériel"],
+        (typeof it.mat === "string" ? it.mat : g["Matériel"]) && "Matériel : " + (typeof it.mat === "string" ? it.mat : g["Matériel"]),
         (it.dos || g["Dosage"]) && "Dosage : " + (it.dos || g["Dosage"]),
       ]
         .filter(Boolean)
         .join(" · "),
       plus: typeof it.vp === "string" ? it.vp : vt("+"),
       moins: typeof it.vm === "string" ? it.vm : vt("–"),
-      crit: it.crit,
+      crit: critEff(it),
       img: (it.sch && typeof edSvgUrl === "function" && edSvgUrl(it.sch)) || g["Schéma (lien)"] || "",
       imgJeu: (typeof crepsImg === "function" && crepsImg(g)) || "",
       schOn: itemSchOn(it),
-      mat: g["Matériel"],
-      noMat: noMat(g),
+      mat: typeof it.mat === "string" ? it.mat : g["Matériel"],
+      noMat: typeof it.mat === "string" ? /^(aucun|—)/i.test(it.mat.trim()) : noMat(g),
       resume: g["Résumé"] || "",
       dos: it.dos || g["Dosage"] || "",
       fam: g,
@@ -150,7 +152,7 @@ function seModel() {
     ce,
     mats: Object.values(mats),
     c,
-    tot: G.map((g, i) => (+g.acc || 0) + (ech.on ? ce[i] || 0 : 0) + c[i]),
+    tot: G.map((g, i) => (+g.acc || 0) + (ech.on ? ce[i] || 0 : 0) + c[i] + RC_MIN),
     nGames: subs.reduce((a, s) => a + s.views.length, 0) + echViews.length,
   };
 }
@@ -177,7 +179,7 @@ function sheetHTML() {
   const lignes = [];
   const l1 = [
     S.titre ? `<b style="font-size:18px">${esc(S.titre)}</b>` : "",
-    S.periode ? `<span style="${cl}">${esc(S.periode)}</span>` : "",
+    S.periode ? `<span style="${cl}">[${esc(S.periode)}]</span>` : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -317,6 +319,6 @@ function sheetHTML() {
   }
   const fb = (t, b, bg = "#F2F3F5") =>
     `<div style="background:${bg};padding:8px 12px;font-size:12px;border-left:3px solid #fff"><b style="font-size:11px">${t}</b><br>${b}</div>`;
-  h += `<div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.1fr 1.4fr;margin-top:12px">${fb("OBJECTIF COLLECTIF", S.objCol ? esc(S.objCol).replace(/\n/g, "<br>") : ph("[ce que le groupe doit réussir]"))}${fb("MATÉRIEL", M.mats.length ? M.mats.map(m => esc(capf(m.t))).join(" · ") : "Aucun matériel particulier.")}${fb("SÉCURITÉ", S.secu ? esc(S.secu).replace(/\n/g, "<br>") : ph("[rappels : hauteur, tapis, pas de saut…]"))}${fb("RETOUR AU CALME", M.G.map(g => `<b style="color:${g.c}">${esc(g.nom)} :</b> ${v(g.rc, "[étirements, bilan…]")}`).join("<br>"))}</div></div>`;
+  h += `<div style="display:grid;grid-template-columns:1.6fr 1.3fr 1.1fr 1.4fr;margin-top:12px">${fb("OBJECTIF COLLECTIF", S.objCol ? esc(S.objCol).replace(/\n/g, "<br>") : ph("[ce que le groupe doit réussir]"))}${fb("MATÉRIEL", M.mats.length ? M.mats.map(m => esc(capf(m.t))).join(" · ") : "Aucun matériel particulier.")}${fb("SÉCURITÉ", S.secu ? esc(S.secu).replace(/\n/g, "<br>") : ph("[rappels : hauteur, tapis, pas de saut…]"))}${fb("RETOUR AU CALME · " + RC_MIN + " min", M.G.map(g => `<b style="color:${g.c}">${esc(g.nom)} :</b> ${v(g.rc, "[étirements, bilan…]")}`).join("<br>"))}</div></div>`;
   return h + bilanFicheHTML();
 }

@@ -109,7 +109,7 @@ function crepsHTML() {
       .join("") || ph("—");
   const cl = "color:#C9D1DE";
   const info = [
-    S.periode ? `<span style="${cl}">${esc(S.periode)}</span>` : "",
+    S.periode ? `<span style="${cl}">[${esc(S.periode)}]</span>` : "",
     S.dates ? `<b>Dates :</b> <span style="${cl}">${esc(S.dates)}</span>` : "",
     S.educ ? `<b>Éducateurs :</b> <span style="${cl}">${esc(S.educ)}</span>` : "",
     S.objectif ? `<b>Objectif général :</b> <span style="${cl}">${esc(S.objectif)}</span>` : "",
@@ -252,7 +252,7 @@ function buildCrepsDoc(logo) {
   const out = [];
   /* bandeau d'en-tête */
   const info = [
-    S.periode,
+    S.periode && "[" + S.periode + "]",
     S.dates && "Dates : " + S.dates,
     S.educ && "Éducateurs : " + S.educ,
     S.objectif && "Objectif général : " + S.objectif,

@@ -354,7 +354,7 @@ function partageBloc(r) {
           EQUIPES.length
             ? `<div class="sml">Équipes<div class="gchk">${EQUIPES.map(q => `<label class="fl"><input type="checkbox" data-pteam="${esc(q.id)}" ${eqs.includes(q.id) ? "checked" : ""}> ${esc(q.nom)}</label>`).join("")}</div></div>`
             : `<p style="color:#6B7280;font-size:13px;margin:0 0 6px">Pas encore d'équipe : créez-en dans « Mes équipes » pour partager avec plusieurs personnes d'un coup.</p>`
-        }<label class="sml" style="margin-top:8px">Personnes (adresses Google, une par ligne)<textarea id="partageTxt" rows="4" placeholder="prenom.nom@gmail.com">${esc(pers.join("\n"))}</textarea></label><label class="fl" style="display:block;margin-top:8px"><input type="checkbox" id="partagePrev" checked> Prévenir par e-mail les personnes ajoutées (avec le lien de la séance)</label><div class="tools" style="margin-top:8px"><a class="btn" data-partage="save" data-id="${esc(r.id)}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer le partage</a><span id="partageMsg" style="font-weight:700"></span></div><p style="color:#6B7280;font-size:13px;margin:6px 0 0">Ils pourront la lire (pas la modifier) après s'être connectés avec leur adresse Google. Elle doit d'abord être enregistrée dans la bibliothèque.</p></div>`
+        }<label class="sml" style="margin-top:8px">Personnes (adresses Google, une par ligne)<textarea id="partageTxt" rows="4" placeholder="prenom.nom@gmail.com">${esc(pers.join("\n"))}</textarea></label><label class="fl" style="display:block;margin-top:8px"><input type="checkbox" id="partagePrev" checked> Prévenir par e-mail les personnes ajoutées (avec le lien de la séance)</label><label class="sml" style="margin-top:6px">Message de l'e-mail (modifiable : ajoute un commentaire si tu veux)<textarea id="partageCom" rows="7">${esc("Bonjour,\n\n" + ((AUTH.user && (AUTH.user.pseudo || AUTH.user.nom)) || "Quelqu'un") + " a partagé avec vous la séance « " + (r.titre || (r.meta && r.meta.titre) || "sans titre") + " ».\n\nPour la voir, connectez-vous avec votre compte Google (cette adresse) :\n" + location.origin + location.pathname + "#/sb/" + r.id + "\n\nBonne séance !")}</textarea></label><div class="tools" style="margin-top:8px"><a class="btn" data-partage="save" data-id="${esc(r.id)}" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;display:inline-block">Enregistrer le partage</a><span id="partageMsg" style="font-weight:700"></span></div><p style="color:#6B7280;font-size:13px;margin:6px 0 0">Ils pourront la lire (pas la modifier) après s'être connectés avec leur adresse Google. Elle doit d'abord être enregistrée dans la bibliothèque.</p></div>`
       : ""
   }</div>`;
 }
@@ -373,7 +373,7 @@ registerClick(e => {
     ];
     m.style.color = "#26364D";
     m.textContent = "Enregistrement…";
-    comptePost("seance_partage", { id, partage: liste, prevenir: !!($("#partagePrev") || {}).checked })
+    comptePost("seance_partage", { id, partage: liste, prevenir: !!($("#partagePrev") || {}).checked, message: ($("#partageCom") || {}).value || "" })
       .then(j => {
         toast("✓ Partage enregistré." + compteInfoMails(j && j.mail));
         return loadSeances().then(render);

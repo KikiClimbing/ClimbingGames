@@ -62,12 +62,8 @@ function admCodeSuggere(fam, extra) {
       .filter(Boolean)
       .map(x => String(x).toLowerCase())
   );
-  let n = 0;
-  pris.forEach(c => {
-    const k = c.startsWith(pre) ? c.slice(pre.length) : "";
-    if (/^\d+$/.test(k)) n = Math.max(n, +k);
-  });
-  while (pris.has(pre + ++n));
+  let n = 1; /* premier numéro libre (comble les trous : D11 puis D13 → D12) */
+  while (pris.has(pre + n)) n++;
   return admPrefixe(fam) + n;
 }
 /* code d'un jeu sans code : on reprend le nom de son schéma s'il suit déjà la règle (ex. E13.png) */
@@ -259,7 +255,7 @@ function admView() {
         .filter(c => !ADM_MASQUES.includes(c) && !connus.includes(c))
         .map(c =>
           c === "Code"
-            ? `<label class="sml">Code<input data-af="Code" data-l="${g.ligne}" value="${esc(v.Code)}" placeholder="Ex. D12" title="Proposé automatiquement selon la famille ; tu peux le modifier (lettre(s) + numéro, jamais utilisé par un autre jeu)."></label>`
+            ? `<label class="sml">Code (automatique)<input data-af="Code" data-l="${g.ligne}" value="${esc(v.Code)}" readonly style="background:#F1F3F8;color:#6B7280;cursor:not-allowed" title="Le code est attribué automatiquement (premier numéro libre de la famille) ; il ne se modifie pas, car les séances et les favoris s'y réfèrent."></label>`
             : ADM_LONGS.includes(c)
               ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="3" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
               : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
@@ -457,9 +453,6 @@ registerClick(e => {
         alert("Le code doit être une ou plusieurs lettres suivies d'un numéro (ex. D12).");
         return true;
       }
-      if (g.codeAvant && g.valeurs.Code && g.valeurs.Code !== g.codeAvant && (g.publie || isEmb({ Code: g.codeAvant })) &&
-        !confirm("Changer le code " + g.codeAvant + " en " + g.valeurs.Code + " ?\n\nLes séances, favoris et « Voir aussi » qui utilisent l'ancien code ne suivront pas, et le schéma (schemas/" + g.codeAvant + ".webp ou son fichier .json) doit être renommé de la même façon."))
-        return true;
       const c = String(g.valeurs.Code || "").trim().toLowerCase();
       const pris = c && [...DATA, ...PREPA_EMBED, ...JEUX_EXTRA].find(x => String(x.Code || "").toLowerCase() === c && norm(x.Titre) !== norm(g.valeurs.Titre) && norm(x.Titre) !== norm(g.orig || ""));
       const autre = c && (ADM.list || []).find(x => x !== g && x.publie && String(x.valeurs.Code || "").toLowerCase() === c);
