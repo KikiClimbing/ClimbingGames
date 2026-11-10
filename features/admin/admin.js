@@ -259,7 +259,7 @@ function admView() {
         .filter(c => !ADM_MASQUES.includes(c) && !connus.includes(c))
         .map(c =>
           c === "Code"
-            ? `<label class="sml">Code (automatique)<input data-af="Code" data-l="${g.ligne}" value="${esc(v.Code)}" readonly style="background:#F1F3F8;color:#6B7280;cursor:not-allowed" title="Le code est attribué automatiquement selon la famille ; il ne se modifie pas à la main."></label>`
+            ? `<label class="sml">Code<input data-af="Code" data-l="${g.ligne}" value="${esc(v.Code)}" placeholder="Ex. D12" title="Proposé automatiquement selon la famille ; tu peux le modifier (lettre(s) + numéro, jamais utilisé par un autre jeu)."></label>`
             : ADM_LONGS.includes(c)
               ? `<label class="sml" style="grid-column:1/-1">${esc(c)}<textarea rows="3" data-af="${esc(c)}" data-l="${g.ligne}">${esc(v[c])}</textarea></label>`
               : `<label class="sml">${esc(c)}<input data-af="${esc(c)}" data-l="${g.ligne}" value="${esc(v[c])}"></label>`
@@ -452,6 +452,14 @@ registerClick(e => {
     if (a === "pub" && !g.valeurs.Code && !confirm("Ce jeu n'a pas de code. Publier quand même ?"))
       return true;
     if (a === "pub" || a === "save") {
+      g.valeurs.Code = String(g.valeurs.Code || "").trim().toUpperCase();
+      if (g.valeurs.Code && !/^[A-Z]+\d+$/.test(g.valeurs.Code)) {
+        alert("Le code doit être une ou plusieurs lettres suivies d'un numéro (ex. D12).");
+        return true;
+      }
+      if (g.codeAvant && g.valeurs.Code && g.valeurs.Code !== g.codeAvant && (g.publie || isEmb({ Code: g.codeAvant })) &&
+        !confirm("Changer le code " + g.codeAvant + " en " + g.valeurs.Code + " ?\n\nLes séances, favoris et « Voir aussi » qui utilisent l'ancien code ne suivront pas, et le schéma (schemas/" + g.codeAvant + ".webp ou son fichier .json) doit être renommé de la même façon."))
+        return true;
       const c = String(g.valeurs.Code || "").trim().toLowerCase();
       const pris = c && [...DATA, ...PREPA_EMBED, ...JEUX_EXTRA].find(x => String(x.Code || "").toLowerCase() === c && norm(x.Titre) !== norm(g.valeurs.Titre) && norm(x.Titre) !== norm(g.orig || ""));
       const autre = c && (ADM.list || []).find(x => x !== g && x.publie && String(x.valeurs.Code || "").toLowerCase() === c);
