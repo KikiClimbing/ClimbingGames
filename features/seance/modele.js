@@ -300,5 +300,9 @@ function seBoutonSauve() {
   b.style.cursor = sale ? "pointer" : "default";
   b.title = sale ? "" : "Rien à enregistrer : aucune modification depuis le dernier enregistrement";
   const m = $("#sSaved");
-  if (m) m.style.display = sale ? "none" : "";
+  if (m) {
+    const ok = !sale && SB_MSG && SB_MSG.id && SB_MSG.id === SE.id;
+    m.textContent = ok ? SB_MSG.txt : "";
+    m.style.display = ok ? "" : "none";
+  }
 }

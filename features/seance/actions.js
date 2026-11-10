@@ -502,3 +502,74 @@ function logoDepuisFichier(file, cb) {
   };
   r.readAsDataURL(file);
 }
+
+/* ---------- réorganiser les sous-sections (fenêtre : glisser-déposer ou flèches) ---------- */
+function reorgListe() {
+  const bloc = (L, nom) =>
+    L.length < 2
+      ? ""
+      : `<h4 style="margin:12px 0 6px">${nom}</h4>` +
+        L.map(
+          (s, k) =>
+            `<div class="rgl" draggable="true" data-rgid="${s.id}" style="display:flex;align-items:center;gap:8px;border:1px solid #D5DAE5;border-radius:8px;padding:8px 10px;margin:4px 0;background:#fff;cursor:grab"><span style="color:#9AA3B5;font-size:18px">⠿</span><b style="flex:1">${esc(s.titre || "Sous-section " + (k + 1))}</b><span style="color:#6B7280;font-size:12px">${s.items.length} exercice${s.items.length > 1 ? "s" : ""}</span><button class="chip" data-rg="up" data-rgid="${s.id}" ${k ? "" : "disabled"}>↑</button><button class="chip" data-rg="dn" data-rgid="${s.id}" ${k < L.length - 1 ? "" : "disabled"}>↓</button></div>`
+        ).join("");
+  return bloc(SE.ech.subs, "Échauffement") + bloc(SE.subs, "Corps de séance") || "<p>Il faut au moins deux sous-sections.</p>";
+}
+function reorgOuvrir() {
+  modal("⇅ Réorganiser les sous-sections", `<p class="hint" style="margin:0 0 6px">Glisse une ligne ou utilise les flèches.</p><div id="rgBox">${reorgListe()}</div><div class="tools" style="margin-top:12px"><a class="chip" data-modal="fermer" data-mid="mpop">Terminé</a></div>`, 560, { fond: false });
+}
+function reorgMaj() {
+  seSave();
+  const b = $("#rgBox");
+  if (b) b.innerHTML = reorgListe();
+  render();
+}
+const reorgMv = (arr, i, d) => {
+  const j = i + d;
+  if (j < 0 || j >= arr.length) return;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+};
+function reorgListeDe(id) {
+  return SE.ech.subs.some(s => s.id === id) ? SE.ech.subs : SE.subs;
+}
+registerClick(e => {
+  const a = e.target.closest("[data-rgo]");
+  if (a) {
+    reorgOuvrir();
+    return true;
+  }
+  const b = e.target.closest("[data-rg]");
+  if (!b) return;
+  const id = +b.dataset.rgid,
+    L = reorgListeDe(id);
+  reorgMv(L, L.findIndex(s => s.id === id), b.dataset.rg === "up" ? -1 : 1);
+  reorgMaj();
+  return true;
+});
+let RG_ID = 0;
+document.addEventListener("dragstart", e => {
+  const r = e.target.closest && e.target.closest("[data-rgid].rgl");
+  if (!r) return;
+  RG_ID = +r.dataset.rgid;
+  e.dataTransfer.effectAllowed = "move";
+  try {
+    e.dataTransfer.setData("text/plain", String(RG_ID));
+  } catch (er) {}
+});
+document.addEventListener("dragover", e => {
+  if (RG_ID && e.target.closest && e.target.closest(".rgl")) e.preventDefault();
+});
+document.addEventListener("drop", e => {
+  const r = e.target.closest && e.target.closest(".rgl");
+  if (!r || !RG_ID) return;
+  e.preventDefault();
+  const to = +r.dataset.rgid,
+    L = reorgListeDe(RG_ID);
+  if (to !== RG_ID && L === reorgListeDe(to)) {
+    const [x] = L.splice(L.findIndex(s => s.id === RG_ID), 1);
+    L.splice(L.findIndex(s => s.id === to) + (e.clientY > r.getBoundingClientRect().top + r.offsetHeight / 2 ? 1 : 0), 0, x);
+    reorgMaj();
+  }
+  RG_ID = 0;
+});
+document.addEventListener("dragend", () => (RG_ID = 0));
