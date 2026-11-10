@@ -244,12 +244,12 @@ function sheetHTML() {
         s.idx.length < M.G.length
           ? ` <span style="font-weight:400">· ${esc(nomsGroupes(M, s.idx))} seulement</span>`
           : "";
-      h += `<div style="background:#DDF0DB;padding:4px 10px;font-size:12px;font-weight:700;color:#2E6F3E;margin-top:2px">${tgs(M, s.d, s.idx)
+      h += `<div style="background:#D3ECEA;padding:4px 10px;font-size:12px;font-weight:700;color:#1D6A66;margin-top:2px">${tgs(M, s.d, s.idx)
         .map(
           x =>
             `<span style="display:inline-block;background:#fff;color:${x.c};border:1px solid ${x.c};padding:0 6px;margin-right:4px;min-width:26px;text-align:center">${x.t}</span>`
         )
-        .join("")} &nbsp;${esc(subLabel(s, k, "") || "Échauffement")}${who}</div><div style="padding:4px 10px;font-size:12px;background:#F4FAF3">${s.views.map(echItem).join("") || `<div>${ph("▸ [Ajouter un jeu ou un exercice]")}</div>`}</div>`;
+        .join("")} &nbsp;${esc(subLabel(s, k, "") || "Échauffement")}${who}</div><div style="padding:4px 10px;font-size:12px;background:#fff">${s.views.map(echItem).join("") || `<div>${ph("▸ [Ajouter un jeu ou un exercice]")}</div>`}</div>`;
     });
   }
   h += band(tgs(M, M.c, M.all), "CORPS DE SÉANCE", "#E3EEF8", "#2B5A9E");
