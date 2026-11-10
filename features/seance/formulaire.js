@@ -39,10 +39,7 @@ function seanceView() {
           if (!g) return "";
           const mod = typeof it2.txt === "string",
             P = principeParties(g);
-          const parts =
-            !mod && P.length > 1
-              ? `<div class="sml" style="margin:4px 0">Variante du jeu à garder<div class="gchk">${P.map((p, i) => `<label class="fl"><input type="checkbox" data-ipn="${i}" data-id="${it2.id}" ${(it2.pn || []).includes(i) ? "" : "checked"}> ${esc(partieNom(p))}</label>`).join("")}</div></div>`
-              : "";
+          const parts = "";
           return `<div class="sml" style="margin-top:8px"><b>${cl("Consigne / règle du jeu", "Consignes et règles du jeu")}</b> <span style="font-weight:400">(texte de cette séance seulement — le jeu de la bibliothèque n'est pas modifié)</span></div>${parts}<textarea rows="4" data-si="txt" data-id="${it2.id}" style="width:100%">${esc(itemDesc(it2, g))}</textarea>${mod ? `<div style="margin-top:2px"><a class="chip" data-sa="txtreset" data-id="${it2.id}" style="cursor:pointer">↺ Revenir au texte du jeu</a></div>` : ""}`;
         };
         const varf = it2 => {

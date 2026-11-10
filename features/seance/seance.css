@@ -412,7 +412,9 @@ body.trOn > *:not(#terrain):not(#trImg):not(#hors):not(#trStop) {
 .trjeu{margin-top:6px;display:inline-block;font-size:15px;font-weight:700;color:#B4500F;background:#FFF1E6;padding:2px 10px;border-radius:6px}
 /* barre d'outils du formulaire de séance : toujours visible au défilement */
 .sbar{position:sticky;top:0;z-index:30;background:#fff;padding:8px 10px;margin-left:-10px;margin-right:-10px;border-bottom:1px solid #D5DAE5;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-#epop .sbar{top:0}
+#epop .poptools{z-index:40}
+#epop{padding-top:0}
+#epop .sbar{top:40px}
 @media (max-width: 860px) {
   .sbar { top: 50px; }
 }
