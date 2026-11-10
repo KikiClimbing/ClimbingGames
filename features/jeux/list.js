@@ -186,10 +186,9 @@ function poutreOuvert() {
 function poutreMenuHTML() {
   if (DISC !== "prepa") return "";
   const ouvert = poutreOuvert();
-  return (
-    `<button class="nav" data-navpoutre="1" aria-expanded="${ouvert}"><span class="ic">${ouvert ? "▾" : "▸"}</span>Poutre par filière</button>` +
-    (ouvert ? POUTRE_CATS.map(c => navBtn("pcat/" + c[0], c[0], '<span class="ic">›</span>')).join("") : "")
-  );
+  const bt = `<button class="nav" data-navpoutre="1" aria-expanded="${ouvert}"><span class="ic">${ouvert ? "▾" : "▸"}</span>Poutre par filière</button>`;
+  if (!ouvert) return bt;
+  return `<div class="navgrp">${bt}${POUTRE_CATS.map(c => navBtn("pcat/" + c[0], c[0], '<span class="ic">›</span>')).join("")}</div>`;
 }
 registerClick(e => {
   if (!e.target.closest("[data-navpoutre]")) return;

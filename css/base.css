@@ -370,3 +370,18 @@ h2.pt {
 .admdd-i{border:0;background:none;text-align:left;padding:8px 12px;border-radius:7px;font:600 14px inherit;font-family:inherit;color:#26364D;cursor:pointer}
 .admdd-i:hover{background:#EEF1F8}.admdd-i.on{background:#E1EBF8;color:#1E4E8C}
 .tpill{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px}
+
+/* sous-menu « Poutre par filière » : fond teinté pour le distinguer des autres entrées */
+.navgrp {
+  background: #e8f0fb;
+  border-left: 3px solid #5b8bd6;
+  border-radius: 8px;
+  padding: 2px 0 4px;
+  margin: 2px 0;
+}
+.navgrp .nav:hover {
+  background: #d8e5f7;
+}
+.navgrp .nav.on {
+  background: var(--navy);
+}
