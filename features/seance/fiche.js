@@ -33,6 +33,9 @@ function subLabel(s, k, def) {
     .filter((x, i, a) => x && norm(x) !== norm(s.titre || "") && a.indexOf(x) === i);
   return n.length ? (t ? t + " — " : "") + n.join(", ") : t;
 }
+/* schéma de cet exercice dans la fiche : choix propre à l'exercice (it.schOn), sinon réglage général de la séance */
+const itemSchOn = it =>
+  typeof it.schOn === "boolean" ? it.schOn : typeof isCreps === "function" && isCreps() ? true : !!(SMETA && SMETA.schemaStd);
 /* vue normalisée d'un jeu (bibliothèque ou libre) */
 function itemView(it) {
   if (it.t === "lib") {
@@ -61,6 +64,7 @@ function itemView(it) {
       crit: it.crit,
       img: (it.sch && typeof edSvgUrl === "function" && edSvgUrl(it.sch)) || g["Schéma (lien)"] || "",
       imgJeu: (typeof crepsImg === "function" && crepsImg(g)) || "",
+      schOn: itemSchOn(it),
       mat: g["Matériel"],
       noMat: noMat(g),
       resume: g["Résumé"] || "",
@@ -80,6 +84,8 @@ function itemView(it) {
     mat: it.mat,
     noMat: /^(aucun|—)/i.test((it.mat || "").trim()),
     resume: it.desc || "",
+    img: (it.sch && typeof edSvgUrl === "function" && edSvgUrl(it.sch)) || "",
+    schOn: itemSchOn(it),
     free: true,
   };
 }
@@ -228,7 +234,7 @@ function sheetHTML() {
   /* échauffement : une sous-section par jeu ou exercice libre, avec ses groupes et sa durée (fond vert) */
   const echItem = x => {
     const v = x.v;
-    const img = schemaStd() && (v.img || v.imgJeu) ? `<div style="margin:4px 0 0 12px"><img src="${esc(v.img || v.imgJeu)}" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain" onerror="this.remove()"></div>` : "";
+    const img = v.schOn && (v.img || v.imgJeu) ? `<div style="margin:4px 0 0 12px"><img src="${esc(v.img || v.imgJeu)}" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain" onerror="this.remove()"></div>` : "";
     const tete = x.same
       ? ""
       : `<b style="color:${C1}">▸</b> ${lk(v, `<b>${esc(x.name)}</b>`)}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}`;
@@ -256,7 +262,7 @@ function sheetHTML() {
   const th = (t, c, f) =>
     `<div style="background:${f};color:${c};font-weight:700;font-size:11px;padding:5px 10px;border-bottom:1px solid #D5DAE5">${t}</div>`;
   const schema = (SMETA.disc || DISC) === "prepa";
-  const avecSchema = !schema && schemaStd();
+  const avecSchema = !schema;
   const exo = (x, n) => {
     const v = x.v,
       L = lines;
@@ -274,7 +280,7 @@ function sheetHTML() {
       ? `<div style="margin:0 0 3px">${x.steps.map(l => `<div><b style="color:${C1}">▸</b> ${esc(l)}</div>`).join("")}</div>`
       : `<b style="color:${C1}">▸</b> ${lk(v, `<b>${n}. ${nm}</b>`)}${v.code ? ` <span style="color:#6B7280;font-size:11px">(${esc(v.code)})</span>` : ""}<div style="margin:2px 0;white-space:pre-line">${esc(v.desc)}</div>`;
     return (
-      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? lk(v, `Fiche ${esc(v.code)} ↗`) + " · " : ""}${esc(v.meta)}</div>${avecSchema && (v.img || v.imgJeu) ? `<div style="margin-top:6px;text-align:center"><img src="${esc(v.img || v.imgJeu)}" onerror="this.remove()" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain"></div>` : ""}</div>` +
+      `<div style="padding:6px 10px;border-bottom:1px solid #D5DAE5;font-size:12px">${first}<div style="color:#6B7280;font-size:11px;font-style:italic">${x.same && v.code ? lk(v, `Fiche ${esc(v.code)} ↗`) + " · " : ""}${esc(v.meta)}</div>${avecSchema && v.schOn && (v.img || v.imgJeu) ? `<div style="margin-top:6px;text-align:center"><img src="${esc(v.img || v.imgJeu)}" onerror="this.remove()" alt="Schéma : ${esc(x.name)}" style="max-width:100%;max-height:200px;object-fit:contain"></div>` : ""}</div>` +
       (schema ? "" : col(v.plus, C2, "+", "#FDF3F2")) +
       (schema ? "" : col(v.moins, "#2E6F3E", "–", "#F1F8F2")) +
       (schema

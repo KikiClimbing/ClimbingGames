@@ -94,7 +94,7 @@ const crepsImg = g =>
       ? "schemas/" + g.Code + ".webp"
       : driveImg(g["Schéma (lien)"] || g["Schéma"]) || "";
 /* image de la situation : le schéma dessiné pour elle (it.sch) sinon celui du jeu */
-const crepsImgRow = r => (r.src && r.src.sch && edSvgUrl(r.src.sch)) || crepsImg(r.g);
+const crepsImgRow = r => r.src && r.src.schOn === false ? "" : (r.src && r.src.sch && edSvgUrl(r.src.sch)) || crepsImg(r.g);
 function crepsHTML() {
   const M = seModel(),
     S = SMETA,
@@ -154,7 +154,7 @@ function crepsChoixHTML() {
   return `<div class="tools" style="margin:8px 0 4px"><span style="font-weight:700">Modèle de fiche :</span><div class="seg">${b("std", "Fiche simplifiée")}${b("creps", "Fiche complète")}</div><span style="color:#6B7280;font-size:13px">Même séance, autre présentation (tableau à 8 colonnes).</span></div>${
     isCreps()
       ? `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schemode" data-m="page" class="${schemaSous() ? "" : "on"}">Sur une page à part</button><button data-sa="schemode" data-m="sous" class="${schemaSous() ? "on" : ""}">Sous chaque situation</button></div></div>`
-      : `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schestd" class="${schemaStd() ? "on" : ""}">${schemaStd() ? "✓ Schémas dans la fiche" : "Ajouter les schémas des jeux"}</button></div></div>`
+      : `<div class="tools" style="margin:0 0 4px"><span style="font-weight:700">Schémas :</span><div class="seg"><button data-sa="schestd" class="${schemaStd() ? "on" : ""}">${schemaStd() ? "✓ Schémas dans la fiche (tous)" : "Ajouter les schémas de tous les jeux"}</button></div><span style="color:#6B7280;font-size:13px">Ou choisis exercice par exercice (case dans chaque exercice).</span></div>`
   }`;
 }
 /* champs propres au modèle CREPS d'une situation (r : ligne de crepsLignes) — placés dans le cadre de l'exercice lui-même */

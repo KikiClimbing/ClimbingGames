@@ -14,7 +14,7 @@ function buildSeanceDoc(logo) {
   if (typeof isCreps === "function" && isCreps()) return buildCrepsDoc(logo);
   const D = window.docx;
   const imgPar = v => {
-    const u = SMETA.schemaStd && v && (v.img || v.imgJeu);
+    const u = v && v.schOn && (v.img || v.imgJeu);
     const r = u && typeof crepsImgRun === "function" && crepsImgRun(D, u, 420, 150);
     return r ? [new D.Paragraph({ children: [r], spacing: { after: 60 } })] : [];
   };
@@ -493,11 +493,11 @@ async function seanceWord(rec) {
     if (meta.modele === "creps" && typeof crepsPreload === "function") {
       msg("Récupération des schémas…");
       manque = await crepsPreload(rec);
-    } else if (meta.schemaStd && typeof crepsImgPng === "function") {
+    } else if (meta.modele !== "creps" && typeof crepsImgPng === "function") {
       msg("Récupération des schémas…");
       const get = () => {
         const M = seModel();
-        return [...M.echSubs, ...M.subs].flatMap(s => s.views.map(x => x.v && (x.v.img || x.v.imgJeu)));
+        return [...M.echSubs, ...M.subs].flatMap(s => s.views.map(x => x.v && x.v.schOn && (x.v.img || x.v.imgJeu)));
       };
       const urls = [...new Set((rec ? withSeance(rec.meta, rec.se, get) : get()).filter(Boolean))];
       await Promise.all(

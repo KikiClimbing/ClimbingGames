@@ -188,6 +188,16 @@ function seanceBind() {
     if (!coche && j < 0) L.push(v);
     it[cle] = L;
   };
+  document.querySelectorAll("[data-isch]").forEach(i =>
+    i.addEventListener("change", () => {
+      const f = seFind(+i.dataset.id);
+      if (f) {
+        f.s.items[f.i].schOn = i.checked;
+        seSave();
+        upd();
+      }
+    })
+  );
   document.querySelectorAll("[data-ipn]").forEach(i =>
     i.addEventListener("change", () => {
       const f = seFind(+i.dataset.id);
@@ -376,6 +386,7 @@ document.addEventListener("click", e => {
     saveMeta();
   } else if (a === "schestd") {
     SMETA.schemaStd = !SMETA.schemaStd;
+    seToutesSubs().forEach(s => s.items.forEach(i => delete i.schOn));
     saveMeta();
   } else if (a === "txtreset") {
     const f = seFind(id);

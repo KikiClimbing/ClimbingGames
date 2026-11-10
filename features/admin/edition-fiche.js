@@ -56,7 +56,11 @@ registerClick(e => {
         if (g) Object.assign(g, FE.v);
         toast("✓ Jeu enregistré dans la feuille (visible pour tous après la prochaine publication de la feuille).");
         modalFermer("mpop", true);
+        const act = document.querySelector(".tab.on");
+        const p = act && act.dataset.p;
         render();
+        /* la fiche ouverte dessous est reconstruite avec les nouvelles valeurs, sur le même onglet */
+        if (typeof MODAL !== "undefined" && MODAL && openFiche(MODAL) && p && $("#" + p)) tab(p);
       })
       .catch(er => {
         $("#feMsg").style.color = "#B2263A";
