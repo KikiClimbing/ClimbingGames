@@ -108,7 +108,7 @@ async function compteBoutonGoogle() {
   try {
     await gsiCharger();
     google.accounts.id.initialize({
-      client_id: CONFIG.GOOGLE_CLIENT_ID,
+      client_id: window.SITE_CONFIG.GOOGLE_CLIENT_ID,
       callback: async resp => {
         const m = $("#compteMsg");
         if (m) m.textContent = "Connexion…";
