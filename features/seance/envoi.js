@@ -59,11 +59,11 @@ function envoiOuvrir(meta, se, id) {
     ${droits ? '<p class="hint" style="margin:0">Les personnes cochées ou listées pourront <b>lire</b> la séance (pas la modifier) après connexion avec leur adresse Google. Retire une adresse pour retirer son accès.</p>' : id ? "<p class=\"hint\" style=\"margin:0\">Cette séance n'est pas à toi : tu peux seulement envoyer un message. Le lien ne s'ouvrira que pour ceux qui ont déjà accès.</p>" : "<p class=\"hint\" style=\"margin:0\">Séance non enregistrée : le message n'aura pas de lien. Enregistre-la dans la bibliothèque pour pouvoir la partager.</p>"}
     ${eq.length ? `<div class="sml">Équipes<div class="gchk">${eq.map(q => `<label class="fl"><input type="checkbox" data-envq="${esc(q.id)}" ${eqs.includes(q.id) ? "checked" : ""}> ${esc(q.nom)} <span style="color:#6B7280">(${envoiMembres(q).length})</span></label>`).join("")}</div></div>` : ""}
     <label class="sml">Personnes (adresses Google, une par ligne)<textarea id="envP" rows="3" placeholder="prenom.nom@gmail.com">${esc(pers.join("\n"))}</textarea></label>
-    <label class="sml">Numéro WhatsApp d'une personne (facultatif, avec l'indicatif — ex. 33612345678)<input id="envN" inputmode="tel" placeholder="33612345678"></label>
     <label class="sml">Message de notification<textarea id="envM" rows="10">${esc("Bonjour,\nvoici la séance « " + titre + " ».\n\n" + envoiTexte(meta, se, id))}</textarea></label>
     ${droits ? '<label class="fl" style="margin:0;display:flex;gap:8px;align-items:center"><input type="checkbox" id="envNouv" checked style="width:auto;flex:none"> Prévenir seulement les nouvelles personnes (pas celles qui ont déjà accès)</label>' : ""}
     <div class="tools">${droits ? `<a class="btn" data-env="save" style="${sty("#26364D")}">Partager (sans message)</a>` : ""}<a class="btn" data-env="mail" style="${sty("#2B5A9E")}">${droits ? "Partager + " : ""}✉ E-mail</a><a class="btn" data-env="wa" style="${sty("#2E7D4F")}">${droits ? "Partager + " : ""}WhatsApp</a><a class="chip" data-env="copy" style="cursor:pointer;align-self:center">Copier le message</a></div>
-    <p class="hint" style="margin:0">WhatsApp ne permet pas d'écrire directement à un groupe : sans numéro, tu choisis le contact ou le groupe dans WhatsApp.</p></div>`,
+    <div id="envMsg" style="font-weight:700;min-height:20px"></div>
+    <p class="hint" style="margin:0">WhatsApp s'ouvre avec le message : tu y choisis le contact ou le groupe.</p></div>`,
     640
   );
 }
@@ -82,9 +82,31 @@ function envoiPartager() {
     { ids, pers } = envoiLire();
   const liste = [...ids.map(i => "team:" + i), ...pers];
   const nouv = liste.filter(x => !avant.includes(x));
+  const m = () => $("#envMsg"),
+    bt = [...document.querySelectorAll("[data-env]")];
+  if (m()) {
+    m().style.color = "#26364D";
+    m().innerHTML = '<span class="spin">⏳</span> Enregistrement du partage…';
+  }
+  bt.forEach(x => (x.style.opacity = ".55"));
+  bt.forEach(x => (x.style.pointerEvents = "none"));
+  const fin = () => bt.forEach(x => ((x.style.opacity = ""), (x.style.pointerEvents = "")));
   comptePost("seance_partage", { id: ENVOI.id, partage: liste, prevenir: false })
-    .then(() => (toast("✓ Partage enregistré."), loadSeances().then(render)))
-    .catch(err => toast("Partage non enregistré : " + err.message));
+    .then(() => {
+      fin();
+      if (m()) {
+        m().style.color = "#2E7D4F";
+        m().textContent = "✓ Partage enregistré.";
+      }
+      return loadSeances().then(render);
+    })
+    .catch(err => {
+      fin();
+      if (m()) {
+        m().style.color = "#B2263A";
+        m().textContent = "Partage non enregistré : " + err.message;
+      }
+    });
   return nouv;
 }
 function envoiDestinataires(nouv, droits) {
@@ -109,8 +131,7 @@ registerClick(e => {
     } else if (k === "save") {
       if (droits) envoiPartager();
     } else if (k === "wa") {
-      const n = (($("#envN") || {}).value || "").replace(/\D/g, "");
-      window.open("https://wa.me/" + n + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+      window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank", "noopener");
       if (droits) envoiPartager();
     } else if (k === "mail") {
       const lu = envoiLire();

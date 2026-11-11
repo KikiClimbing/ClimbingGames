@@ -429,3 +429,6 @@ body.trOn > *:not(#terrain):not(#trImg):not(#hors):not(#trStop) {
 .stab-b[data-stabgo=apercu]{--tb:#F1F3F7;--tc:#94A3B8}
 .stab-b{border-bottom:3px solid var(--tc,#D5DAE5);opacity:.78}
 .stab-b.on{background:var(--tb,#26364D);color:#26364D;border-color:var(--tc,#26364D);box-shadow:0 2px 0 var(--tb,#fff);font-weight:800;opacity:1}
+
+.spin{display:inline-block;animation:spinR 1s linear infinite}
+@keyframes spinR{to{transform:rotate(360deg)}}
