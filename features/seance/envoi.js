@@ -35,6 +35,14 @@ function envoiTexte(meta, se, id) {
     return L.join("\n");
   });
 }
+/* séance enregistrée appartenant à l'utilisateur ? (alors l'envoi peut aussi ouvrir les droits) */
+function envoiRec(id) {
+  return typeof SEANCES !== "undefined" ? SEANCES.find(x => x.id === id) : null;
+}
+function envoiMien(id) {
+  const r = envoiRec(id);
+  return !!(r && typeof compteOn === "function" && compteOn() && typeof compteMien === "function" && compteMien(r));
+}
 function envoiOuvrir(meta, se, id) {
   ENVOI = { meta, se, id };
   const eq = typeof EQUIPES !== "undefined" ? EQUIPES : [];
@@ -46,7 +54,7 @@ function envoiOuvrir(meta, se, id) {
     <label class="sml">Personnes (adresses e-mail, une par ligne)<textarea id="envP" rows="3" placeholder="prenom.nom@gmail.com"></textarea></label>
     <label class="sml">Numéro WhatsApp d'une personne (facultatif, avec l'indicatif — ex. 33612345678)<input id="envN" inputmode="tel" placeholder="33612345678"></label>
     <label class="sml">Message<textarea id="envM" rows="12">${esc("Bonjour,\nvoici la séance « " + titre + " ».\n\n" + envoiTexte(meta, se, id))}</textarea></label>
-    ${id ? "<p class=\"hint\" style=\"margin:0\">Pour que le lien s'ouvre chez les destinataires, partage aussi la séance (bouton « 👥 Partager »).</p>" : "<p class=\"hint\" style=\"margin:0\">Cette séance n'est pas enregistrée : le message contient le résumé, sans lien.</p>"}
+    ${id && envoiMien(id) ? '<label class="fl" style="margin:0"><input type="checkbox" id="envAcces" checked> Donner aussi accès à la séance (lecture) aux destinataires par e-mail, pour que le lien s\'ouvre</label>' : id ? "<p class=\"hint\" style=\"margin:0\">Le lien ne s'ouvrira que pour les personnes qui ont déjà accès à la séance.</p>" : "<p class=\"hint\" style=\"margin:0\">Cette séance n'est pas enregistrée : le message contient le résumé, sans lien.</p>"}
     <div class="tools"><a class="btn" data-env="mail" style="background:#2B5A9E;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer">✉ E-mail</a><a class="btn" data-env="wa" style="background:#2E7D4F;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer">WhatsApp</a><a class="chip" data-env="copy" style="cursor:pointer">⧉ Copier le message</a></div>
     <p class="hint" style="margin:0">WhatsApp ne permet pas d'écrire directement à un groupe : sans numéro, tu choisis le contact ou le groupe dans WhatsApp.</p></div>`,
     640
@@ -80,6 +88,17 @@ registerClick(e => {
       if (!adr.size) {
         toast("Ajoute au moins une équipe ou une adresse.");
         return true;
+      }
+      const acc = $("#envAcces");
+      if (acc && acc.checked && ENVOI && ENVOI.id && envoiMien(ENVOI.id)) {
+        const r = envoiRec(ENVOI.id),
+          cur = partageListe(r),
+          plus = [...ids.map(i => "team:" + i), ...[...adr].filter(a => !eq.some(q => ids.includes(q.id) && (Array.isArray(q.membres) ? q.membres : String(q.membres || "").split(/[\s,;]+/)).includes(a)))];
+        const tout = [...new Set([...cur, ...plus])];
+        if (tout.length !== cur.length)
+          comptePost("seance_partage", { id: ENVOI.id, partage: tout, prevenir: false })
+            .then(() => (toast("✓ Accès à la séance ouvert."), loadSeances()))
+            .catch(err => toast("Accès non modifié : " + err.message));
       }
       const l = [...adr].join(",");
       if (msg.length > 1800) navigator.clipboard && navigator.clipboard.writeText(msg);
