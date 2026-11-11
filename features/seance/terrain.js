@@ -150,7 +150,10 @@ function terrainCartes0(gi) {
 }
 async function terrainVeille(on) {
   try {
-    if (on && navigator.wakeLock) TRWAKE = await navigator.wakeLock.request("screen");
+    if (on && navigator.wakeLock) {
+      if (TRWAKE) TRWAKE.release().catch(() => {});
+      TRWAKE = await navigator.wakeLock.request("screen");
+    }
     else if (TRWAKE) {
       await TRWAKE.release();
       TRWAKE = null;
@@ -254,8 +257,14 @@ function terrainCarte(k) {
   terrainDessin();
 }
 function terrainTick() {
-  TR.restant--;
-  if (TR.restant === 0 && !TR.fin) {
+  /* le temps est mesuré sur l'horloge : si le téléphone suspend la page (écran éteint), le chrono rattrape son retard au retour */
+  const now = Date.now(),
+    n = Math.floor((now - (TR.last || now - 1000)) / 1000);
+  if (n < 1) return;
+  TR.last = (TR.last || now - 1000) + n * 1000;
+  const avant = TR.restant;
+  TR.restant -= n;
+  if (TR.restant <= 0 && avant > 0 && !TR.fin) {
     TR.fin = true;
     terrainBip();
   }
@@ -319,6 +328,7 @@ function terrainClic(e) {
     terrainCarte(0);
   } else if (a === "play") {
     TR.tourne = !TR.tourne;
+    TR.last = Date.now();
     if (TR.tourne) sonDeverrouiller();
     clearInterval(TRTIMER);
     TRTIMER = TR.tourne ? setInterval(terrainTick, 1000) : null;
@@ -344,7 +354,10 @@ function terrainClic(e) {
   }
 }
 document.addEventListener("visibilitychange", () => {
-  if (TR && document.visibilityState === "visible") terrainVeille(true);
+  if (TR && document.visibilityState === "visible") {
+    terrainVeille(true);
+    if (TR.tourne) terrainTick();
+  }
 });
 
 /* schéma en grand : il occupe tout l'écran et s'adapte quand on tourne le téléphone (portrait ou paysage) */
