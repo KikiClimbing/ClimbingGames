@@ -37,7 +37,8 @@ function envoiTexte(meta, se, id) {
 }
 /* séance enregistrée appartenant à l'utilisateur ? (alors l'envoi peut aussi ouvrir les droits) */
 function envoiRec(id) {
-  return typeof SEANCES !== "undefined" ? SEANCES.find(x => x.id === id) : null;
+  /* même source que la fiche : propriétaire (owner) et partage tels que le serveur les donne */
+  return typeof sbAll === "function" ? sbAll().find(x => x.id === id) : null;
 }
 function envoiMien(id) {
   const r = envoiRec(id);
