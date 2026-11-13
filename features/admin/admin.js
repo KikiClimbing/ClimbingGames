@@ -443,8 +443,11 @@ registerClick(e => {
       !confirm("Retirer « " + g.valeurs.Titre + " » du site ? Il repassera en attente.")
     )
       return true;
-    if (a === "no" && !confirm("Refuser « " + g.valeurs.Titre + " » ? Il ne sera pas publié."))
-      return true;
+    let raison = "";
+    if (a === "no") {
+      raison = prompt("Refuser « " + g.valeurs.Titre + " » ?\nRaison du refus (envoyée par e-mail à l'auteur s'il avait un compte ; laisse vide pour ne pas en donner) :");
+      if (raison === null) return true;
+    }
     if (a === "pub" && !g.valeurs.Code && !confirm("Ce jeu n'a pas de code. Publier quand même ?"))
       return true;
     if (a === "pub" || a === "save") {
@@ -469,7 +472,7 @@ registerClick(e => {
     const orig = g.orig;
     const req =
       a === "no"
-        ? admPost("admin_refuser", { ligne: l, titreAvant: orig })
+        ? admPost("admin_refuser", { ligne: l, titreAvant: orig, raison })
         : admPost("admin_enregistrer", {
             ligne: l,
             titreAvant: orig,
@@ -478,12 +481,14 @@ registerClick(e => {
             retirer: a === "unpub",
           });
     req
-      .then(async () => {
+      .then(async r => {
         toast(
           a === "pub"
             ? "✓ Jeu publié."
             : a === "no"
-              ? "Jeu refusé."
+              ? r && r.prevenu
+                ? "Jeu refusé · auteur prévenu par e-mail."
+                : "Jeu refusé (auteur sans compte ou e-mails désactivés : personne n'est prévenu)."
               : a === "unpub"
                 ? "Jeu retiré du site."
                 : "✓ Modifications enregistrées."

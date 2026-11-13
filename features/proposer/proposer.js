@@ -192,7 +192,7 @@ function propView() {
   if (PROP.ok)
     return (
       head +
-      `<div class="box" style="border-left:6px solid #2E7D4F"><b>Merci !</b> Votre jeu a été envoyé. Il sera relu avant d'apparaître sur le site.<div class="tools" style="margin-top:10px"><a class="btn" data-pr="again" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Proposer un autre jeu</a></div></div>`
+      `<div class="box" style="border-left:6px solid #2E7D4F"><b>Merci !</b> Votre jeu a été envoyé. Il est <b>en attente de relecture</b> : il n'apparaîtra sur le site qu'une fois publié. ${PROP.prevenu ? "Un e-mail de confirmation vient de vous être envoyé ; vous serez aussi prévenu(e) par e-mail s'il n'est pas retenu." : typeof compteOn === "function" && compteOn() ? "" : "Sans compte Google, nous ne pouvons pas vous prévenir : connectez-vous la prochaine fois pour être informé(e)."}<div class="tools" style="margin-top:10px"><a class="btn" data-pr="again" style="background:#26364D;color:#fff;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;display:inline-block">Proposer un autre jeu</a></div></div>`
     );
   const v = PROP.v;
   if (!v.Auteur && typeof AUTH !== "undefined" && AUTH.user) v.Auteur = AUTH.user.pseudo || AUTH.user.nom;
@@ -236,13 +236,14 @@ async function propEnvoyer() {
     const r = await fetch(CONFIG.GAME_ADD_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "jeu", jeu: v }),
+      body: JSON.stringify({ key: CONFIG.GAME_ADD_KEY || "", action: "jeu", jeu: v, ...(typeof compteOn === "function" && compteOn() && AUTH.session ? { session: AUTH.session } : {}) }),
     });
     const j = await r.json();
     if (!j.ok) throw new Error(j.error || "refusé");
     PROP.v = {};
     propSave();
     PROP.ok = true;
+    PROP.prevenu = !!j.prevenu;
   } catch (e) {
     PROP.msg = "Échec de l'envoi (" + e.message + "). Vous pouvez réessayer.";
   }
