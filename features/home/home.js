@@ -65,12 +65,13 @@ registerView({
 
 /* ---------- sélecteur de discipline (en haut du menu) ---------- */
 function majTitreDisc() {
-  const t = DISCIPLINES[DISC].titre;
+  /* le nom du site ne change pas avec la discipline (le sélecteur du menu dit laquelle on voit) */
+  const t = "Le Carnet de l'Éducateur";
   const h = document.querySelector(".brand h1"),
     b = document.querySelector(".bar b");
   if (h) h.textContent = t;
   if (b) b.textContent = t;
-  document.title = t;
+  document.title = t + " — " + DISCIPLINES[DISC].nom;
 }
 function setDisc(d) {
   if (!DISCIPLINES[d] || d === DISC) return;

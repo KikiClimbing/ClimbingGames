@@ -1,4 +1,4 @@
-# Jeux d'escalade — site pour éducateurs
+# Le Carnet de l'Éducateur — la bibliothèque des éducateurs sportifs
 
 > **Documentation complète : `docs/maintenance.md`** (aussi dans le site : Administration > Documentation). À mettre à jour à chaque changement.
 
